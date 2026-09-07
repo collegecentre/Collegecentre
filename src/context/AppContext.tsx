@@ -97,6 +97,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         'account',
         'login',
         'signup',
+        'terms',
+        'privacy',
+        'refunds',
+        'contact',
       ]
       if (validViews.includes(route)) return route
     }
@@ -130,6 +134,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         'account',
         'login',
         'signup',
+        'terms',
+        'privacy',
+        'refunds',
+        'contact',
       ]
       if (validViews.includes(route)) {
         setCurrentViewState(route)

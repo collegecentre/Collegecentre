@@ -13,6 +13,12 @@ import { ApplicationsPage } from '@/pages/ApplicationsPage'
 import { ProfilePage } from '@/pages/ProfilePage'
 import { AccountPage } from '@/pages/AccountPage'
 import { AuthPages } from '@/pages/AuthPages'
+import {
+  TermsPage,
+  PrivacyPolicyPage,
+  RefundPolicyPage,
+  ContactPage,
+} from '@/pages/LegalPages'
 import { BackgroundGrid } from '@/components/reactbits/BackgroundGrid'
 import { ShieldCheck, Heart } from 'lucide-react'
 
@@ -42,6 +48,14 @@ const AppContent: React.FC = () => {
         return <AuthPages initialMode="login" />
       case 'signup':
         return <AuthPages initialMode="signup" />
+      case 'terms':
+        return <TermsPage />
+      case 'privacy':
+        return <PrivacyPolicyPage />
+      case 'refunds':
+        return <RefundPolicyPage />
+      case 'contact':
+        return <ContactPage />
       default:
         return <LandingPage />
     }
@@ -102,6 +116,31 @@ const AppContent: React.FC = () => {
               className="hover:text-foreground transition-colors"
             >
               Account
+            </button>
+            <span className="text-black/20 dark:text-white/20 hidden sm:inline">|</span>
+            <button
+              onClick={() => setCurrentView('terms')}
+              className="hover:text-foreground transition-colors"
+            >
+              Terms
+            </button>
+            <button
+              onClick={() => setCurrentView('privacy')}
+              className="hover:text-foreground transition-colors"
+            >
+              Privacy
+            </button>
+            <button
+              onClick={() => setCurrentView('refunds')}
+              className="hover:text-foreground transition-colors"
+            >
+              Refund Policy
+            </button>
+            <button
+              onClick={() => setCurrentView('contact')}
+              className="hover:text-foreground transition-colors"
+            >
+              Contact
             </button>
           </div>
 
