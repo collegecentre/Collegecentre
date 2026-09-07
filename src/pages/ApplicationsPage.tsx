@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useApp } from '@/context/AppContext'
 import { ApplicationStatus } from '@/types'
+import { ApplicationTimeline } from '@/components/enterprise/ApplicationTimeline'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -202,36 +203,12 @@ export const ApplicationsPage: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Stage Transition Buttons */}
-                  <div className="p-3 rounded-xl bg-muted/40 border border-border/50 space-y-2">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-semibold text-muted-foreground uppercase tracking-wider text-[11px]">
-                        Move Status Stage:
-                      </span>
-                      <span className="text-muted-foreground text-[11px]">
-                        Applied on {new Date(app.applied_at).toLocaleDateString()}
-                      </span>
-                    </div>
-
-                    <div className="flex flex-wrap gap-1.5">
-                      {statusStages.map((stage) => {
-                        const isCurrent = app.status === stage
-                        return (
-                          <button
-                            key={stage}
-                            onClick={() => changeAppStatus(app.id, stage, app.notes)}
-                            className={`px-2.5 py-1 rounded-lg text-xs transition-[color,background-color,border-color,transform] ${
-                              isCurrent
-                                ? 'bg-indigo-600 text-white font-bold shadow-xs scale-105'
-                                : 'bg-background border border-border text-foreground hover:bg-accent'
-                            }`}
-                          >
-                            {stage}
-                          </button>
-                        )
-                      })}
-                    </div>
-                  </div>
+                  {/* Ant Design Style Stepper Timeline */}
+                  <ApplicationTimeline
+                    application={app}
+                    onStatusChange={(newStatus) => changeAppStatus(app.id, newStatus, app.notes)}
+                    onEditNotes={() => handleStartEditNotes(app.id, app.notes)}
+                  />
 
                   {/* Personal Notes / Interview Tracker */}
                   <div className="space-y-1.5">

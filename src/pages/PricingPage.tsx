@@ -4,8 +4,8 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { SpotlightCard } from '@/components/reactbits/SpotlightCard'
 import { ShinyText } from '@/components/reactbits/ShinyText'
-import { StarBorder } from '@/components/reactbits/StarBorder'
-import { Card, CardContent } from '@/components/ui/card'
+import { MovingBorder } from '@/components/aceternity/MovingBorder'
+import { BackgroundBeams } from '@/components/aceternity/BackgroundBeams'
 import {
   Zap,
   CheckCircle2,
@@ -45,9 +45,12 @@ export const PricingPage: React.FC = () => {
   ]
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 md:py-12 space-y-12">
+    <div className="relative max-w-4xl mx-auto px-4 py-8 md:py-12 space-y-12 overflow-hidden">
+      {/* Background Ambient Beams */}
+      <BackgroundBeams />
+
       {/* Header */}
-      <div className="text-center space-y-3">
+      <div className="relative z-10 text-center space-y-3">
         <Badge variant="matchMid" className="px-4 py-1 text-xs font-bold uppercase tracking-wider">
           <ShinyText text="Transparent Student Pricing" speed={4} />
         </Badge>
@@ -59,12 +62,9 @@ export const PricingPage: React.FC = () => {
         </p>
       </div>
 
-      {/* Pricing Card */}
-      <div className="max-w-md mx-auto">
-        <SpotlightCard
-          spotlightColor="rgba(99, 102, 241, 0.25)"
-          className="border-2 border-indigo-500/80 shadow-2xl overflow-hidden rounded-3xl"
-        >
+      {/* Pricing Card with Moving Border */}
+      <div className="relative z-10 max-w-md mx-auto">
+        <div className="border-2 border-indigo-500/80 shadow-2xl overflow-hidden rounded-3xl bg-card">
           <div className="bg-gradient-to-r from-indigo-600 to-indigo-700 text-white p-7 text-center space-y-2">
             <span className="text-xs uppercase font-extrabold tracking-widest bg-white/20 px-3.5 py-1 rounded-full">
               Full Discovery Pass
@@ -106,29 +106,30 @@ export const PricingPage: React.FC = () => {
               </div>
             </div>
 
-            <StarBorder
-              onClick={() => (isPassActive ? setCurrentView('dashboard') : setIsPaymentModalOpen(true))}
-              className="w-full"
-              color="#6366f1"
-              speed="4s"
-            >
-              <div className="flex items-center justify-center gap-2 py-1 text-base font-bold w-full">
-                <Zap className="w-4 h-4 fill-amber-300 text-amber-300" />
-                <span>{isPassActive ? 'Go to Active Dashboard' : 'Unlock Pass for ₹199'}</span>
-                <ArrowRight className="w-4 h-4" />
-              </div>
-            </StarBorder>
+            <div className="flex justify-center">
+              <MovingBorder
+                onClick={() => (isPassActive ? setCurrentView('dashboard') : setIsPaymentModalOpen(true))}
+                className="w-full py-3"
+                duration={3000}
+              >
+                <div className="flex items-center justify-center gap-2 text-base font-bold w-full">
+                  <Zap className="w-4 h-4 fill-amber-300 text-amber-300" />
+                  <span>{isPassActive ? 'Go to Active Dashboard' : 'Unlock Pass for ₹199'}</span>
+                  <ArrowRight className="w-4 h-4" />
+                </div>
+              </MovingBorder>
+            </div>
 
             <div className="p-3 rounded-xl bg-muted/50 border text-xs text-muted-foreground flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
               <span>No auto-debit · No unexpected renewals · 100% Student friendly</span>
             </div>
           </div>
-        </SpotlightCard>
+        </div>
       </div>
 
       {/* Comparison: Active vs Expired Pass Breakdown */}
-      <div className="rounded-3xl border bg-card p-6 sm:p-8 space-y-6 shadow-sm">
+      <div className="relative z-10 rounded-3xl border bg-card p-6 sm:p-8 space-y-6 shadow-sm">
         <div className="text-center space-y-1">
           <h2 className="text-xl sm:text-2xl font-black text-foreground">
             What Happens During vs After Your 24-Hour Pass
@@ -172,7 +173,7 @@ export const PricingPage: React.FC = () => {
       </div>
 
       {/* FAQs */}
-      <div className="space-y-4">
+      <div className="relative z-10 space-y-4">
         <div className="flex items-center gap-2">
           <HelpCircle className="w-5 h-5 text-indigo-600" />
           <h2 className="text-xl font-black text-foreground">Frequently Asked Questions</h2>

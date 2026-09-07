@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { MovingBorder } from '@/components/aceternity/MovingBorder'
 import {
   Zap,
   ShieldCheck,
@@ -151,25 +152,30 @@ export const PaymentModal: React.FC = () => {
 
         {/* CTA Pay Button */}
         <div className="pt-2">
-          <Button
-            variant="premium"
-            className="w-full h-12 text-base font-bold shadow-lg shadow-indigo-500/25 gap-2"
-            onClick={handlePay}
-            disabled={isProcessing}
-          >
-            {isProcessing ? (
+          {isProcessing ? (
+            <Button
+              variant="premium"
+              className="w-full h-12 text-base font-bold shadow-lg shadow-indigo-500/25 gap-2"
+              disabled
+            >
               <span className="flex items-center gap-2">
                 <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 Simulating Payment Confirmation...
               </span>
-            ) : (
-              <span className="flex items-center gap-2">
+            </Button>
+          ) : (
+            <MovingBorder
+              onClick={handlePay}
+              duration={3000}
+              className="w-full h-12 text-base font-bold text-indigo-950 dark:text-indigo-200"
+            >
+              <div className="flex items-center justify-center gap-2 w-full text-foreground">
                 <Zap className="w-4 h-4 fill-amber-300 text-amber-300" />
-                Pay ₹199 & Unlock 24 Hours
+                <span>Pay ₹199 & Unlock 24 Hours</span>
                 <ArrowRight className="w-4 h-4" />
-              </span>
-            )}
-          </Button>
+              </div>
+            </MovingBorder>
+          )}
 
           <p className="text-[11px] text-center text-muted-foreground mt-2">
             Simulated Sandbox Payment Flow for MVP · Activates pass instantly
