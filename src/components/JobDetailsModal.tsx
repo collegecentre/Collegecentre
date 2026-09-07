@@ -11,17 +11,11 @@ import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import {
   MapPin,
-  Building,
-  GraduationCap,
   Sparkles,
   Bookmark,
   ExternalLink,
   ShieldCheck,
   CheckCircle2,
-  Calendar,
-  Layers,
-  FileText,
-  Clock,
 } from 'lucide-react'
 
 interface JobDetailsModalProps {
@@ -40,7 +34,6 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }
   } = useApp()
 
   const [appliedPrompt, setAppliedPrompt] = useState<boolean>(false)
-  const [appNotes, setAppNotes] = useState<string>('')
 
   if (!job) return null
 
@@ -53,11 +46,8 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }
       return
     }
 
-    // Auto record in tracker
-    createOrUpdateApp(job.id, 'Applied', appNotes || `Applied on ${job.company} portal.`)
+    createOrUpdateApp(job.id, 'Applied', `Applied via ${job.company} portal.`)
     setAppliedPrompt(true)
-
-    // Open target portal
     window.open(job.application_url, '_blank', 'noopener,noreferrer')
   }
 
@@ -66,26 +56,26 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }
 
   return (
     <Dialog open={!!job} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent onClose={onClose} className="max-w-2xl max-h-[85vh]">
+      <DialogContent onClose={onClose} className="max-w-2xl max-h-[88vh]">
         <DialogHeader className="text-left border-b pb-4">
           <div className="flex items-start justify-between gap-4">
-            <div className="flex items-start gap-3">
-              <div className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-2xl shrink-0 dark:bg-slate-800 dark:border-slate-700">
+            <div className="flex items-start gap-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-50 to-slate-100 border border-border flex items-center justify-center text-2xl shrink-0 dark:from-slate-800 dark:to-indigo-950">
                 {job.company_logo || '🏢'}
               </div>
               <div>
-                <DialogTitle className="text-xl font-bold text-foreground">
+                <DialogTitle className="text-xl sm:text-2xl font-black text-foreground">
                   {job.title}
                 </DialogTitle>
                 <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground mt-1">
-                  <span className="font-semibold text-foreground">{job.company}</span>
+                  <span className="font-bold text-foreground">{job.company}</span>
                   <span>•</span>
                   <span className="flex items-center gap-1">
                     <MapPin className="w-3 h-3" />
                     {job.location} ({job.work_mode})
                   </span>
                   <span>•</span>
-                  <span className="text-emerald-700 font-bold dark:text-emerald-400">
+                  <span className="text-emerald-700 font-extrabold dark:text-emerald-400">
                     {job.salary}
                   </span>
                 </div>
@@ -107,34 +97,34 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }
           </div>
         </DialogHeader>
 
-        <div className="space-y-6 py-2 overflow-y-auto max-h-[60vh] pr-1">
+        <div className="space-y-6 py-3 overflow-y-auto max-h-[60vh] pr-1">
           {/* AI Match Analysis Box */}
-          <div className="rounded-2xl border border-indigo-200 bg-gradient-to-br from-indigo-50/70 via-background to-emerald-50/50 p-4 sm:p-5 dark:border-indigo-900 dark:from-indigo-950/40 dark:to-emerald-950/30 space-y-4">
+          <div className="rounded-2xl border border-indigo-200/80 bg-gradient-to-br from-indigo-50/70 via-background to-emerald-50/50 p-4 sm:p-5 dark:border-indigo-900/60 dark:from-indigo-950/40 dark:to-emerald-950/30 space-y-4 shadow-xs">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="p-1.5 rounded-lg bg-indigo-600 text-white shadow-xs">
+              <div className="flex items-center gap-2.5">
+                <span className="p-1.5 rounded-xl bg-indigo-600 text-white shadow-xs">
                   <Sparkles className="w-4 h-4" />
                 </span>
                 <div>
-                  <h4 className="text-sm font-bold text-foreground">
+                  <h4 className="text-sm font-black text-foreground">
                     CollegeCentre AI Match Score
                   </h4>
                   <p className="text-[11px] text-muted-foreground">
-                    Calculated against your student profile & skills
+                    Matched against your college degree, batch & technical skills
                   </p>
                 </div>
               </div>
-              <Badge variant={matchVariant} className="text-sm font-extrabold px-3 py-1">
+              <Badge variant={matchVariant} className="text-sm font-black px-3.5 py-1">
                 {job.match.score}% Match
               </Badge>
             </div>
 
-            {/* Score Bars Breakdown */}
+            {/* Score Bars */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
                   <span className="text-muted-foreground">Skills Match:</span>
-                  <span className="font-semibold text-foreground">
+                  <span className="font-bold text-foreground">
                     {job.match.breakdown.skillsMatch}%
                   </span>
                 </div>
@@ -144,7 +134,7 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
                   <span className="text-muted-foreground">Education & Degree:</span>
-                  <span className="font-semibold text-foreground">
+                  <span className="font-bold text-foreground">
                     {job.match.breakdown.educationMatch}%
                   </span>
                 </div>
@@ -157,7 +147,7 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
                   <span className="text-muted-foreground">Fresher Eligibility:</span>
-                  <span className="font-semibold text-foreground">
+                  <span className="font-bold text-foreground">
                     {job.match.breakdown.fresherMatch}%
                   </span>
                 </div>
@@ -170,7 +160,7 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
                   <span className="text-muted-foreground">Location & Mode:</span>
-                  <span className="font-semibold text-foreground">
+                  <span className="font-bold text-foreground">
                     {job.match.breakdown.locationMatch}%
                   </span>
                 </div>
@@ -181,10 +171,10 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }
               </div>
             </div>
 
-            {/* Match Reasons Bulleted List */}
+            {/* Match Reasons */}
             <div className="border-t border-border/70 pt-3">
-              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-2">
-                Why this job matches you:
+              <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider block mb-2">
+                Why this opportunity matches you:
               </span>
               <ul className="space-y-1.5 text-xs text-foreground/90">
                 {job.match.reasons.map((reason, i) => (
@@ -197,7 +187,7 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }
             </div>
           </div>
 
-          {/* Key Job Specifications */}
+          {/* Job Specifications */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
             <div className="p-3 rounded-xl border bg-card space-y-0.5">
               <span className="text-[11px] text-muted-foreground">Experience</span>
@@ -219,7 +209,7 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }
 
           {/* Required Skills */}
           <div className="space-y-2">
-            <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
               Required Skills
             </h4>
             <div className="flex flex-wrap gap-2">
@@ -227,7 +217,7 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }
                 <Badge
                   key={index}
                   variant="secondary"
-                  className="px-3 py-1 text-xs font-medium bg-slate-100 dark:bg-slate-800 text-foreground"
+                  className="px-3 py-1 text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-foreground"
                 >
                   {skill}
                 </Badge>
@@ -235,23 +225,23 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }
             </div>
           </div>
 
-          {/* Detailed Job Description */}
+          {/* Role Description */}
           <div className="space-y-2">
-            <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              About the Role
+            <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+              About the Position
             </h4>
-            <p className="text-sm text-foreground/90 leading-relaxed whitespace-pre-line bg-muted/20 p-4 rounded-xl border">
+            <p className="text-xs sm:text-sm text-foreground/90 leading-relaxed whitespace-pre-line bg-muted/20 p-4 rounded-xl border">
               {job.description}
             </p>
           </div>
 
-          {/* Application Status Banner if already logged */}
+          {/* Tracker Status Banner */}
           {existingApp && (
             <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs flex items-center justify-between dark:bg-emerald-950/40 dark:border-emerald-800">
               <div className="flex items-center gap-2 text-emerald-800 dark:text-emerald-300">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                 <span>
-                  <strong>Logged in your Tracker:</strong> Current status is{' '}
+                  <strong>Application Tracked:</strong> Current status is{' '}
                   <span className="font-bold underline">{existingApp.status}</span>
                 </span>
               </div>
@@ -266,7 +256,7 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }
         <div className="border-t pt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="text-xs text-muted-foreground flex items-center gap-1.5">
             <ShieldCheck className="w-4 h-4 text-emerald-600" />
-            <span>Applies directly to official employer page</span>
+            <span>Direct employer application link</span>
           </div>
 
           <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -274,7 +264,7 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }
               variant="outline"
               size="sm"
               onClick={() => toggleSaveJob(job.id)}
-              className="gap-1.5 text-xs h-10 px-4"
+              className="gap-1.5 text-xs h-10 px-4 font-semibold"
             >
               <Bookmark className={`w-4 h-4 ${saved ? 'fill-current text-indigo-600' : ''}`} />
               <span>{saved ? 'Saved' : 'Save'}</span>

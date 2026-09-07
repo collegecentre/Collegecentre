@@ -31,8 +31,6 @@ export const INITIAL_STUDENT: StudentProfile = {
   preferred_categories: ['Software Development', 'Frontend Development', 'Full Stack', 'Data & AI'],
   preferred_locations: ['Bengaluru', 'Remote', 'Hyderabad', 'Pune'],
   preferred_work_mode: ['Remote', 'Hybrid'],
-  resume_name: 'Aarav_Sharma_Resume_2026.pdf',
-  resume_headline: 'Pre-final year CSE student building responsive web applications with React & TypeScript.',
 }
 
 export const SEED_JOBS: Job[] = [
@@ -542,7 +540,7 @@ export const db = {
         job_id: 'job_06',
         status: 'Applied',
         applied_at: new Date(Date.now() - 6 * 3600 * 1000).toISOString(),
-        notes: 'Applied on career portal with updated 2026 resume.',
+        notes: 'Applied on company portal with verified student profile.',
         updated_at: new Date(Date.now() - 6 * 3600 * 1000).toISOString(),
       },
     ]

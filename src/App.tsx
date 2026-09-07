@@ -13,6 +13,7 @@ import { ApplicationsPage } from '@/pages/ApplicationsPage'
 import { ProfilePage } from '@/pages/ProfilePage'
 import { AccountPage } from '@/pages/AccountPage'
 import { AuthPages } from '@/pages/AuthPages'
+import { BackgroundGrid } from '@/components/reactbits/BackgroundGrid'
 import { ShieldCheck, Heart } from 'lucide-react'
 
 const AppContent: React.FC = () => {
@@ -47,7 +48,8 @@ const AppContent: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground selection:bg-indigo-600 selection:text-white pb-16 md:pb-0">
+    <div className="min-h-screen flex flex-col bg-background text-foreground selection:bg-indigo-600 selection:text-white pb-16 md:pb-0 relative">
+      <BackgroundGrid />
       {/* Top and Mobile Navigation */}
       <Navigation onOpenDemo={() => setIsDemoOpen(true)} />
 

@@ -7,17 +7,15 @@ export interface StudentProfile {
   name: string
   email: string
   phone: string
-  education_level: string // e.g. "B.Tech / B.E.", "BCA / MCA", "B.Sc / M.Sc", "BBA / MBA"
+  education_level: string // e.g. "Undergraduate (B.Tech / B.E.)", "BCA / MCA"
   degree: string // e.g. "Computer Science & Engineering"
   college: string // e.g. "National Institute of Technology"
   graduation_year: number // e.g. 2026, 2025, 2024
   skills: string[] // e.g. ["JavaScript", "React", "Python", "SQL"]
-  experience_level: string // e.g. "Fresher (0 years)", "0-1 years (Internships)"
-  preferred_categories: string[] // e.g. ["Software Development", "Data & AI", "Frontend", "QA / Testing"]
-  preferred_locations: string[] // e.g. ["Bengaluru", "Hyderabad", "Remote", "Pune", "Delhi NCR"]
+  experience_level: string // e.g. "Fresher (0 years)", "0-1 years"
+  preferred_categories: string[] // e.g. ["Software Development", "Data & AI"]
+  preferred_locations: string[] // e.g. ["Bengaluru", "Hyderabad", "Remote", "Pune"]
   preferred_work_mode: WorkMode[] // ['Remote', 'Hybrid']
-  resume_name?: string
-  resume_headline?: string
 }
 
 export interface Job {
@@ -27,18 +25,18 @@ export interface Job {
   company_logo?: string
   location: string
   work_mode: WorkMode
-  salary: string // e.g. "₹4–6 LPA", "₹25,000/month stipend"
-  experience: string // e.g. "0–1 years", "Fresher", "0 years"
+  salary: string // e.g. "₹4–6 LPA", "₹30,000/month stipend"
+  experience: string // e.g. "0–1 years", "Fresher"
   education: string // e.g. "B.Tech / BCA / Any Graduate"
   skills: string[]
-  category: string // e.g. "Software Development", "Data Engineering", "UI/UX Design", "Product Management", "QA / Testing", "Sales & Marketing"
+  category: string // e.g. "Software Development", "Data & AI", "QA / Testing"
   job_type: JobType
-  posted_at: string // ISO date or "Today", "Yesterday"
+  posted_at: string
   deadline: string
   description: string
-  fresher_eligibility: boolean // true = Fresher eligible
+  fresher_eligibility: boolean
   application_url: string
-  source: string // e.g. "TechNova Careers", "Direct Employer", "Campus Placement Partner"
+  source: string
 }
 
 export interface SavedJob {
@@ -74,13 +72,13 @@ export interface AccessPeriod {
   id: string
   student_id: string
   payment_id: string
-  started_at: string // ISO timestamp
-  expires_at: string // ISO timestamp (+24 hours)
+  started_at: string
+  expires_at: string
   status: 'active' | 'expired'
 }
 
 export interface MatchResult {
-  score: number // 0 - 100
+  score: number
   breakdown: {
     skillsMatch: number
     educationMatch: number
