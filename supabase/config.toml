@@ -1,0 +1,11 @@
+﻿project_id = "giiehnvjdswiwylnrliu"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
