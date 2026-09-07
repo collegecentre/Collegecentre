@@ -67,7 +67,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onSelectJob }) => 
           className="font-mono text-xs px-3 py-2 rounded-sm border border-black/15 dark:border-white/20 hover:border-black dark:hover:border-white transition-colors text-foreground flex items-center gap-1.5 self-start sm:self-auto"
         >
           <User className="w-3.5 h-3.5" />
-          <span>[ PROFILE & SKILLS ]</span>
+          <span>[ UPDATE CANDIDATE PROFILE ]</span>
         </button>
       </div>
 

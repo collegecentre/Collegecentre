@@ -7,6 +7,7 @@ import {
   X,
   Save,
   ShieldCheck,
+  CheckCircle2,
 } from 'lucide-react'
 
 export const ProfilePage: React.FC = () => {
@@ -69,11 +70,11 @@ export const ProfilePage: React.FC = () => {
     e.preventDefault()
     updateStudent(formData)
     setSavedFeedback(true)
-    setTimeout(() => setSavedFeedback(false), 2500)
+    setTimeout(() => setSavedFeedback(false), 3000)
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 space-y-8">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 space-y-8 relative">
       {/* Editorial Header */}
       <div className="border-b border-black/10 dark:border-white/15 pb-6">
         <div className="font-mono text-xs uppercase tracking-widest text-muted-foreground mb-2">
@@ -89,15 +90,32 @@ export const ProfilePage: React.FC = () => {
             </p>
           </div>
 
+          {/* Primary Top Save Button */}
           <button
-            type="button"
-            onClick={handleSave}
-            className="px-6 py-2.5 bg-vermilion hover:bg-vermilion-hover text-white font-mono text-xs font-bold uppercase tracking-wider transition-colors shrink-0"
+            type="submit"
+            form="candidate-profile-form"
+            className="px-6 py-3 bg-vermilion hover:bg-vermilion-hover text-white font-mono text-xs font-bold uppercase tracking-wider transition-colors shrink-0 flex items-center gap-2 shadow-xs"
           >
-            {savedFeedback ? '[✓ SAVED]' : '[SAVE PARAMETERS →]'}
+            <Save className="w-3.5 h-3.5" />
+            <span>{savedFeedback ? '[✓ PROFILE UPDATED]' : '[ SAVE CANDIDATE PROFILE ]'}</span>
           </button>
         </div>
       </div>
+
+      {/* Success Notification Banner */}
+      {savedFeedback && (
+        <div className="border border-emerald-500/40 bg-emerald-500/10 p-4 font-mono text-xs text-emerald-700 dark:text-emerald-400 flex items-center justify-between animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="flex items-center gap-2.5">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span className="font-bold uppercase">
+              [STATUS: SAVED] CANDIDATE PROFILE AND MATCH CRITERIA UPDATED SUCCESSFULLY.
+            </span>
+          </div>
+          <span className="text-[10px] uppercase font-bold text-muted-foreground hidden sm:inline">
+            REAL-TIME MATCH RECALCULATED
+          </span>
+        </div>
+      )}
 
       {/* Zero Resume Guarantee Box */}
       <div className="border border-black/10 dark:border-white/15 p-4 sm:p-5 bg-muted/10 flex items-start gap-4 font-mono text-xs">
@@ -112,11 +130,16 @@ export const ProfilePage: React.FC = () => {
         </div>
       </div>
 
-      <form onSubmit={handleSave} className="space-y-8">
+      <form id="candidate-profile-form" onSubmit={handleSave} className="space-y-8">
         {/* Section 01: Personal Credentials */}
         <div className="border border-black/10 dark:border-white/15 bg-card p-6 space-y-4">
-          <div className="font-mono text-xs font-bold text-foreground uppercase tracking-wider pb-3 border-b border-black/10 dark:border-white/10">
-            01 // PERSONAL CREDENTIALS
+          <div className="flex items-baseline justify-between pb-3 border-b border-black/10 dark:border-white/10">
+            <div className="font-mono text-xs font-bold text-foreground uppercase tracking-wider">
+              01 // PERSONAL CREDENTIALS
+            </div>
+            <span className="font-mono text-[10px] text-muted-foreground uppercase">
+              [VERIFIED IDENTITY]
+            </span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 font-mono">
@@ -164,8 +187,13 @@ export const ProfilePage: React.FC = () => {
 
         {/* Section 02: College & Academics */}
         <div className="border border-black/10 dark:border-white/15 bg-card p-6 space-y-4">
-          <div className="font-mono text-xs font-bold text-foreground uppercase tracking-wider pb-3 border-b border-black/10 dark:border-white/10">
-            02 // COLLEGE & ACADEMIC DATA
+          <div className="flex items-baseline justify-between pb-3 border-b border-black/10 dark:border-white/10">
+            <div className="font-mono text-xs font-bold text-foreground uppercase tracking-wider">
+              02 // COLLEGE & ACADEMIC DATA
+            </div>
+            <span className="font-mono text-[10px] text-muted-foreground uppercase">
+              [DEGREE & BATCH ALIGNMENT]
+            </span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 font-mono">
@@ -281,7 +309,7 @@ export const ProfilePage: React.FC = () => {
                 onClick={handleAddSkill}
                 className="px-4 py-2 border border-black dark:border-white text-xs font-mono font-bold uppercase tracking-wider hover:bg-muted/40 transition-colors shrink-0"
               >
-                [+ ADD]
+                [+ ADD SKILL]
               </button>
             </div>
           </div>
@@ -289,8 +317,13 @@ export const ProfilePage: React.FC = () => {
 
         {/* Section 04: Location & Work Mode Preferences */}
         <div className="border border-black/10 dark:border-white/15 bg-card p-6 space-y-5">
-          <div className="font-mono text-xs font-bold text-foreground uppercase tracking-wider pb-3 border-b border-black/10 dark:border-white/10">
-            04 // LOCATION & WORK MODE PREFERENCES
+          <div className="flex items-baseline justify-between pb-3 border-b border-black/10 dark:border-white/10">
+            <div className="font-mono text-xs font-bold text-foreground uppercase tracking-wider">
+              04 // LOCATION & WORK MODE PREFERENCES
+            </div>
+            <span className="font-mono text-[10px] text-muted-foreground uppercase">
+              [GEOGRAPHY & COMMUTE]
+            </span>
           </div>
 
           {/* Work Mode */}
@@ -367,18 +400,45 @@ export const ProfilePage: React.FC = () => {
           </div>
         </div>
 
-        {/* Submit */}
-        <div className="flex justify-end pt-2">
+        {/* Bottom Save & Update Bar */}
+        <div className="border border-black/10 dark:border-white/15 bg-card p-6 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono">
+          <div className="space-y-0.5 text-left w-full sm:w-auto">
+            <div className="text-xs font-bold text-foreground uppercase tracking-wider">
+              COMMIT CANDIDATE PROFILE CHANGES
+            </div>
+            <p className="text-[11px] text-muted-foreground">
+              Saving recalculates match scores across all active 150+ fresher openings immediately.
+            </p>
+          </div>
+
           <button
             type="submit"
-            className="w-full sm:w-auto h-12 px-10 font-mono text-xs font-bold uppercase tracking-wider bg-vermilion hover:bg-vermilion-hover text-white transition-colors flex items-center justify-center gap-2"
+            className="w-full sm:w-auto h-12 px-10 font-mono text-xs font-bold uppercase tracking-wider bg-vermilion hover:bg-vermilion-hover text-white transition-colors flex items-center justify-center gap-2 shadow-sm shrink-0"
           >
             <Save className="w-4 h-4" />
-            <span>SAVE CANDIDATE SPECIFICATION</span>
+            <span>{savedFeedback ? '[✓ PROFILE SAVED]' : 'SAVE CANDIDATE PROFILE'}</span>
           </button>
         </div>
       </form>
+
+      {/* Sticky Floating Save Trigger (Always visible while editing any option) */}
+      <div className="sticky bottom-6 z-20 flex justify-end pointer-events-none">
+        <div className="pointer-events-auto border border-black/20 dark:border-white/25 bg-background/95 backdrop-blur-md p-2 shadow-xl flex items-center gap-3 font-mono">
+          <span className="text-[11px] text-muted-foreground uppercase hidden md:inline px-2 font-bold">
+            CANDIDATE SPECIFICATION
+          </span>
+          <button
+            type="submit"
+            form="candidate-profile-form"
+            className="px-6 py-2.5 bg-vermilion hover:bg-vermilion-hover text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-2 shadow-xs"
+          >
+            <Save className="w-3.5 h-3.5" />
+            <span>{savedFeedback ? '[✓ PROFILE SAVED]' : '[ SAVE PROFILE ]'}</span>
+          </button>
+        </div>
+      </div>
     </div>
   )
 }
+
 
