@@ -11,6 +11,8 @@ import {
   Zap,
   SlidersHorizontal,
   ArrowUpRight,
+  Sun,
+  Moon,
 } from 'lucide-react'
 
 interface NavigationProps {
@@ -26,6 +28,8 @@ export const Navigation: React.FC<NavigationProps> = ({ onOpenDemo }) => {
     savedJobs,
     applications,
     setIsPaymentModalOpen,
+    resolvedTheme,
+    toggleTheme,
   } = useApp()
 
   const navItems = [
@@ -98,7 +102,28 @@ export const Navigation: React.FC<NavigationProps> = ({ onOpenDemo }) => {
           </nav>
 
           {/* Right Action Bar */}
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2">
+            {/* Dark / Light Mode Toggle */}
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="font-mono text-[10px] uppercase tracking-wider px-2 py-1 rounded-sm border border-black/15 dark:border-white/20 hover:border-black dark:hover:border-white text-slate-700 dark:text-slate-200 transition-colors flex items-center gap-1.5"
+              aria-label={`Current mode: ${resolvedTheme}. Click to switch theme.`}
+              title={`Switch to ${resolvedTheme === 'dark' ? 'light' : 'dark'} mode`}
+            >
+              {resolvedTheme === 'dark' ? (
+                <>
+                  <Sun className="w-3 h-3 text-amber-400 fill-amber-400/20" />
+                  <span className="hidden sm:inline">LIGHT</span>
+                </>
+              ) : (
+                <>
+                  <Moon className="w-3 h-3 text-slate-800" />
+                  <span className="hidden sm:inline">DARK</span>
+                </>
+              )}
+            </button>
+
             {/* Demo Pass Simulator trigger */}
             <button
               type="button"

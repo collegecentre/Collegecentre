@@ -18,6 +18,19 @@
         font-family: 'Geist Mono', monospace;
       }
     </style>
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('collegecentre-theme');
+          var isDark = saved === 'dark' || (!saved || saved === 'system') && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (isDark) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body class="bg-background text-foreground antialiased min-h-screen">
     <div id="root"></div>

@@ -26,6 +26,8 @@ export interface RemainingTime {
   isExpired: boolean
 }
 
+export type ThemeMode = 'light' | 'dark' | 'system'
+
 interface AppContextType {
   student: StudentProfile
   updateStudent: (student: StudentProfile) => void
@@ -52,6 +54,10 @@ interface AppContextType {
   simulateRemainingTime: (minutes: number) => void
   resetData: () => void
   showToast: (message: string, type?: 'success' | 'info' | 'warning') => void
+  theme: ThemeMode
+  resolvedTheme: 'light' | 'dark'
+  setTheme: (theme: ThemeMode) => void
+  toggleTheme: () => void
 }
 
 const AppContext = createContext<AppContextType | null>(null)
@@ -129,6 +135,47 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [selectedJob, setSelectedJob] = useState<JobWithMatch | null>(null)
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState<boolean>(false)
 
+  // Theme state & dark mode persistence
+  const [theme, setThemeState] = useState<ThemeMode>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('collegecentre-theme') as ThemeMode
+      if (saved === 'light' || saved === 'dark' || saved === 'system') return saved
+    }
+    return 'system'
+  })
+
+  const [systemIsDark, setSystemIsDark] = useState<boolean>(() => {
+    if (typeof window !== 'undefined' && window.matchMedia) {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches
+    }
+    return false
+  })
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return
+    const media = window.matchMedia('(prefers-color-scheme: dark)')
+    const listener = (e: MediaQueryListEvent) => setSystemIsDark(e.matches)
+    media.addEventListener('change', listener)
+    return () => media.removeEventListener('change', listener)
+  }, [])
+
+  const resolvedTheme: 'light' | 'dark' = useMemo(() => {
+    if (theme === 'system') {
+      return systemIsDark ? 'dark' : 'light'
+    }
+    return theme
+  }, [theme, systemIsDark])
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return
+    const root = document.documentElement
+    if (resolvedTheme === 'dark') {
+      root.classList.add('dark')
+    } else {
+      root.classList.remove('dark')
+    }
+  }, [resolvedTheme])
+
   // Toast state
   const [toastInfo, setToastInfo] = useState<{ message: string; type: string } | null>(null)
 
@@ -138,6 +185,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setToastInfo((current) => (current?.message === message ? null : current))
     }, 4000)
   }, [])
+
+  const setTheme = useCallback((newTheme: ThemeMode) => {
+    setThemeState(newTheme)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('collegecentre-theme', newTheme)
+    }
+  }, [])
+
+  const toggleTheme = useCallback(() => {
+    const nextTheme = resolvedTheme === 'dark' ? 'light' : 'dark'
+    setTheme(nextTheme)
+    showToast(`Switched to ${nextTheme.toUpperCase()} mode`, 'info')
+  }, [resolvedTheme, setTheme, showToast])
 
   // Calculate live countdown timer
   const [remainingTime, setRemainingTime] = useState<RemainingTime>(() => {
@@ -311,6 +371,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         simulateRemainingTime,
         resetData,
         showToast,
+        theme,
+        resolvedTheme,
+        setTheme,
+        toggleTheme,
       }}
     >
       {children}

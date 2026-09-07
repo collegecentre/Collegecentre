@@ -5,6 +5,9 @@ import {
   ShieldCheck,
   Calendar,
   RotateCcw,
+  Sun,
+  Moon,
+  Laptop,
 } from 'lucide-react'
 
 export const AccountPage: React.FC = () => {
@@ -16,6 +19,9 @@ export const AccountPage: React.FC = () => {
     payments,
     setIsPaymentModalOpen,
     resetData,
+    theme,
+    resolvedTheme,
+    setTheme,
   } = useApp()
 
   return (
@@ -169,6 +175,57 @@ export const AccountPage: React.FC = () => {
               ))}
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Theme Preference Box */}
+      <div className="border border-black/10 dark:border-white/15 bg-card">
+        <div className="p-5 border-b border-black/10 dark:border-white/15 bg-muted/20 font-mono flex items-center justify-between">
+          <div>
+            <div className="text-xs font-bold text-foreground uppercase tracking-wider">
+              APPEARANCE // INTERFACE THEME
+            </div>
+            <div className="text-[11px] text-muted-foreground mt-0.5">
+              Select your visual presentation mode for CollegeCentre
+            </div>
+          </div>
+          <span className="font-mono text-[10px] text-muted-foreground uppercase hidden sm:inline">
+            [ACTIVE: {resolvedTheme.toUpperCase()}]
+          </span>
+        </div>
+
+        <div className="p-6 font-mono">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {[
+              { id: 'light', label: 'LIGHT EDITORIAL', desc: 'Crisp white canvas with hairline dark rules', icon: Sun },
+              { id: 'dark', label: 'DARK EDITORIAL', desc: 'Pitch black #0a0a0a with high-contrast text', icon: Moon },
+              { id: 'system', label: 'SYSTEM ADAPTIVE', desc: 'Syncs automatically with your OS preference', icon: Laptop },
+            ].map((option) => {
+              const isSelected = theme === option.id
+              const Icon = option.icon
+              return (
+                <button
+                  key={option.id}
+                  type="button"
+                  onClick={() => setTheme(option.id as any)}
+                  className={`p-4 border text-left space-y-2 transition-colors ${
+                    isSelected
+                      ? 'border-black dark:border-white bg-muted/30 ring-1 ring-black dark:ring-white'
+                      : 'border-black/10 dark:border-white/15 hover:border-black/40 dark:hover:border-white/40 bg-card'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <Icon className="w-4 h-4 text-foreground" />
+                    {isSelected && (
+                      <span className="text-[10px] font-bold text-vermilion uppercase">[ACTIVE]</span>
+                    )}
+                  </div>
+                  <div className="text-xs font-bold text-foreground uppercase">{option.label}</div>
+                  <p className="text-[11px] text-muted-foreground font-sans">{option.desc}</p>
+                </button>
+              )
+            })}
+          </div>
         </div>
       </div>
 
