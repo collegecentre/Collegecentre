@@ -7,6 +7,7 @@ import {
   SavedJob,
   StudentProfile,
 } from '@/types'
+import { supabase } from './supabase'
 
 const STORAGE_KEYS = {
   STUDENT: 'collegecentre_student_profile',
@@ -304,6 +305,33 @@ export const db = {
 
   saveStudent(student: StudentProfile): void {
     localStorage.setItem(STORAGE_KEYS.STUDENT, JSON.stringify(student))
+    this.saveStudentToCloud(student)
+  },
+
+  async saveStudentToCloud(student: StudentProfile): Promise<void> {
+    try {
+      await supabase.from('cc_student_profiles').upsert(
+        {
+          id: student.id,
+          name: student.name,
+          email: student.email,
+          phone: student.phone,
+          education_level: student.education_level,
+          degree: student.degree,
+          college: student.college,
+          graduation_year: student.graduation_year,
+          skills: student.skills,
+          experience_level: student.experience_level,
+          preferred_categories: student.preferred_categories,
+          preferred_locations: student.preferred_locations,
+          preferred_work_mode: student.preferred_work_mode,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: 'id' }
+      )
+    } catch (err) {
+      console.warn('Supabase student sync warning', err)
+    }
   },
 
   // Jobs
@@ -316,6 +344,25 @@ export const db = {
     }
     localStorage.setItem(STORAGE_KEYS.JOBS, JSON.stringify(SEED_JOBS))
     return SEED_JOBS
+  },
+
+  // Fetch live jobs from Supabase cc_jobs table
+  async fetchCloudJobs(): Promise<Job[] | null> {
+    try {
+      const { data, error } = await supabase
+        .from('cc_jobs')
+        .select('*')
+        .eq('is_active', true)
+        .order('posted_at', { ascending: false })
+
+      if (!error && data && data.length > 0) {
+        localStorage.setItem(STORAGE_KEYS.JOBS, JSON.stringify(data))
+        return data as Job[]
+      }
+    } catch (err) {
+      console.warn('Supabase jobs fetch fallback to local storage', err)
+    }
+    return null
   },
 
   getJobById(id: string): Job | undefined {
@@ -387,7 +434,40 @@ export const db = {
     // Save access period
     localStorage.setItem(STORAGE_KEYS.ACCESS_PERIOD, JSON.stringify(accessPeriod))
 
+    this.syncPassToCloud(payment, accessPeriod)
+
     return { payment, accessPeriod }
+  },
+
+  async syncPassToCloud(payment: Payment, period: AccessPeriod): Promise<void> {
+    try {
+      await Promise.all([
+        supabase.from('cc_payments').insert({
+          id: payment.id,
+          user_id: payment.student_id,
+          amount: payment.amount,
+          currency: 'INR',
+          payment_method: payment.payment_method,
+          status: payment.status,
+          transaction_id: payment.transaction_id,
+          created_at: payment.created_at,
+        }),
+        supabase.from('cc_access_passes').insert({
+          id: period.id,
+          user_id: period.student_id,
+          student_email: 'student@college.edu.in',
+          started_at: period.started_at,
+          expires_at: period.expires_at,
+          amount: 199.0,
+          status: period.status,
+          payment_method: payment.payment_method,
+          transaction_id: payment.transaction_id,
+          created_at: period.started_at,
+        }),
+      ])
+    } catch (err) {
+      console.warn('Supabase pass sync warning', err)
+    }
   },
 
   // Developer simulation helper: immediately expire pass to test locked state
@@ -552,6 +632,25 @@ export const db = {
     return this.getApplications(studentId).find((a) => a.job_id === jobId)
   },
 
+  async syncApplicationToCloud(app: Application): Promise<void> {
+    try {
+      await supabase.from('cc_applications').upsert(
+        {
+          id: app.id,
+          user_id: app.student_id,
+          job_id: app.job_id,
+          status: app.status,
+          notes: app.notes || null,
+          applied_at: app.applied_at,
+          updated_at: app.updated_at,
+        },
+        { onConflict: 'id' }
+      )
+    } catch (err) {
+      console.warn('Supabase application sync warning', err)
+    }
+  },
+
   createOrUpdateApplication(
     jobId: string,
     status: ApplicationStatus,
@@ -566,6 +665,7 @@ export const db = {
       if (notes !== undefined) list[existingIndex].notes = notes
       list[existingIndex].updated_at = new Date().toISOString()
       localStorage.setItem(STORAGE_KEYS.APPLICATIONS, JSON.stringify(list))
+      this.syncApplicationToCloud(list[existingIndex])
       return list[existingIndex]
     } else {
       const newApp: Application = {
@@ -579,6 +679,7 @@ export const db = {
       }
       list.unshift(newApp)
       localStorage.setItem(STORAGE_KEYS.APPLICATIONS, JSON.stringify(list))
+      this.syncApplicationToCloud(newApp)
       return newApp
     }
   },
@@ -597,6 +698,7 @@ export const db = {
     if (notes !== undefined) app.notes = notes
     app.updated_at = new Date().toISOString()
     localStorage.setItem(STORAGE_KEYS.APPLICATIONS, JSON.stringify(list))
+    this.syncApplicationToCloud(app)
     return app
   },
 

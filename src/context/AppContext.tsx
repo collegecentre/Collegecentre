@@ -65,6 +65,20 @@ const AppContext = createContext<AppContextType | null>(null)
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [student, setStudent] = useState<StudentProfile>(() => db.getStudent())
   const [jobsRaw, setJobsRaw] = useState<Job[]>(() => db.getJobs())
+
+  // Fetch live active fresher openings from Supabase cloud database
+  useEffect(() => {
+    let isMounted = true
+    db.fetchCloudJobs().then((cloudJobs) => {
+      if (isMounted && cloudJobs && cloudJobs.length > 0) {
+        setJobsRaw(cloudJobs)
+      }
+    })
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
   const [savedJobs, setSavedJobs] = useState<SavedJob[]>(() => db.getSavedJobs())
   const [applications, setApplications] = useState<Application[]>(() => db.getApplications())
   const [payments, setPayments] = useState<Payment[]>(() => db.getPayments())
