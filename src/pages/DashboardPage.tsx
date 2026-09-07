@@ -1,9 +1,6 @@
 import React from 'react'
 import { useApp, JobWithMatch } from '@/context/AppContext'
 import { JobCard } from '@/components/JobCard'
-import { MetricStatCard } from '@/components/enterprise/MetricStatCard'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import {
   Clock,
   Zap,
@@ -12,12 +9,12 @@ import {
   Laptop,
   Flame,
   ArrowRight,
+  ArrowUpRight,
   Bookmark,
   CheckCircle2,
   Lock,
   User,
   ShieldCheck,
-  TrendingUp,
 } from 'lucide-react'
 
 interface DashboardPageProps {
@@ -47,71 +44,60 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onSelectJob }) => 
   const recommendedJobs = jobs.slice(0, 6)
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-6 md:py-8 space-y-8">
-      {/* Welcome & Profile Summary Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
+      {/* Editorial Header / Metadata Row */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-black/10 dark:border-white/15 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
-              Welcome back, {student.name.split(' ')[0]}!
-            </h1>
-            <Badge variant="outline" className="text-xs font-semibold">
-              {student.graduation_year} Batch
-            </Badge>
+            <span className="font-mono text-xs text-[#fe7141] font-bold">[STUDENT_PORTAL]</span>
+            <span className="font-mono text-xs text-muted-foreground">/</span>
+            <span className="font-mono text-xs text-muted-foreground">{student.graduation_year} BATCH</span>
           </div>
-          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+          <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight mt-1">
+            Welcome back, {student.name.split(' ')[0]}
+          </h1>
+          <p className="font-mono text-xs text-muted-foreground mt-0.5">
             {student.degree} · {student.college}
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setCurrentView('profile')}
-            className="text-xs gap-1.5 h-9 font-semibold hover:bg-accent"
-          >
-            <User className="w-3.5 h-3.5" />
-            <span>Profile & Skills</span>
-          </Button>
-        </div>
+        <button
+          type="button"
+          onClick={() => setCurrentView('profile')}
+          className="font-mono text-xs px-3 py-2 rounded-sm border border-black/15 dark:border-white/20 hover:border-black dark:hover:border-white transition-colors text-foreground flex items-center gap-1.5 self-start sm:self-auto"
+        >
+          <User className="w-3.5 h-3.5" />
+          <span>[ PROFILE & SKILLS ]</span>
+        </button>
       </div>
 
-      {/* Main Situation & 24-Hour Pass Hero Banner */}
-      <div
-        className={`rounded-3xl border p-6 sm:p-7 space-y-6 shadow-sm transition-[border-color,background-color] ${
-          isPassActive
-            ? 'bg-gradient-to-br from-indigo-950 via-slate-900 to-indigo-900 text-white border-indigo-700/60 shadow-xl'
-            : 'bg-card border-border text-card-foreground'
-        }`}
-      >
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-border/40">
+      {/* Main Situation & 24-Hour Pass Hairline Block */}
+      <div className="rounded-lg border border-black/15 dark:border-white/20 bg-card p-6 space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-black/10 dark:border-white/10">
           <div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs uppercase font-extrabold tracking-wider opacity-80">
-                Your Job Hunt Sprint
-              </span>
-              <Badge
-                className={
+            <div className="flex items-center gap-2 font-mono text-xs">
+              <span className="text-muted-foreground uppercase">[STATUS]</span>
+              <span
+                className={`font-bold px-1.5 py-0.2 rounded-xs ${
                   isPassActive
-                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40 text-xs font-bold'
-                    : 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-400/40 text-xs font-bold'
-                }
+                    ? 'bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-300'
+                    : 'bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300'
+                }`}
               >
-                24-HOUR PASS
-              </Badge>
+                {isPassActive ? '24-HOUR PASS ACTIVE' : 'PASS EXPIRED / SEARCH LOCKED'}
+              </span>
             </div>
 
-            <div className="flex items-center gap-2.5 mt-2.5">
-              <Clock className={`w-5 h-5 shrink-0 ${isPassActive ? 'text-emerald-400' : 'text-amber-500'}`} />
-              <div className="text-xl sm:text-2xl font-black font-mono tracking-tight tabular-nums">
+            <div className="flex items-baseline gap-2.5 mt-2">
+              <Clock className={`w-4 h-4 shrink-0 ${isPassActive ? 'text-emerald-600' : 'text-amber-600'}`} />
+              <div className="text-xl sm:text-2xl font-mono font-bold tracking-tight tabular-nums text-foreground">
                 {isPassActive ? (
                   <span>
-                    ⏱ {remainingTime.hours}h {remainingTime.minutes}m {remainingTime.seconds}s remaining
+                    ⏱ {remainingTime.hours}H {remainingTime.minutes}M {remainingTime.seconds}S REMAINING
                   </span>
                 ) : (
-                  <span className="text-foreground font-sans text-lg font-bold">
-                    Pass Expired / Discovery Locked
+                  <span className="text-base text-muted-foreground font-medium">
+                    New job search is locked. Saved jobs & tracker remain permanent.
                   </span>
                 )}
               </div>
@@ -120,159 +106,151 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onSelectJob }) => 
 
           <div>
             {isPassActive ? (
-              <Button
-                variant="secondary"
-                size="sm"
+              <button
+                type="button"
                 onClick={() => setCurrentView('jobs')}
-                className="gap-2 bg-white text-indigo-950 hover:bg-slate-100 font-bold shadow-xs h-10 px-5"
+                className="font-mono text-xs font-bold px-4 py-2.5 rounded-sm bg-black dark:bg-white text-white dark:text-black hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors flex items-center gap-2"
               >
-                <span>Browse All Jobs</span>
+                <span>[ BROWSE ALL JOBS ]</span>
                 <ArrowRight className="w-4 h-4" />
-              </Button>
+              </button>
             ) : (
-              <Button
-                size="sm"
+              <button
+                type="button"
                 onClick={() => setIsPaymentModalOpen(true)}
-                className="h-10 px-4 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs gap-1.5"
+                className="font-mono text-xs font-bold px-4 py-2.5 rounded-sm bg-[#fe7141] hover:bg-[#e05828] text-white transition-colors flex items-center gap-2 shadow-2xs"
               >
-                <Zap className="w-4 h-4 fill-amber-300 text-amber-300" />
-                <span>Unlock 24 Hours for ₹199</span>
-                <ArrowRight className="w-4 h-4" />
-              </Button>
+                <Zap className="w-4 h-4 fill-current" />
+                <span>[ UNLOCK 24 HOURS — ₹199 ]</span>
+                <ArrowUpRight className="w-4 h-4" />
+              </button>
             )}
           </div>
         </div>
 
-        {/* 4 Metric Cards (Mantine Style) */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 space-y-1">
-            <span className="text-xs opacity-75 flex items-center gap-1.5">
-              <Briefcase className="w-3.5 h-3.5" /> Total Matched
+        {/* 4 Swiss Metric Data Blocks */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 font-mono text-xs">
+          <div className="p-3.5 rounded-sm bg-slate-50 dark:bg-slate-900 border border-black/5 dark:border-white/10 space-y-1">
+            <span className="text-[10px] text-muted-foreground uppercase flex items-center gap-1">
+              <Briefcase className="w-3 h-3" /> TOTAL MATCHED
             </span>
-            <div className="text-2xl sm:text-3xl font-black tabular-nums">{totalMatchedJobs}</div>
-            <span className="text-[11px] opacity-70 block">tailored to profile</span>
+            <div className="text-2xl font-black tabular-nums text-foreground">{totalMatchedJobs}</div>
+            <span className="text-[10px] text-muted-foreground block">for your degree & skills</span>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 space-y-1">
-            <span className="text-xs opacity-75 flex items-center gap-1.5 text-emerald-400">
-              <Sparkles className="w-3.5 h-3.5" /> High Match (&gt;85%)
+          <div className="p-3.5 rounded-sm bg-slate-50 dark:bg-slate-900 border border-black/5 dark:border-white/10 space-y-1">
+            <span className="text-[10px] text-emerald-600 dark:text-emerald-400 uppercase flex items-center gap-1 font-bold">
+              <Sparkles className="w-3 h-3" /> HIGH MATCH (&gt;85%)
             </span>
-            <div className="text-2xl sm:text-3xl font-black text-emerald-400 tabular-nums">
+            <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400 tabular-nums">
               {highMatchJobs}
             </div>
-            <span className="text-[11px] opacity-70 block">top skill alignment</span>
+            <span className="text-[10px] text-muted-foreground block">highest skill fit</span>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 space-y-1">
-            <span className="text-xs opacity-75 flex items-center gap-1.5 text-indigo-300">
-              <Laptop className="w-3.5 h-3.5" /> Remote Roles
+          <div className="p-3.5 rounded-sm bg-slate-50 dark:bg-slate-900 border border-black/5 dark:border-white/10 space-y-1">
+            <span className="text-[10px] text-muted-foreground uppercase flex items-center gap-1">
+              <Laptop className="w-3 h-3" /> REMOTE ROLES
             </span>
-            <div className="text-2xl sm:text-3xl font-black tabular-nums">{remoteJobs}</div>
-            <span className="text-[11px] opacity-70 block">pan-India / WFH</span>
+            <div className="text-2xl font-black tabular-nums text-foreground">{remoteJobs}</div>
+            <span className="text-[10px] text-muted-foreground block">pan-India / WFH</span>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 space-y-1">
-            <span className="text-xs opacity-75 flex items-center gap-1.5 text-amber-300">
-              <Flame className="w-3.5 h-3.5" /> Posted Today
+          <div className="p-3.5 rounded-sm bg-slate-50 dark:bg-slate-900 border border-black/5 dark:border-white/10 space-y-1">
+            <span className="text-[10px] text-[#fe7141] uppercase flex items-center gap-1 font-bold">
+              <Flame className="w-3 h-3" /> POSTED TODAY
             </span>
-            <div className="text-2xl sm:text-3xl font-black text-amber-300 tabular-nums">
+            <div className="text-2xl font-black text-[#fe7141] tabular-nums">
               {jobsPostedToday}
             </div>
-            <span className="text-[11px] opacity-70 block">in the last 24h</span>
+            <span className="text-[10px] text-muted-foreground block">curated in last 24h</span>
           </div>
         </div>
       </div>
 
-      {/* Permanent Tracker Quick Access (Ant Design / HeroUI inspired) */}
+      {/* Permanent Archive Quick Access (Rule 11) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div
           onClick={() => setCurrentView('saved')}
-          className="p-5 rounded-2xl bg-card border border-border/80 shadow-xs hover:border-indigo-400/50 hover:shadow-md transition-[border-color,box-shadow] cursor-pointer flex items-center justify-between group"
+          className="p-5 rounded-lg border border-black/10 dark:border-white/15 bg-card hover:border-black dark:hover:border-white transition-colors cursor-pointer flex items-center justify-between group"
         >
-          <div className="flex items-center gap-3.5">
-            <div className="p-3 rounded-2xl bg-indigo-50 text-indigo-600 dark:bg-indigo-950 dark:text-indigo-400 group-hover:scale-105 transition-transform">
-              <Bookmark className="w-5 h-5" />
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-sm bg-slate-100 dark:bg-slate-800 text-foreground">
+              <Bookmark className="w-4 h-4" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-sm font-extrabold text-foreground">Saved Jobs</h3>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
-                  Permanent
+              <div className="flex items-center gap-2 font-mono">
+                <h3 className="text-xs font-bold text-foreground">[SAVED JOBS]</h3>
+                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">
+                  RULE 11: PERMANENT
                 </span>
               </div>
               <p className="text-xs text-muted-foreground mt-0.5">
-                {savedJobs.length} opportunities saved for later review
+                {savedJobs.length} opportunities bookmarked for later review
               </p>
             </div>
           </div>
-          <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-transform" />
+          <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-transform" />
         </div>
 
         <div
           onClick={() => setCurrentView('applications')}
-          className="p-5 rounded-2xl bg-card border border-border/80 shadow-xs hover:border-emerald-400/50 hover:shadow-md transition-[border-color,box-shadow] cursor-pointer flex items-center justify-between group"
+          className="p-5 rounded-lg border border-black/10 dark:border-white/15 bg-card hover:border-black dark:hover:border-white transition-colors cursor-pointer flex items-center justify-between group"
         >
-          <div className="flex items-center gap-3.5">
-            <div className="p-3 rounded-2xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400 group-hover:scale-105 transition-transform">
-              <CheckCircle2 className="w-5 h-5" />
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-sm bg-slate-100 dark:bg-slate-800 text-foreground">
+              <CheckCircle2 className="w-4 h-4" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-sm font-extrabold text-foreground">Application Tracker</h3>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
-                  Permanent
+              <div className="flex items-center gap-2 font-mono">
+                <h3 className="text-xs font-bold text-foreground">[APPLICATION TRACKER]</h3>
+                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">
+                  RULE 11: PERMANENT
                 </span>
               </div>
               <p className="text-xs text-muted-foreground mt-0.5">
-                {applications.length} applications in recruitment stages
+                {applications.length} applications in recruitment pipeline
               </p>
             </div>
           </div>
-          <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-transform" />
+          <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-transform" />
         </div>
       </div>
 
       {/* Recommended Jobs */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-indigo-600" />
-              <h2 className="text-xl font-extrabold text-foreground">Recommended for You</h2>
-            </div>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Ranked by AI match percentage based on your technical skills, branch & graduation year
-            </p>
+        <div className="flex items-center justify-between border-t border-b border-black/15 dark:border-white/20 py-2.5 font-mono text-xs">
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-[#fe7141]">02 //</span>
+            <span className="font-bold text-foreground uppercase tracking-wider">TOP MATCHES FOR YOUR DEGREE</span>
           </div>
 
-          <Button
-            variant="ghost"
-            size="sm"
+          <button
+            type="button"
             onClick={() => setCurrentView('jobs')}
-            className="text-xs font-bold text-primary hover:text-primary gap-1"
+            className="text-xs font-bold hover:underline flex items-center gap-1 text-[#fe7141]"
           >
-            <span>View all ({jobs.length})</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Button>
+            <span>[ VIEW ALL ({jobs.length}) ]</span>
+            <ArrowUpRight className="w-3.5 h-3.5" />
+          </button>
         </div>
 
-        {/* Lock alert if expired */}
+        {/* Lock warning if expired */}
         {!isPassActive && (
-          <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex flex-col sm:flex-row items-center justify-between gap-3 dark:bg-amber-950/40 dark:border-amber-800 dark:text-amber-200">
+          <div className="p-4 rounded-lg border border-amber-300 dark:border-amber-800 bg-amber-50/60 dark:bg-amber-950/30 text-xs font-mono flex flex-col sm:flex-row items-center justify-between gap-3 text-amber-900 dark:text-amber-200">
             <div className="flex items-center gap-2">
-              <Lock className="w-4 h-4 text-amber-600 shrink-0" />
+              <Lock className="w-4 h-4 text-amber-700 dark:text-amber-400 shrink-0" />
               <span>
-                Your 24-hour Job Hunt Pass has expired. Unlock for ₹199 to search and apply to new openings.
+                Your 24-hour pass has expired. Discovery is locked, but your saved jobs & tracker stay permanent.
               </span>
             </div>
-            <Button
-              variant="premium"
-              size="sm"
+            <button
+              type="button"
               onClick={() => setIsPaymentModalOpen(true)}
-              className="text-xs h-8 px-4 font-bold shrink-0"
+              className="px-3 py-1.5 rounded-sm bg-[#fe7141] hover:bg-[#e05828] text-white font-bold shrink-0 shadow-2xs"
             >
-              Unlock for ₹199
-            </Button>
+              [ UNLOCK 24H — ₹199 ]
+            </button>
           </div>
         )}
 

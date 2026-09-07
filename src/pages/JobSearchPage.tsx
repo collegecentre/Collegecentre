@@ -119,68 +119,68 @@ export const JobSearchPage: React.FC<JobSearchPageProps> = ({ onSelectJob }) => 
   return (
     <div className="max-w-6xl mx-auto px-4 py-6 md:py-8 space-y-6">
       {/* Search Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-black/10 dark:border-white/15 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-extrabold text-foreground tracking-tight">
-              Discover Fresher Jobs
-            </h1>
-            <Badge variant="matchMid" className="text-xs">
-              {filteredJobs.length} Results
-            </Badge>
+            <span className="font-mono text-xs text-[#fe7141] font-bold">[DISCOVERY_FEED]</span>
+            <span className="font-mono text-xs text-muted-foreground">/</span>
+            <span className="font-mono text-xs text-foreground font-bold">{filteredJobs.length} RESULTS</span>
           </div>
-          <p className="text-xs text-muted-foreground mt-0.5">
+          <h1 className="text-2xl font-black text-foreground tracking-tight mt-1 uppercase">
+            Discover Fresher Jobs
+          </h1>
+          <p className="font-mono text-xs text-muted-foreground mt-0.5">
             24-hour pass active. AI match percentages calculated in real-time.
           </p>
         </div>
 
         {/* Sort selector */}
-        <div className="flex items-center gap-2 self-start sm:self-auto">
-          <span className="text-xs text-muted-foreground">Sort by:</span>
-          <div className="inline-flex rounded-lg border bg-card p-0.5">
+        <div className="flex items-center gap-2 self-start sm:self-auto font-mono text-xs">
+          <span className="text-muted-foreground uppercase text-[10px]">SORT:</span>
+          <div className="inline-flex rounded-sm border border-black/15 dark:border-white/20 bg-card p-0.5">
             <button
               onClick={() => setSortBy('match')}
-              className={`px-2.5 py-1 text-xs rounded-md font-medium transition-colors ${
+              className={`px-2.5 py-1 text-xs rounded-xs font-mono font-bold transition-colors ${
                 sortBy === 'match'
-                  ? 'bg-indigo-600 text-white font-bold'
+                  ? 'bg-black dark:bg-white text-white dark:text-black'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              Highest Match
+              HIGHEST MATCH
             </button>
             <button
               onClick={() => setSortBy('newest')}
-              className={`px-2.5 py-1 text-xs rounded-md font-medium transition-colors ${
+              className={`px-2.5 py-1 text-xs rounded-xs font-mono font-bold transition-colors ${
                 sortBy === 'newest'
-                  ? 'bg-indigo-600 text-white font-bold'
+                  ? 'bg-black dark:bg-white text-white dark:text-black'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              Newest First
+              NEWEST
             </button>
           </div>
         </div>
       </div>
 
       {/* Search Bar and Quick Mobile Filter Toggle */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 font-mono">
         <div className="relative flex-1">
           <label htmlFor="search-jobs-input" className="sr-only">Search jobs by title, skill, or company</label>
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
           <Input
             id="search-jobs-input"
             type="text"
-            placeholder="Search by job title, skill (e.g. React, Python), or company..."
+            placeholder="FILTER BY ROLE, SKILL (REACT, PYTHON, SQL), OR FIRM..."
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
-            className="pl-9 h-11 text-base sm:text-sm bg-card border-border/80 shadow-xs"
+            className="pl-10 h-11 text-xs font-mono bg-card border-black/15 dark:border-white/20 rounded-none uppercase placeholder:text-muted-foreground/60"
           />
           {keyword && (
             <button
               type="button"
               onClick={() => setKeyword('')}
               aria-label="Clear search input"
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary rounded"
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -188,58 +188,57 @@ export const JobSearchPage: React.FC<JobSearchPageProps> = ({ onSelectJob }) => 
         </div>
 
         {/* Mobile Filter Toggle */}
-        <Button
-          variant="outline"
-          className="md:hidden h-11 px-3 gap-1.5"
+        <button
+          className="md:hidden h-11 px-3 border border-black/15 dark:border-white/20 text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-1.5"
           onClick={() => setShowMobileFilters(!showMobileFilters)}
         >
-          <Filter className="w-4 h-4" />
-          <span className="text-xs">Filters</span>
+          <Filter className="w-3.5 h-3.5" />
+          <span>FILTERS</span>
           {hasActiveFilters && (
-            <span className="w-2 h-2 rounded-full bg-indigo-600 animate-pulse" />
+            <span className="w-1.5 h-1.5 bg-vermilion" />
           )}
-        </Button>
+        </button>
       </div>
 
       {/* Filter Row (Desktop & Expanded Mobile) */}
       <div
         className={`${
           showMobileFilters ? 'block' : 'hidden'
-        } md:block p-4 rounded-xl border bg-card/60 backdrop-blur-sm space-y-4`}
+        } md:block p-4 border border-black/10 dark:border-white/15 bg-muted/10 font-mono space-y-4`}
       >
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {/* Work Mode */}
           <div className="space-y-1">
-            <label htmlFor="filter-work-mode" className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-              Work Mode
+            <label htmlFor="filter-work-mode" className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+              [WORK_MODE]
             </label>
             <select
               id="filter-work-mode"
               value={selectedWorkMode}
               onChange={(e) => setSelectedWorkMode(e.target.value)}
-              className="w-full h-9 rounded-lg border border-input bg-background px-3 py-1 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+              className="w-full h-9 rounded-none border border-black/15 dark:border-white/20 bg-background px-2.5 py-1 text-xs font-mono text-foreground focus:outline-none uppercase"
             >
-              <option value="All">All Modes</option>
-              <option value="Remote">Remote Only</option>
-              <option value="Hybrid">Hybrid</option>
-              <option value="Onsite">Onsite</option>
+              <option value="All">ALL MODES</option>
+              <option value="Remote">REMOTE ONLY</option>
+              <option value="Hybrid">HYBRID</option>
+              <option value="Onsite">ONSITE</option>
             </select>
           </div>
 
           {/* Location */}
           <div className="space-y-1">
-            <label htmlFor="filter-location" className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-              Location
+            <label htmlFor="filter-location" className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+              [METRO_REGION]
             </label>
             <select
               id="filter-location"
               value={selectedLocation}
               onChange={(e) => setSelectedLocation(e.target.value)}
-              className="w-full h-9 rounded-lg border border-input bg-background px-3 py-1 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+              className="w-full h-9 rounded-none border border-black/15 dark:border-white/20 bg-background px-2.5 py-1 text-xs font-mono text-foreground focus:outline-none uppercase"
             >
               {locations.map((loc) => (
                 <option key={loc} value={loc}>
-                  {loc === 'All' ? 'All Locations' : loc}
+                  {loc === 'All' ? 'ALL REGIONS' : loc.toUpperCase()}
                 </option>
               ))}
             </select>
@@ -247,18 +246,18 @@ export const JobSearchPage: React.FC<JobSearchPageProps> = ({ onSelectJob }) => 
 
           {/* Category */}
           <div className="space-y-1">
-            <label htmlFor="filter-category" className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-              Job Category
+            <label htmlFor="filter-category" className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+              [JOB_CATEGORY]
             </label>
             <select
               id="filter-category"
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full h-9 rounded-lg border border-input bg-background px-3 py-1 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+              className="w-full h-9 rounded-none border border-black/15 dark:border-white/20 bg-background px-2.5 py-1 text-xs font-mono text-foreground focus:outline-none uppercase"
             >
               {categories.map((cat) => (
                 <option key={cat} value={cat}>
-                  {cat === 'All' ? 'All Categories' : cat}
+                  {cat === 'All' ? 'ALL DISCIPLINES' : cat.toUpperCase()}
                 </option>
               ))}
             </select>
@@ -269,26 +268,24 @@ export const JobSearchPage: React.FC<JobSearchPageProps> = ({ onSelectJob }) => 
             <button
               type="button"
               onClick={() => setFresherOnly(!fresherOnly)}
-              className={`flex-1 h-9 px-3 rounded-lg border text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors ${
+              className={`flex-1 h-9 px-3 border text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors ${
                 fresherOnly
-                  ? 'border-emerald-500 bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300'
-                  : 'border-border text-muted-foreground hover:bg-accent'
+                  ? 'border-black dark:border-white bg-foreground text-background font-bold'
+                  : 'border-black/15 dark:border-white/20 text-muted-foreground hover:bg-muted/40'
               }`}
             >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Fresher Only</span>
+              <span>{fresherOnly ? '[✓ FRESHER ELIGIBLE]' : '[+ FRESHER ONLY]'}</span>
             </button>
 
             {hasActiveFilters && (
-              <Button
-                variant="ghost"
-                size="sm"
+              <button
+                type="button"
                 onClick={resetFilters}
-                className="h-9 px-2 text-xs text-muted-foreground hover:text-foreground"
+                className="h-9 px-2.5 border border-black/15 dark:border-white/20 text-xs font-mono text-muted-foreground hover:text-foreground hover:bg-muted/40 uppercase tracking-wider"
                 title="Reset filters"
               >
-                <X className="w-4 h-4" />
-              </Button>
+                [RESET]
+              </button>
             )}
           </div>
         </div>
@@ -296,20 +293,31 @@ export const JobSearchPage: React.FC<JobSearchPageProps> = ({ onSelectJob }) => 
 
       {/* Jobs Results List */}
       {filteredJobs.length === 0 ? (
-        <div className="p-12 text-center rounded-2xl border border-dashed bg-muted/20 space-y-3">
-          <Briefcase className="w-10 h-10 text-muted-foreground mx-auto" />
-          <h3 className="text-base font-bold text-foreground">No jobs match your active filters</h3>
-          <p className="text-xs text-muted-foreground max-w-sm mx-auto">
-            Try adjusting your search terms, location, or work mode filters to view more opportunities.
-          </p>
-          <Button variant="outline" size="sm" onClick={resetFilters} className="text-xs">
-            Clear all filters
-          </Button>
+        <div className="p-16 text-center border border-black/10 dark:border-white/15 bg-muted/10 space-y-4">
+          <div className="w-12 h-12 border border-black/15 dark:border-white/20 mx-auto flex items-center justify-center">
+            <Briefcase className="w-5 h-5 text-muted-foreground" />
+          </div>
+          <div className="space-y-1">
+            <h3 className="font-mono text-sm font-bold uppercase tracking-wider text-foreground">
+              NO ROLES MATCH ACTIVE PARAMETERS
+            </h3>
+            <p className="text-xs text-muted-foreground max-w-sm mx-auto font-mono">
+              Adjust keywords, location, or mode filters to broaden your search results.
+            </p>
+          </div>
+          <button
+            onClick={resetFilters}
+            className="px-4 py-2 border border-black dark:border-white text-xs font-mono font-bold uppercase tracking-wider hover:bg-muted/40 transition-colors"
+          >
+            [RESET ALL FILTERS]
+          </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-black/10 dark:bg-white/15 border border-black/10 dark:border-white/15">
           {filteredJobs.map((job) => (
-            <JobCard key={job.id} job={job} onSelect={onSelectJob} />
+            <div key={job.id} className="bg-background">
+              <JobCard job={job} onSelect={onSelectJob} />
+            </div>
           ))}
         </div>
       )}

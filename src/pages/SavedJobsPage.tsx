@@ -1,18 +1,10 @@
 import React from 'react'
 import { useApp, JobWithMatch } from '@/context/AppContext'
 import { JobCard } from '@/components/JobCard'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
 import {
   Bookmark,
   ShieldCheck,
-  Briefcase,
   ArrowRight,
-  Sparkles,
-  ExternalLink,
-  Trash2,
-  Lock,
 } from 'lucide-react'
 
 interface SavedJobsPageProps {
@@ -23,10 +15,8 @@ export const SavedJobsPage: React.FC<SavedJobsPageProps> = ({ onSelectJob }) => 
   const {
     savedJobs,
     jobs,
-    toggleSaveJob,
     setCurrentView,
     isPassActive,
-    setIsPaymentModalOpen,
   } = useApp()
 
   // Match saved jobs with their full job entity and score
@@ -35,66 +25,75 @@ export const SavedJobsPage: React.FC<SavedJobsPageProps> = ({ onSelectJob }) => 
     .filter((j): j is JobWithMatch => !!j)
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6 md:py-8 space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-extrabold text-foreground tracking-tight">Saved Jobs</h1>
-            <Badge variant="matchMid" className="text-xs">
-              {savedJobList.length} Saved
-            </Badge>
-          </div>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Your saved jobs belong permanently to your student account.
-          </p>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 space-y-8">
+      {/* Editorial Header */}
+      <div className="border-b border-black/10 dark:border-white/15 pb-6">
+        <div className="font-mono text-xs uppercase tracking-widest text-muted-foreground mb-2">
+          [ARCHIVE // STUDENT_DESK]
         </div>
+        <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-4">
+          <div className="space-y-1">
+            <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground">
+              Saved Positions
+            </h1>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              Roles preserved permanently under your student profile. Zero expiration on bookmarked jobs.
+            </p>
+          </div>
 
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setCurrentView('jobs')}
-          className="text-xs gap-1.5 h-9"
-        >
-          <Briefcase className="w-3.5 h-3.5" />
-          <span>Discover More Jobs</span>
-        </Button>
+          <div className="flex items-center gap-3">
+            <span className="font-mono text-xs px-3 py-1.5 border border-black/10 dark:border-white/15 bg-muted/20 text-foreground">
+              [{savedJobList.length} SAVED_ROLES]
+            </span>
+            <button
+              onClick={() => setCurrentView(isPassActive ? 'jobs' : 'pricing')}
+              className="px-4 py-1.5 border border-black dark:border-white text-xs font-mono font-bold uppercase tracking-wider hover:bg-muted/40 transition-colors"
+            >
+              [+ DISCOVER MORE]
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Permanent Data Guarantee Banner */}
-      <div className="rounded-xl border border-emerald-200 bg-emerald-50/70 p-4 text-xs dark:bg-emerald-950/30 dark:border-emerald-800 flex items-start gap-3">
+      {/* Rule 11 Permanent Access Notice */}
+      <div className="border border-black/10 dark:border-white/15 p-4 sm:p-5 bg-muted/10 flex items-start gap-4">
         <ShieldCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
-        <div className="space-y-0.5">
-          <h4 className="font-bold text-emerald-900 dark:text-emerald-200">
-            Permanent Access Guarantee
-          </h4>
-          <p className="text-emerald-800/90 dark:text-emerald-300 leading-relaxed">
-            Even when your ₹199 / 24-hour pass expires, all saved jobs remain in your account forever. You can open role details, apply to them, or manage your notes at any time without paying again.
+        <div className="space-y-1">
+          <div className="font-mono text-xs font-bold uppercase tracking-wider text-foreground">
+            RULE 11 // PERMANENT STUDENT ACCESS
+          </div>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            All positions saved during your ₹199 / 24-hour pass stay unlocked forever. You can return at any time, review details, check AI match insights, and apply directly without purchasing another sprint pass.
           </p>
         </div>
       </div>
 
       {/* Saved Jobs List */}
       {savedJobList.length === 0 ? (
-        <div className="p-12 text-center rounded-2xl border border-dashed bg-muted/20 space-y-3">
-          <Bookmark className="w-10 h-10 text-muted-foreground mx-auto stroke-[1.5]" />
-          <h3 className="text-base font-bold text-foreground">No saved jobs yet</h3>
-          <p className="text-xs text-muted-foreground max-w-sm mx-auto">
-            When you browse opportunities, select the bookmark icon on any card to save it permanently for later review.
-          </p>
-          <Button
-            variant="default"
-            size="sm"
-            onClick={() => setCurrentView(isPassActive ? 'jobs' : 'dashboard')}
-            className="text-xs bg-indigo-600 hover:bg-indigo-700 text-white"
+        <div className="p-16 text-center border border-black/10 dark:border-white/15 bg-muted/10 space-y-4">
+          <div className="w-12 h-12 border border-black/15 dark:border-white/20 mx-auto flex items-center justify-center">
+            <Bookmark className="w-5 h-5 text-muted-foreground" />
+          </div>
+          <div className="space-y-1">
+            <h3 className="font-mono text-sm font-bold uppercase tracking-wider text-foreground">
+              NO BOOKMARKED POSITIONS FOUND
+            </h3>
+            <p className="text-xs text-muted-foreground max-w-sm mx-auto">
+              Save opportunities while browsing the live database to preserve them here permanently.
+            </p>
+          </div>
+          <button
+            onClick={() => setCurrentView(isPassActive ? 'jobs' : 'pricing')}
+            className="inline-flex items-center gap-2 px-6 py-2.5 bg-vermilion hover:bg-vermilion-hover text-white text-xs font-mono font-bold uppercase tracking-wider transition-colors"
           >
-            {isPassActive ? 'Browse Jobs Now' : 'Go to Dashboard'}
-          </Button>
+            <span>{isPassActive ? 'BROWSE OPPORTUNITIES' : 'ACTIVATE 24H PASS [₹199]'}</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-black/10 dark:bg-white/15 border border-black/10 dark:border-white/15">
           {savedJobList.map((job) => (
-            <div key={job.id} className="relative group">
+            <div key={job.id} className="bg-background">
               <JobCard job={job} onSelect={onSelectJob} />
             </div>
           ))}

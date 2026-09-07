@@ -10,6 +10,7 @@ import {
   User,
   Zap,
   SlidersHorizontal,
+  ArrowUpRight,
 } from 'lucide-react'
 
 interface NavigationProps {
@@ -28,8 +29,18 @@ export const Navigation: React.FC<NavigationProps> = ({ onOpenDemo }) => {
   } = useApp()
 
   const navItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: Compass },
-    { id: 'jobs', label: 'Discover Jobs', icon: Briefcase },
+    { id: 'landing', label: 'OVERVIEW' },
+    { id: 'pricing', label: 'PRICING' },
+    { id: 'dashboard', label: 'DASHBOARD' },
+    { id: 'jobs', label: 'DISCOVER' },
+    { id: 'saved', label: 'SAVED', count: savedJobs.length },
+    { id: 'applications', label: 'TRACKER', count: applications.length },
+    { id: 'profile', label: 'PROFILE' },
+  ]
+
+  const mobileNavItems = [
+    { id: 'dashboard', label: 'Home', icon: Compass },
+    { id: 'jobs', label: 'Jobs', icon: Briefcase },
     { id: 'saved', label: 'Saved', icon: Bookmark, badge: savedJobs.length },
     { id: 'applications', label: 'Tracker', icon: CheckCircle2, badge: applications.length },
     { id: 'profile', label: 'Profile', icon: User },
@@ -37,205 +48,122 @@ export const Navigation: React.FC<NavigationProps> = ({ onOpenDemo }) => {
 
   return (
     <>
-      {/* Top Navigation */}
-      <header className="sticky top-0 z-40 w-full border-b border-border/80 bg-background/80 backdrop-blur-xl shadow-xs">
-        <div className="container max-w-7xl mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
-          {/* Brand Logo */}
+      {/* Top Editorial Masthead (State of AI Design Style) */}
+      <header className="sticky top-0 z-40 w-full border-b border-black/10 dark:border-white/15 bg-white/95 dark:bg-black/95 backdrop-blur-md">
+        <div className="container max-w-7xl mx-auto flex h-14 items-center justify-between px-4 sm:px-6">
+          {/* Brand Mark */}
           <button
             type="button"
-            className="flex items-center gap-2.5 text-left select-none group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-xl p-1 -m-1"
+            className="flex items-center gap-2.5 text-left select-none group focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-black dark:focus-visible:ring-white p-1 -m-1"
             onClick={() => setCurrentView('landing')}
             aria-label="CollegeCentre Home"
           >
-            <div className="h-9 w-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black text-sm tracking-tight shadow-xs">
+            <div className="h-7 w-7 rounded-sm bg-black dark:bg-white text-white dark:text-black flex items-center justify-center font-mono font-bold text-xs">
               CC
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-extrabold text-base tracking-tight text-foreground">
-                  CollegeCentre
-                </span>
-                <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.2 rounded bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-border">
-                  Freshers
-                </span>
-              </div>
-              <p className="text-[11px] text-muted-foreground hidden sm:block font-medium">
-                ₹199 / 24-Hour Job Hunt Pass
-              </p>
+            <div className="flex items-baseline gap-2">
+              <span className="font-mono font-bold text-sm tracking-tight text-black dark:text-white uppercase">
+                COLLEGECENTRE
+              </span>
+              <span className="font-mono text-[10px] text-slate-500 dark:text-slate-400 hidden sm:inline">
+                [2026_EDITION]
+              </span>
             </div>
           </button>
 
-          {/* Desktop Navigation Links with visible focus rings and targeted transitions */}
-          <nav className="hidden md:flex items-center gap-1.5" aria-label="Main Navigation">
-            <button
-              type="button"
-              onClick={() => setCurrentView('landing')}
-              className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
-                currentView === 'landing'
-                  ? 'text-primary bg-primary/10 shadow-xs'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-accent/60'
-              }`}
-            >
-              Overview
-            </button>
-            <button
-              type="button"
-              onClick={() => setCurrentView('pricing')}
-              className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
-                currentView === 'pricing'
-                  ? 'text-primary bg-primary/10 shadow-xs'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-accent/60'
-              }`}
-            >
-              Pricing
-            </button>
-            <button
-              type="button"
-              onClick={() => setCurrentView('dashboard')}
-              className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
-                currentView === 'dashboard'
-                  ? 'text-primary bg-primary/10 shadow-xs'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-accent/60'
-              }`}
-            >
-              Dashboard
-            </button>
-            <button
-              type="button"
-              onClick={() => setCurrentView('jobs')}
-              className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
-                currentView === 'jobs'
-                  ? 'text-primary bg-primary/10 shadow-xs'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-accent/60'
-              }`}
-            >
-              Find Jobs
-            </button>
-            <button
-              type="button"
-              onClick={() => setCurrentView('saved')}
-              className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 relative ${
-                currentView === 'saved'
-                  ? 'text-primary bg-primary/10 shadow-xs'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-accent/60'
-              }`}
-            >
-              Saved
-              {savedJobs.length > 0 && (
-                <span className="ml-1.5 px-1.5 py-0.2 rounded-full text-[10px] bg-secondary text-foreground font-bold">
-                  {savedJobs.length}
-                </span>
-              )}
-            </button>
-            <button
-              type="button"
-              onClick={() => setCurrentView('applications')}
-              className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 relative ${
-                currentView === 'applications'
-                  ? 'text-primary bg-primary/10 shadow-xs'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-accent/60'
-              }`}
-            >
-              Tracker
-              {applications.length > 0 && (
-                <span className="ml-1.5 px-1.5 py-0.2 rounded-full text-[10px] bg-emerald-100 text-emerald-800 font-bold dark:bg-emerald-950 dark:text-emerald-300">
-                  {applications.length}
-                </span>
-              )}
-            </button>
-            <button
-              type="button"
-              onClick={() => setCurrentView('profile')}
-              className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
-                currentView === 'profile'
-                  ? 'text-primary bg-primary/10 shadow-xs'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-accent/60'
-              }`}
-            >
-              Profile
-            </button>
+          {/* Monospace Editorial Nav Links */}
+          <nav className="hidden lg:flex items-center gap-1 font-mono text-[11px] tracking-tight" aria-label="Main Navigation">
+            {navItems.map((item) => {
+              const isActive = currentView === item.id
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setCurrentView(item.id as any)}
+                  className={`px-2.5 py-1 transition-colors relative flex items-center gap-1 ${
+                    isActive
+                      ? 'text-black dark:text-white font-bold bg-slate-100 dark:bg-slate-900 rounded-sm'
+                      : 'text-slate-500 hover:text-black dark:text-slate-400 dark:hover:text-white'
+                  }`}
+                >
+                  <span>{isActive ? `[ ${item.label} ]` : item.label}</span>
+                  {typeof item.count === 'number' && item.count > 0 && (
+                    <span className="text-[10px] px-1 py-0.2 rounded-xs bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold">
+                      {item.count}
+                    </span>
+                  )}
+                </button>
+              )
+            })}
           </nav>
 
           {/* Right Action Bar */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-2.5">
             {/* Demo Pass Simulator trigger */}
-            <Button
-              variant="outline"
-              size="sm"
+            <button
+              type="button"
               onClick={onOpenDemo}
-              className="text-xs gap-1.5 h-8 border-dashed border-indigo-300 text-indigo-600 dark:border-indigo-700 dark:text-indigo-400 bg-indigo-50/50 dark:bg-indigo-950/30"
-              title="Test pass expiration and timer simulator"
+              className="font-mono text-[10px] uppercase tracking-wider px-2 py-1 rounded-sm border border-dashed border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-black dark:hover:border-white transition-colors flex items-center gap-1"
+              title="Test pass timer and expiration simulator"
             >
-              <SlidersHorizontal className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Pass Simulator</span>
-            </Button>
+              <SlidersHorizontal className="w-3 h-3" />
+              <span className="hidden sm:inline">SIMULATOR</span>
+            </button>
 
             {/* Pass Status / Unlock Button */}
             {isPassActive ? (
               <button
                 type="button"
                 onClick={() => setCurrentView('account')}
-                aria-label={`Pass active: ${remainingTime.hours} hours and ${remainingTime.minutes} minutes remaining. View account details.`}
-                className="cursor-pointer flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-700 border border-emerald-300/60 text-xs font-bold shadow-xs hover:bg-emerald-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 transition-colors dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-700"
+                aria-label={`Pass active: ${remainingTime.hours} hours and ${remainingTime.minutes} minutes remaining.`}
+                className="font-mono text-xs px-2.5 py-1 rounded-sm bg-emerald-50 text-emerald-800 border border-emerald-300 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-700 font-bold flex items-center gap-1.5"
               >
-                <span className="relative flex h-2 w-2" aria-hidden="true">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                </span>
-                <Clock className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
-                <span className="font-mono tabular-nums text-[11px] sm:text-xs tracking-tight">
-                  {remainingTime.hours}h {remainingTime.minutes}m left
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="tabular-nums">
+                  {remainingTime.hours}H {remainingTime.minutes}M
                 </span>
               </button>
             ) : (
-              <Button
-                size="sm"
+              <button
+                type="button"
                 onClick={() => setIsPaymentModalOpen(true)}
-                className="h-9 px-3.5 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs gap-1.5"
+                className="font-mono text-xs font-bold px-3 py-1.5 rounded-sm bg-[#fe7141] hover:bg-[#e05828] text-white shadow-2xs transition-colors flex items-center gap-1.5"
                 aria-label="Unlock 24-hour job hunt pass for ₹199"
               >
-                <Zap className="w-3.5 h-3.5 fill-amber-300 text-amber-300" aria-hidden="true" />
-                <span>Unlock Pass · ₹199</span>
-              </Button>
+                <Zap className="w-3.5 h-3.5 fill-current" />
+                <span>UNLOCK [₹199]</span>
+              </button>
             )}
           </div>
         </div>
       </header>
 
-      {/* Mobile Bottom Bar */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-background/90 backdrop-blur-xl border-t border-border/80 px-2 py-1 shadow-2xl">
+      {/* Mobile Bottom Navigation Bar */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-black/95 backdrop-blur-xl border-t border-black/10 dark:border-white/15 px-2 py-1">
         <div className="grid grid-cols-5 gap-1 items-center max-w-md mx-auto">
-          {navItems.map((item) => {
+          {mobileNavItems.map((item) => {
             const Icon = item.icon
             const isActive = currentView === item.id
             return (
               <button
                 key={item.id}
                 type="button"
-                onClick={() => setCurrentView(item.id)}
-                className={`flex flex-col items-center justify-center py-2 px-1 rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary relative min-h-[48px] ${
+                onClick={() => setCurrentView(item.id as any)}
+                className={`flex flex-col items-center justify-center py-2 px-1 rounded-sm transition-colors relative min-h-[48px] ${
                   isActive
-                    ? 'text-primary font-bold'
-                    : 'text-muted-foreground hover:text-foreground'
+                    ? 'text-black dark:text-white font-bold'
+                    : 'text-slate-400 hover:text-black dark:hover:text-white'
                 }`}
-                aria-label={item.label}
               >
                 <div className="relative">
-                  <Icon
-                    className={`w-5 h-5 transition-transform ${
-                      isActive ? 'scale-110 stroke-[2.25]' : 'stroke-[1.75]'
-                    }`}
-                  />
+                  <Icon className="w-4 h-4" />
                   {item.badge !== undefined && item.badge > 0 && (
-                    <span className="absolute -top-1 -right-2 h-4 min-w-4 px-1 rounded-full bg-indigo-600 text-white text-[9px] font-bold flex items-center justify-center shadow-xs">
+                    <span className="absolute -top-1.5 -right-2 px-1 min-w-[14px] h-[14px] rounded-full text-[9px] bg-black text-white dark:bg-white dark:text-black flex items-center justify-center font-mono">
                       {item.badge}
                     </span>
                   )}
                 </div>
-                <span className="text-[10px] mt-1 tracking-tight font-medium">{item.label}</span>
-                {isActive && (
-                  <span className="absolute bottom-0.5 w-6 h-0.5 bg-primary rounded-full" />
-                )}
+                <span className="text-[10px] font-mono mt-1 tracking-tight">{item.label}</span>
               </button>
             )
           })}

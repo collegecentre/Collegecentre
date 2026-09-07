@@ -1,16 +1,9 @@
 import React from 'react'
 import { useApp } from '@/context/AppContext'
-import { Button } from '@/components/ui/button'
-import { SpotlightCard } from '@/components/reactbits/SpotlightCard'
-import { StarBorder } from '@/components/reactbits/StarBorder'
 import {
-  Lock,
-  Zap,
   Bookmark,
   CheckCircle2,
   ShieldCheck,
-  Clock,
-  Sparkles,
   ArrowRight,
 } from 'lucide-react'
 
@@ -23,113 +16,95 @@ export const ExpiredAccessScreen: React.FC = () => {
   } = useApp()
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8 md:py-12 animate-in fade-in zoom-in-95 duration-300">
-      <SpotlightCard
-        spotlightColor="rgba(245, 158, 11, 0.15)"
-        className="border-indigo-100 shadow-2xl dark:border-slate-800 rounded-3xl overflow-hidden"
-      >
-        {/* Top visual banner */}
-        <div className="bg-gradient-to-r from-amber-500/10 via-indigo-500/10 to-emerald-500/10 p-6 md:p-8 text-center border-b border-border/60">
-          <div className="mx-auto w-16 h-16 rounded-2xl bg-amber-500/15 border border-amber-300 text-amber-600 dark:border-amber-700 dark:text-amber-400 flex items-center justify-center mb-4 shadow-sm">
-            <Lock className="w-8 h-8" />
-          </div>
-
-          <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 mb-3">
-            <Clock className="w-3.5 h-3.5" /> 24-Hour Pass Expired
+    <div className="max-w-3xl mx-auto px-4 py-8 md:py-16">
+      <div className="border border-black/10 dark:border-white/15 bg-card">
+        {/* Editorial Top Bar */}
+        <div className="border-b border-black/10 dark:border-white/15 px-6 py-4 bg-muted/20 flex items-center justify-between font-mono text-[11px]">
+          <span className="text-muted-foreground uppercase tracking-widest">
+            [ACCESS_GATE // SPRINT_WINDOW_CLOSED]
           </span>
+          <span className="font-bold text-vermilion uppercase tracking-wider">
+            [STATUS: EXPIRED]
+          </span>
+        </div>
 
-          <h2 className="text-2xl md:text-3xl font-black text-foreground tracking-tight">
-            Your 24-Hour Job Hunt Pass Has Expired
+        {/* Hero Section */}
+        <div className="p-6 md:p-10 border-b border-black/10 dark:border-white/15 space-y-4">
+          <div className="font-mono text-xs text-muted-foreground uppercase tracking-wider">
+            SPRINT CONCLUSION // 24 HOURS ELAPSED
+          </div>
+          <h2 className="text-3xl md:text-4xl font-black text-foreground tracking-tight">
+            Your 24-Hour Pass Has Expired.
           </h2>
-
-          <p className="text-sm sm:text-base text-muted-foreground mt-2 max-w-lg mx-auto leading-relaxed">
-            Your saved jobs and application tracker are still available. Get another 24-hour pass for ₹199 to continue finding and applying to jobs.
+          <p className="text-sm md:text-base text-muted-foreground max-w-xl leading-relaxed">
+            Discovery access to new job listings and real-time AI scoring has concluded. All positions you saved and applications you tracked remain permanently accessible under your profile.
           </p>
 
-          {/* Primary Unlock CTA with StarBorder */}
-          <div className="mt-6 flex justify-center">
-            <StarBorder
+          <div className="pt-2">
+            <button
               onClick={() => setIsPaymentModalOpen(true)}
-              color="#6366f1"
-              speed="4s"
+              className="inline-flex items-center gap-2 px-8 py-3 bg-vermilion hover:bg-vermilion-hover text-white text-xs font-mono font-bold uppercase tracking-wider transition-colors"
             >
-              <div className="flex items-center gap-2 py-1 px-5 text-base font-bold">
-                <Zap className="w-4 h-4 fill-amber-300 text-amber-300" />
-                <span>Get 24 Hours — ₹199</span>
-                <ArrowRight className="w-4 h-4" />
-              </div>
-            </StarBorder>
+              <span>UNLOCK NEW 24-HOUR SPRINT — ₹199</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
           </div>
         </div>
 
-        <div className="p-6 md:p-8 space-y-6">
-          {/* Permanent Data Guarantee */}
-          <div className="rounded-2xl bg-emerald-50 border border-emerald-200 p-4.5 dark:bg-emerald-950/40 dark:border-emerald-800">
-            <div className="flex items-start gap-3">
-              <ShieldCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
-              <div>
-                <h4 className="text-sm font-extrabold text-emerald-900 dark:text-emerald-200">
-                  Important: Your Data is Always Preserved
-                </h4>
-                <p className="text-xs text-emerald-800/90 dark:text-emerald-300 mt-1 leading-relaxed">
-                  CollegeCentre never locks or deletes your saved jobs, application statuses, interview notes, or student profile. You only purchase another ₹199 pass when you are ready to discover and apply to new job listings.
+        {/* Rule 11 Permanent Guarantee Notice */}
+        <div className="p-6 md:p-8 bg-muted/10 border-b border-black/10 dark:border-white/15 space-y-2">
+          <div className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider text-foreground">
+            <ShieldCheck className="w-4 h-4 text-emerald-600" />
+            <span>RULE 11 // PERMANENT DESK GUARANTEE</span>
+          </div>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            CollegeCentre never locks or revokes access to your saved positions, application pipeline stages, interview notes, or student credentials. Passes are strictly transactional: ₹199 only when you wish to execute a new 24-hour job search cycle.
+          </p>
+        </div>
+
+        {/* Preserved Data Shortcuts */}
+        <div className="p-6 md:p-8 space-y-4 font-mono">
+          <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
+            PERMANENTLY PRESERVED ASSETS:
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-black/10 dark:bg-white/15 border border-black/10 dark:border-white/15">
+            <button
+              type="button"
+              onClick={() => setCurrentView('saved')}
+              className="p-5 bg-card hover:bg-muted/40 transition-colors text-left flex items-start justify-between group"
+            >
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 text-foreground font-bold text-xs">
+                  <Bookmark className="w-3.5 h-3.5 text-vermilion" />
+                  <span>[01] SAVED POSITIONS</span>
+                </div>
+                <p className="text-[11px] text-muted-foreground">
+                  {savedJobs.length} roles preserved on desk
                 </p>
               </div>
-            </div>
-          </div>
+              <ArrowRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground transition-transform group-hover:translate-x-0.5" />
+            </button>
 
-          {/* Immediate Action Buttons for Still Available Data */}
-          <div>
-            <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">
-              Still Available in Your Student Account:
-            </h4>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={() => setCurrentView('saved')}
-                className="group flex items-center justify-between p-4 rounded-2xl border border-border bg-card hover:bg-accent/60 transition-colors text-left"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="p-2.5 rounded-xl bg-indigo-50 text-indigo-600 dark:bg-indigo-950 dark:text-indigo-400 group-hover:scale-105 transition-transform">
-                    <Bookmark className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h5 className="text-sm font-extrabold text-foreground">Saved Jobs</h5>
-                    <p className="text-xs text-muted-foreground">{savedJobs.length} opportunities saved</p>
-                  </div>
+            <button
+              type="button"
+              onClick={() => setCurrentView('applications')}
+              className="p-5 bg-card hover:bg-muted/40 transition-colors text-left flex items-start justify-between group"
+            >
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 text-foreground font-bold text-xs">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>[02] APPLICATION TRACKER</span>
                 </div>
-                <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-transform" />
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setCurrentView('applications')}
-                className="group flex items-center justify-between p-4 rounded-2xl border border-border bg-card hover:bg-accent/60 transition-colors text-left"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400 group-hover:scale-105 transition-transform">
-                    <CheckCircle2 className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h5 className="text-sm font-extrabold text-foreground">Application Tracker</h5>
-                    <p className="text-xs text-muted-foreground">{applications.length} active applications</p>
-                  </div>
-                </div>
-                <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-transform" />
-              </button>
-            </div>
-          </div>
-
-          <div className="pt-2 text-center text-xs text-muted-foreground">
-            <span className="inline-flex items-center gap-1 font-bold text-foreground">
-              <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
-              Why the 24-Hour Pass?
-            </span>{' '}
-            No recurring auto-debit traps. You focus intensely for 24 hours finding high-match jobs, and maintain your career tracker forever.
+                <p className="text-[11px] text-muted-foreground">
+                  {applications.length} pipeline records
+                </p>
+              </div>
+              <ArrowRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground transition-transform group-hover:translate-x-0.5" />
+            </button>
           </div>
         </div>
-      </SpotlightCard>
+      </div>
     </div>
   )
 }

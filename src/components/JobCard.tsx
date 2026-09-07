@@ -1,15 +1,11 @@
 import React from 'react'
 import { JobWithMatch, useApp } from '@/context/AppContext'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import {
   MapPin,
   ExternalLink,
   Bookmark,
-  Sparkles,
-  CheckCircle,
-  GraduationCap,
   Calendar,
+  ArrowUpRight,
 } from 'lucide-react'
 
 interface JobCardProps {
@@ -37,129 +33,107 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSelect }) => {
     toggleSaveJob(job.id)
   }
 
-  const matchVariant =
-    job.match.score >= 85 ? 'matchHigh' : job.match.score >= 70 ? 'matchMid' : 'matchNormal'
-
   return (
     <div
       onClick={() => onSelect(job)}
-      className="group cursor-pointer rounded-2xl border border-border/80 bg-card hover:border-indigo-400/60 dark:hover:border-indigo-500/60 hover:shadow-md transition-[border-color,box-shadow] duration-200"
+      className="group cursor-pointer rounded-lg border border-black/10 dark:border-white/15 bg-card hover:border-black dark:hover:border-white transition-colors duration-150 p-5 flex flex-col justify-between space-y-4"
     >
-      <div className="p-5 sm:p-6 space-y-4">
-        {/* Header: Company, Title & Save */}
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-start gap-3.5 min-w-0">
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo-50 to-slate-100 border border-border/70 flex items-center justify-center text-2xl shrink-0 group-hover:scale-105 transition-transform dark:from-slate-800 dark:to-indigo-950">
-              {job.company_logo || '🏢'}
-            </div>
-            <div className="min-w-0">
-              <h3 className="font-extrabold text-base sm:text-lg text-foreground group-hover:text-primary transition-colors truncate">
-                {job.title}
-              </h3>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
-                <span className="font-semibold text-foreground/90 truncate">{job.company}</span>
-                <span>•</span>
-                <span className="flex items-center gap-1">
-                  <MapPin className="w-3 h-3" />
-                  {job.location}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={handleSaveClick}
-            aria-label={saved ? `Remove ${job.title} at ${job.company} from saved jobs` : `Save ${job.title} at ${job.company}`}
-            className={`p-2.5 rounded-xl transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
-              saved
-                ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-950 dark:text-indigo-300'
-                : 'text-muted-foreground hover:bg-accent/80 hover:text-foreground'
-            }`}
-          >
-            <Bookmark className={`w-4 h-4 ${saved ? 'fill-current' : ''}`} />
-          </button>
-        </div>
-
-        {/* Match Percentage & Chips */}
-        <div className="flex flex-wrap items-center gap-2">
-          <Badge variant={matchVariant} className="gap-1.5 py-1 px-3 text-xs font-black shadow-xs">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>{job.match.score}% Match</span>
-          </Badge>
-
-          {job.fresher_eligibility && (
-            <Badge variant="success" className="gap-1 py-1 px-2.5 text-xs font-semibold">
-              <CheckCircle className="w-3 h-3" />
-              <span>Fresher Eligible</span>
-            </Badge>
-          )}
-
-          <Badge variant="secondary" className="text-xs font-medium">
-            {job.work_mode}
-          </Badge>
-
-          <Badge variant="outline" className="text-xs text-muted-foreground font-medium">
-            {job.job_type}
-          </Badge>
-        </div>
-
-        {/* Salary and Education fit */}
-        <div className="space-y-2 pt-1 border-t border-border/50">
-          <div className="flex items-center justify-between text-xs pt-2">
-            <span className="font-extrabold text-emerald-700 dark:text-emerald-400 text-sm tracking-tight tabular-nums">
-              {job.salary}
-            </span>
-            <span className="text-muted-foreground flex items-center gap-1 text-[11px]">
-              <GraduationCap className="w-3.5 h-3.5" />
-              {job.education}
+      <div className="space-y-3">
+        {/* Top Monospace Metadata Header */}
+        <div className="flex items-center justify-between border-b border-black/10 dark:border-white/10 pb-2 text-[11px] font-mono text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-foreground uppercase tracking-wider">{job.company}</span>
+            <span>/</span>
+            <span className="flex items-center gap-1">
+              <MapPin className="w-3 h-3" />
+              {job.location} ({job.work_mode})
             </span>
           </div>
-
-          {/* Skill pills */}
-          <div className="flex flex-wrap gap-1.5 pt-1">
-            {job.skills.slice(0, 4).map((skill, idx) => (
-              <span
-                key={idx}
-                className="px-2.5 py-0.5 rounded-lg bg-secondary/80 text-secondary-foreground text-[11px] font-medium border border-border/40"
-              >
-                {skill}
-              </span>
-            ))}
-            {job.skills.length > 4 && (
-              <span className="px-2 py-0.5 rounded-lg bg-muted text-muted-foreground text-[10px] font-medium">
-                +{job.skills.length - 4}
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* Footer Actions */}
-        <div className="flex items-center justify-between gap-2 pt-3 border-t border-border/60">
-          <span className="text-[11px] text-muted-foreground flex items-center gap-1">
-            <Calendar className="w-3 h-3" />
-            {job.deadline}
-          </span>
 
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-8 text-xs px-3 font-semibold hover:bg-accent"
-              onClick={() => onSelect(job)}
+            <span
+              className={`px-1.5 py-0.5 rounded-xs font-bold text-[10px] ${
+                job.match.score >= 85
+                  ? 'bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-300'
+                  : job.match.score >= 70
+                  ? 'bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300'
+                  : 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300'
+              }`}
             >
-              View details
-            </Button>
-            <Button
-              variant="default"
-              size="sm"
-              className="h-8 text-xs ps-3.5 pe-3 gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-xs shadow-indigo-500/20"
-              onClick={handleApplyClick}
+              [MATCH {job.match.score}%]
+            </span>
+
+            <button
+              type="button"
+              onClick={handleSaveClick}
+              aria-label={saved ? `Remove ${job.title} from saved jobs` : `Save ${job.title}`}
+              className={`p-1 rounded-sm transition-colors ${
+                saved
+                  ? 'text-[#fe7141]'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
             >
-              <span>Apply</span>
-              <ExternalLink className="w-3 h-3" />
-            </Button>
+              <Bookmark className={`w-3.5 h-3.5 ${saved ? 'fill-current' : ''}`} />
+            </button>
           </div>
+        </div>
+
+        {/* Job Title */}
+        <div>
+          <h3 className="font-bold text-base sm:text-lg text-foreground tracking-tight group-hover:underline">
+            {job.title}
+          </h3>
+          <div className="flex items-baseline gap-2 mt-1">
+            <span className="font-mono font-bold text-sm text-[#fe7141] tabular-nums">
+              {job.salary}
+            </span>
+            <span className="text-[11px] font-mono text-muted-foreground">
+              · {job.education}
+            </span>
+          </div>
+        </div>
+
+        {/* Monospace Skill Tags */}
+        <div className="flex flex-wrap gap-1.5 pt-1">
+          {job.skills.slice(0, 4).map((skill, idx) => (
+            <span
+              key={idx}
+              className="px-2 py-0.5 rounded-xs bg-slate-100 dark:bg-slate-800 text-foreground font-mono text-[10px] uppercase tracking-tight border border-black/5 dark:border-white/10"
+            >
+              [{skill}]
+            </span>
+          ))}
+          {job.skills.length > 4 && (
+            <span className="px-1.5 py-0.5 rounded-xs font-mono text-[10px] text-muted-foreground">
+              +{job.skills.length - 4} MORE
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Footer Actions */}
+      <div className="flex items-center justify-between gap-2 pt-3 border-t border-black/10 dark:border-white/10 font-mono text-xs">
+        <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+          <Calendar className="w-3 h-3" />
+          {job.deadline}
+        </span>
+
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            className="px-2.5 py-1 text-xs text-muted-foreground hover:text-foreground hover:underline transition-colors"
+            onClick={() => onSelect(job)}
+          >
+            DETAILS
+          </button>
+          <button
+            type="button"
+            className="px-3 py-1 text-xs font-bold bg-black dark:bg-white text-white dark:text-black hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors rounded-sm flex items-center gap-1"
+            onClick={handleApplyClick}
+          >
+            <span>APPLY</span>
+            <ArrowUpRight className="w-3.5 h-3.5" />
+          </button>
         </div>
       </div>
     </div>

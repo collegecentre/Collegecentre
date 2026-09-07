@@ -6,10 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
 } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Clock, Zap, AlertTriangle, RotateCcw, ShieldCheck } from 'lucide-react'
 
 interface DemoControllerProps {
@@ -30,113 +27,127 @@ export const DemoController: React.FC<DemoControllerProps> = ({ open, onOpenChan
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent onClose={() => onOpenChange(false)}>
-        <DialogHeader>
-          <div className="flex items-center gap-2">
-            <span className="p-1.5 rounded-lg bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
-              <Clock className="w-5 h-5" />
-            </span>
-            <DialogTitle>Pass Simulator & Demo Controls</DialogTitle>
-          </div>
-          <DialogDescription>
-            Test CollegeCentre's ₹199 / 24-hour pass lifecycle, live countdown, and locked/unlocked access boundaries.
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent onClose={() => onOpenChange(false)} className="max-w-md p-0 overflow-hidden border border-black/10 dark:border-white/15 bg-card">
+        {/* Editorial Top Bar */}
+        <div className="border-b border-black/10 dark:border-white/15 px-6 py-3 bg-muted/20 flex items-center justify-between font-mono text-[11px]">
+          <span className="text-muted-foreground uppercase tracking-widest">
+            [SYS_CONTROL // PASS_SIMULATOR]
+          </span>
+          <span className="font-bold text-vermilion uppercase tracking-wider">
+            [DEBUG_PANEL]
+          </span>
+        </div>
 
-        <div className="space-y-4 py-3">
+        <div className="p-6 space-y-5">
+          <DialogHeader className="text-left space-y-1">
+            <DialogTitle className="text-xl font-black text-foreground tracking-tight">
+              Pass Lifecycle Simulator
+            </DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground leading-relaxed">
+              Toggle between active 24-hour search access, 15-minute expiration warnings, and locked boundary states.
+            </DialogDescription>
+          </DialogHeader>
+
           {/* Current Status Box */}
-          <div className="p-3.5 rounded-xl border bg-muted/40 space-y-2">
+          <div className="border border-black/10 dark:border-white/15 p-4 bg-muted/10 font-mono space-y-2 text-xs">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-muted-foreground">Current Pass State:</span>
-              <Badge variant={isPassActive ? 'passActive' : 'passExpired'}>
-                {isPassActive ? '● Active (24-Hour Pass)' : '○ Expired / Locked'}
-              </Badge>
+              <span className="text-muted-foreground uppercase tracking-wider text-[10px]">CURRENT_STATE:</span>
+              <span
+                className={`px-2 py-0.5 border text-[10px] font-bold uppercase tracking-wider ${
+                  isPassActive
+                    ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600'
+                    : 'border-red-500/30 bg-red-500/10 text-red-600'
+                }`}
+              >
+                {isPassActive ? '[ACTIVE_24H]' : '[EXPIRED_LOCKED]'}
+              </span>
             </div>
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-muted-foreground">Countdown Timer:</span>
-              <span className="font-mono font-bold text-foreground">
-                {isPassActive ? remainingTime.formatted : 'Pass Inactive (Job Search Locked)'}
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground uppercase tracking-wider text-[10px]">COUNTDOWN_TIMER:</span>
+              <span className="font-bold text-foreground">
+                {isPassActive ? remainingTime.formatted : '00h 00m 00s (LOCKED)'}
               </span>
             </div>
             {accessPeriod && (
-              <div className="flex items-center justify-between text-[11px] text-muted-foreground border-t pt-2 mt-1">
-                <span>Pass Expires At:</span>
-                <span>{new Date(accessPeriod.expires_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })} ({new Date(accessPeriod.expires_at).toLocaleDateString()})</span>
+              <div className="flex items-center justify-between text-[10px] text-muted-foreground border-t border-black/10 dark:border-white/10 pt-2">
+                <span>EXPIRES:</span>
+                <span>{new Date(accessPeriod.expires_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
               </div>
             )}
           </div>
 
-          {/* Quick Simulation Actions */}
-          <div className="space-y-2">
-            <label className="text-xs font-semibold text-foreground uppercase tracking-wider">
-              Quick State Changes
-            </label>
+          {/* Simulation Actions */}
+          <div className="space-y-2 font-mono">
+            <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+              SIMULATE LIFECYCLE STATE:
+            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              <Button
-                variant="default"
-                size="sm"
-                className="justify-start gap-2 bg-indigo-600 hover:bg-indigo-700 text-white"
+            <div className="space-y-2">
+              <button
+                type="button"
+                className="w-full py-2.5 px-3 border border-black dark:border-white bg-foreground text-background text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
                 onClick={() => {
                   activatePass('UPI')
                   onOpenChange(false)
                 }}
               >
-                <Zap className="w-4 h-4 fill-amber-300 text-amber-300" />
-                <span>Activate Full 24 Hours</span>
-              </Button>
+                <Zap className="w-3.5 h-3.5 text-vermilion" />
+                <span>ACTIVATE FULL 24-HOUR SPRINT</span>
+              </button>
 
-              <Button
-                variant="outline"
-                size="sm"
-                className="justify-start gap-2 border-amber-300 text-amber-700 hover:bg-amber-50 dark:border-amber-700 dark:text-amber-400"
+              <button
+                type="button"
+                className="w-full py-2.5 px-3 border border-black/15 dark:border-white/20 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-muted/40 transition-colors"
                 onClick={() => {
                   simulateRemainingTime(15)
                   onOpenChange(false)
                 }}
               >
-                <Clock className="w-4 h-4 text-amber-600" />
-                <span>Set 15 Mins Remaining</span>
-              </Button>
+                <Clock className="w-3.5 h-3.5 text-amber-500" />
+                <span>SET 15 MINUTES REMAINING</span>
+              </button>
 
-              <Button
-                variant="outline"
-                size="sm"
-                className="justify-start gap-2 border-rose-300 text-rose-700 hover:bg-rose-50 dark:border-rose-800 dark:text-rose-400 sm:col-span-2"
+              <button
+                type="button"
+                className="w-full py-2.5 px-3 border border-red-500/30 text-red-600 dark:text-red-400 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-red-500/10 transition-colors"
                 onClick={() => {
                   simulatePassExpiry()
                   onOpenChange(false)
                 }}
               >
-                <AlertTriangle className="w-4 h-4 text-rose-600" />
-                <span>Simulate Expired Pass (Test Locked State)</span>
-              </Button>
+                <AlertTriangle className="w-3.5 h-3.5" />
+                <span>SIMULATE PASS EXPIRY (TEST LOCK)</span>
+              </button>
             </div>
           </div>
 
-          {/* Guarantee Note */}
-          <div className="p-3 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs flex items-start gap-2 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800">
-            <ShieldCheck className="w-4 h-4 mt-0.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
-            <span>
-              <strong>Rule 11 Enforced:</strong> When pass expires, new job search locks, but <strong>Saved Jobs</strong>, <strong>Application Tracker</strong>, and <strong>Profile</strong> remain permanently accessible!
+          {/* Rule 11 Reminder */}
+          <div className="border border-black/10 dark:border-white/15 p-3 bg-muted/10 text-xs flex items-start gap-2.5 font-mono">
+            <ShieldCheck className="w-4 h-4 mt-0.5 shrink-0 text-emerald-600" />
+            <span className="text-[11px] text-muted-foreground leading-relaxed">
+              <strong className="text-foreground uppercase">RULE 11:</strong> When sprint locks, saved positions and recruitment stages stay permanently intact.
             </span>
           </div>
-        </div>
 
-        <DialogFooter className="sm:justify-between items-center">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={resetData}
-            className="text-xs text-muted-foreground hover:text-foreground gap-1"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span>Reset Demo Data</span>
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => onOpenChange(false)}>
-            Close
-          </Button>
-        </DialogFooter>
+          {/* Footer Controls */}
+          <div className="pt-2 border-t border-black/10 dark:border-white/10 flex items-center justify-between font-mono text-xs">
+            <button
+              type="button"
+              onClick={resetData}
+              className="text-muted-foreground hover:text-red-600 flex items-center gap-1 uppercase tracking-wider"
+            >
+              <RotateCcw className="w-3 h-3" />
+              <span>[RESET DEMO DATA]</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => onOpenChange(false)}
+              className="px-4 py-1.5 border border-black/15 dark:border-white/20 text-foreground hover:bg-muted/40 uppercase tracking-wider"
+            >
+              CLOSE
+            </button>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   )

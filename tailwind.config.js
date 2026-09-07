@@ -14,7 +14,21 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ["Inter", "system-ui", "-apple-system", "sans-serif"],
+        mono: ["Geist Mono", "Fragment Mono", "monospace"],
+      },
       colors: {
+        vermilion: {
+          DEFAULT: "#fe7141",
+          hover: "#e05828",
+          light: "#fff1ec",
+          border: "#fed7c7",
+        },
+        sage: {
+          DEFAULT: "#597e87",
+          light: "#d1ddd3",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

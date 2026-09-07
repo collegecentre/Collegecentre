@@ -1,7 +1,5 @@
 import React from 'react'
 import { useApp } from '@/context/AppContext'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { JobCard } from '@/components/JobCard'
 import {
   Zap,
@@ -9,111 +7,113 @@ import {
   CheckCircle2,
   Clock,
   ArrowRight,
-  Briefcase,
-  GraduationCap,
-  Sparkles,
-  Lock,
-  Unlock,
+  ArrowUpRight,
   Check,
   Layers,
   Search,
+  ExternalLink,
 } from 'lucide-react'
 
 export const LandingPage: React.FC = () => {
   const { setCurrentView, setIsPaymentModalOpen, isPassActive, jobs, setSelectedJob } = useApp()
 
-  // Sample top 4 jobs to showcase authentic product utility immediately
   const sampleJobs = jobs.slice(0, 4)
 
   return (
-    <div className="space-y-16 pb-20 max-w-6xl mx-auto px-4 sm:px-6">
+    <div className="space-y-16 pb-24 max-w-6xl mx-auto px-4 sm:px-6">
       {/* Hero Section */}
-      <section className="pt-8 sm:pt-14 pb-4 text-center max-w-3xl mx-auto space-y-6">
-        {/* Crisp Category Badge */}
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-2xs">
-          <span className="w-2 h-2 rounded-full bg-emerald-500" />
-          <span>Curated for 2024, 2025 & 2026 Graduates</span>
+      <section className="pt-10 sm:pt-16 pb-6 space-y-8">
+        {/* Monospace Eyebrow Metadata (State of AI Design Style) */}
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-black/10 dark:border-white/15 pb-3 text-[11px] font-mono text-muted-foreground uppercase">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-[#fe7141]" />
+            <span className="text-foreground font-bold">[VOL. 02 // SPRINT REPORT]</span>
+          </div>
+          <span>CAMPUS RECRUITING & FRESHER DISCOVERY</span>
+          <span className="hidden sm:inline">[BATCHES: 2024 / 2025 / 2026]</span>
         </div>
 
-        {/* Clean, Confident Headline */}
-        <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-slate-950 dark:text-white leading-[1.12]">
-          Find verified fresher jobs, without the subscription trap.
-        </h1>
-
-        <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
-          CollegeCentre aggregates verified entry-level roles, ranks them against your degree and skills, and links directly to official employer portals. Pay ₹199 once for 24 hours of search—your saved jobs and application history stay permanent forever.
-        </p>
-
-        {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-          {isPassActive ? (
-            <Button
-              size="lg"
-              className="w-full sm:w-auto h-11 px-6 text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs gap-2"
-              onClick={() => setCurrentView('dashboard')}
-            >
-              <span>Go to Active Dashboard</span>
-              <ArrowRight className="w-4 h-4" />
-            </Button>
-          ) : (
-            <Button
-              size="lg"
-              className="w-full sm:w-auto h-11 px-6 text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs gap-2"
-              onClick={() => setIsPaymentModalOpen(true)}
-            >
-              <Zap className="w-4 h-4 fill-amber-300 text-amber-300" />
-              <span>Unlock 24-Hour Pass · ₹199</span>
-            </Button>
-          )}
-
-          <Button
-            variant="outline"
-            size="lg"
-            className="w-full sm:w-auto h-11 px-6 text-sm font-semibold border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800"
-            onClick={() => setCurrentView('pricing')}
-          >
-            How the Pass Works
-          </Button>
+        {/* Editorial Headline */}
+        <div className="space-y-4 max-w-4xl">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-foreground leading-[1.08] uppercase font-sans">
+            A 24-Hour Job Hunt Platform for College Freshers.
+          </h1>
+          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl leading-relaxed">
+            Aggregated entry-level openings, deterministic skill matching, and zero subscription traps. Pay ₹199 once when you are ready to sprint—keep your application pipeline and saved jobs forever.
+          </p>
         </div>
 
-        {/* Trust Points */}
-        <div className="flex flex-wrap items-center justify-center gap-y-2 gap-x-6 text-xs text-slate-500 dark:text-slate-400 pt-1">
-          <span className="flex items-center gap-1.5">
-            <Check className="w-3.5 h-3.5 text-emerald-600" />
-            Instant UPI & Card access
-          </span>
-          <span className="flex items-center gap-1.5">
-            <Check className="w-3.5 h-3.5 text-emerald-600" />
-            No recurring monthly auto-debit
-          </span>
-          <span className="flex items-center gap-1.5">
-            <Check className="w-3.5 h-3.5 text-emerald-600" />
-            Applications never locked or deleted
-          </span>
+        {/* Action Controls & Real-time Metrics Bar */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pt-2 border-t border-black/10 dark:border-white/15">
+          <div className="flex flex-wrap items-center gap-3">
+            {isPassActive ? (
+              <button
+                type="button"
+                onClick={() => setCurrentView('dashboard')}
+                className="font-mono text-xs font-bold px-5 py-3 rounded-sm bg-black dark:bg-white text-white dark:text-black hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors flex items-center gap-2"
+              >
+                <span>[ GO TO ACTIVE DASHBOARD ]</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setIsPaymentModalOpen(true)}
+                className="font-mono text-xs font-bold px-5 py-3 rounded-sm bg-[#fe7141] hover:bg-[#e05828] text-white transition-colors flex items-center gap-2 shadow-2xs"
+              >
+                <Zap className="w-4 h-4 fill-current" />
+                <span>[ UNLOCK 24-HOUR PASS — ₹199 ]</span>
+                <ArrowUpRight className="w-4 h-4" />
+              </button>
+            )}
+
+            <button
+              type="button"
+              onClick={() => setCurrentView('pricing')}
+              className="font-mono text-xs font-semibold px-4 py-3 rounded-sm border border-black/15 dark:border-white/20 hover:border-black dark:hover:border-white transition-colors text-foreground"
+            >
+              [ HOW IT WORKS ]
+            </button>
+          </div>
+
+          {/* Hairline Metrics Strip */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 font-mono text-left">
+            <div className="border-l border-black/10 dark:border-white/15 pl-3">
+              <span className="text-[10px] text-muted-foreground block uppercase">CURATED ROLES</span>
+              <span className="text-base font-bold text-foreground">150+</span>
+            </div>
+            <div className="border-l border-black/10 dark:border-white/15 pl-3">
+              <span className="text-[10px] text-muted-foreground block uppercase">AVERAGE CTC</span>
+              <span className="text-base font-bold text-foreground">₹5.8 LPA</span>
+            </div>
+            <div className="border-l border-black/10 dark:border-white/15 pl-3">
+              <span className="text-[10px] text-muted-foreground block uppercase">MATCH SCORE</span>
+              <span className="text-base font-bold text-foreground">94.6%</span>
+            </div>
+            <div className="border-l border-black/10 dark:border-white/15 pl-3">
+              <span className="text-[10px] text-muted-foreground block uppercase">SPRINT PASS</span>
+              <span className="text-base font-bold text-[#fe7141]">₹199 FLAT</span>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Real Product Utility: Live Job Feed Preview */}
-      <section className="space-y-4 pt-4">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-border pb-3">
-          <div>
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-              Recently Curated Fresher Openings
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-              Real entry-level positions verified with direct company application URLs
-            </p>
+      {/* Section 01: Curated Openings Feed */}
+      <section className="space-y-6 pt-4">
+        {/* Hairline Section Divider with Monospace Tag */}
+        <div className="flex items-center justify-between border-t border-b border-black/15 dark:border-white/20 py-2.5 font-mono text-xs text-foreground">
+          <div className="flex items-center gap-2">
+            <span className="font-bold">01 //</span>
+            <span className="uppercase tracking-wider font-semibold">LIVE RECRUITING DATABASE</span>
           </div>
-
-          <Button
-            variant="ghost"
-            size="sm"
+          <button
+            type="button"
             onClick={() => (isPassActive ? setCurrentView('jobs') : setIsPaymentModalOpen(true))}
-            className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 self-start sm:self-auto gap-1"
+            className="text-xs hover:underline flex items-center gap-1 font-bold text-[#fe7141]"
           >
-            <span>{isPassActive ? 'Search all openings' : 'Unlock full database (150+)'}</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Button>
+            <span>[ VIEW ALL 150+ ROLES ]</span>
+            <ArrowUpRight className="w-3.5 h-3.5" />
+          </button>
         </div>
 
         {/* Real Job Cards Grid */}
@@ -128,149 +128,141 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* The Honest Model: Why 24 Hours? */}
-      <section className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/50 p-6 sm:p-10 space-y-8">
-        <div className="max-w-2xl space-y-2">
-          <Badge variant="outline" className="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800">
-            The Philosophy
-          </Badge>
-          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-            Designed for high-focus sprints, not passive billing.
-          </h2>
-          <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-            Most students don't need a ₹1,499 monthly subscription. Job hunting happens in dedicated 1-2 day sprints—on weekends, right after exams, or during placement drives. With CollegeCentre, you pay ₹199 when you are ready to apply.
-          </p>
+      {/* Section 02: The Economic Model */}
+      <section className="space-y-6 pt-4">
+        {/* Hairline Section Divider */}
+        <div className="flex items-center justify-between border-t border-b border-black/15 dark:border-white/20 py-2.5 font-mono text-xs text-foreground">
+          <div className="flex items-center gap-2">
+            <span className="font-bold">02 //</span>
+            <span className="uppercase tracking-wider font-semibold">THE 24-HOUR SPRINT ARCHITECTURE</span>
+          </div>
+          <span className="text-muted-foreground hidden sm:inline">[RULE_11 // GUARANTEED_RETENTION]</span>
         </div>
 
-        {/* Side-by-Side Comparison */}
+        {/* Comparison Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Active 24 Hours */}
-          <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-4 shadow-2xs">
-            <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-sm">
-              <Clock className="w-4 h-4" />
-              <span>DURING YOUR 24-HOUR PASS (₹199)</span>
+          {/* Card A: During Sprint */}
+          <div className="p-6 rounded-lg border border-black/10 dark:border-white/15 bg-card space-y-4">
+            <div className="flex items-center justify-between border-b border-black/10 dark:border-white/10 pb-2 font-mono text-xs">
+              <span className="font-bold text-foreground">[THE 24-HOUR PASS — ₹199]</span>
+              <span className="text-emerald-700 dark:text-emerald-300 font-bold">DISCOVERY ACTIVE</span>
             </div>
-            <ul className="space-y-2.5 text-xs text-slate-700 dark:text-slate-300">
+            <ul className="space-y-2.5 font-mono text-xs text-muted-foreground">
               <li className="flex items-start gap-2">
-                <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                <span><strong>Search & Filter:</strong> Full access to search 150+ verified entry-level roles.</span>
+                <span className="text-black dark:text-white font-bold">+</span>
+                <span>Unrestricted search across 150+ fresher openings</span>
               </li>
               <li className="flex items-start gap-2">
-                <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                <span><strong>AI Profile Matching:</strong> Real-time match scoring against your degree and skills.</span>
+                <span className="text-black dark:text-white font-bold">+</span>
+                <span>Deterministic match percentages calculated per skill</span>
               </li>
               <li className="flex items-start gap-2">
-                <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                <span><strong>Direct Applications:</strong> Open official employer application links without intermediaries.</span>
+                <span className="text-black dark:text-white font-bold">+</span>
+                <span>Direct application URLs to official employer career portals</span>
               </li>
               <li className="flex items-start gap-2">
-                <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                <span><strong>Bookmark Opportunities:</strong> Save interesting roles to your permanent library.</span>
+                <span className="text-black dark:text-white font-bold">+</span>
+                <span>Save and bookmark jobs into your permanent archive</span>
               </li>
             </ul>
           </div>
 
-          {/* After Expiration (Rule 11) */}
-          <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-4 shadow-2xs">
-            <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold text-sm">
-              <ShieldCheck className="w-4 h-4" />
-              <span>AFTER 24 HOURS (LIFETIME ACCESS)</span>
+          {/* Card B: After Expiration */}
+          <div className="p-6 rounded-lg border border-black/10 dark:border-white/15 bg-card space-y-4">
+            <div className="flex items-center justify-between border-b border-black/10 dark:border-white/10 pb-2 font-mono text-xs">
+              <span className="font-bold text-foreground">[PERMANENT CAREER ARCHIVE]</span>
+              <span className="text-[#fe7141] font-bold">LIFETIME ACCESS</span>
             </div>
-            <ul className="space-y-2.5 text-xs text-slate-700 dark:text-slate-300">
+            <ul className="space-y-2.5 font-mono text-xs text-muted-foreground">
               <li className="flex items-start gap-2">
-                <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                <span><strong>Saved Jobs Never Expire:</strong> Return anytime to review jobs you bookmarked.</span>
+                <span className="text-[#fe7141] font-bold">✓</span>
+                <span>Saved jobs remain permanently accessible for review</span>
               </li>
               <li className="flex items-start gap-2">
-                <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                <span><strong>Recruitment Pipeline:</strong> Update stages (Applied → Shortlisted → Selected).</span>
+                <span className="text-[#fe7141] font-bold">✓</span>
+                <span>Recruitment pipeline stages (Applied → Shortlisted → Selected)</span>
               </li>
               <li className="flex items-start gap-2">
-                <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                <span><strong>Interview Notes:</strong> Record coding test links, interview dates, and notes for free.</span>
+                <span className="text-[#fe7141] font-bold">✓</span>
+                <span>Record coding assessment links and interview notes freely</span>
               </li>
               <li className="flex items-start gap-2">
-                <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                <span><strong>Zero Recurring Charge:</strong> Only purchase another pass when you want new job discovery.</span>
+                <span className="text-[#fe7141] font-bold">✓</span>
+                <span>Zero recurring fees. Buy another pass only when searching anew</span>
               </li>
             </ul>
           </div>
         </div>
       </section>
 
-      {/* 4-Step Process */}
-      <section className="space-y-8 pt-4">
-        <div className="text-center max-w-xl mx-auto space-y-2">
-          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-            Simple 4-Step Workflow
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-            No resume parsing errors. Direct, deterministic matching from your skills.
-          </p>
+      {/* Section 03: Four-Step Execution */}
+      <section className="space-y-6 pt-4">
+        {/* Hairline Section Divider */}
+        <div className="flex items-center justify-between border-t border-b border-black/15 dark:border-white/20 py-2.5 font-mono text-xs text-foreground">
+          <div className="flex items-center gap-2">
+            <span className="font-bold">03 //</span>
+            <span className="uppercase tracking-wider font-semibold">STUDENT WORKFLOW</span>
+          </div>
+          <span className="text-muted-foreground hidden sm:inline">[ZERO_RESUME_PARSING_ERRORS]</span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-card space-y-2.5">
-            <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 text-xs font-bold flex items-center justify-center">
-              01
-            </div>
-            <h3 className="font-bold text-sm text-slate-900 dark:text-white">Set Profile</h3>
-            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-              Add your college degree, branch, passing year, and technical skills. No resume upload required.
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 font-mono text-xs">
+          <div className="p-5 rounded-lg border border-black/10 dark:border-white/15 bg-card space-y-2">
+            <span className="text-[11px] text-[#fe7141] font-bold">[STEP 01]</span>
+            <h3 className="font-bold text-sm text-foreground">PROFILE</h3>
+            <p className="text-muted-foreground leading-relaxed">
+              Specify degree, branch, passing year, and technical skills. No resume upload required.
             </p>
           </div>
 
-          <div className="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-card space-y-2.5">
-            <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 text-xs font-bold flex items-center justify-center">
-              02
-            </div>
-            <h3 className="font-bold text-sm text-slate-900 dark:text-white">Pay ₹199</h3>
-            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-              Instant activation via UPI QR or Card. A single flat fee with zero monthly auto-renewal traps.
+          <div className="p-5 rounded-lg border border-black/10 dark:border-white/15 bg-card space-y-2">
+            <span className="text-[11px] text-[#fe7141] font-bold">[STEP 02]</span>
+            <h3 className="font-bold text-sm text-foreground">₹199 PASS</h3>
+            <p className="text-muted-foreground leading-relaxed">
+              Instant activation via UPI QR or Card. A single flat fee with zero recurring monthly charges.
             </p>
           </div>
 
-          <div className="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-card space-y-2.5">
-            <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 text-xs font-bold flex items-center justify-center">
-              03
-            </div>
-            <h3 className="font-bold text-sm text-slate-900 dark:text-white">Discover & Apply</h3>
-            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-              Inspect transparent match scores, view verified role requirements, and apply directly to employer sites.
+          <div className="p-5 rounded-lg border border-black/10 dark:border-white/15 bg-card space-y-2">
+            <span className="text-[11px] text-[#fe7141] font-bold">[STEP 03]</span>
+            <h3 className="font-bold text-sm text-foreground">DISCOVERY</h3>
+            <p className="text-muted-foreground leading-relaxed">
+              Inspect transparent match breakdown, check criteria, and apply directly to employer portals.
             </p>
           </div>
 
-          <div className="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-card space-y-2.5">
-            <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 text-xs font-bold flex items-center justify-center">
-              04
-            </div>
-            <h3 className="font-bold text-sm text-slate-900 dark:text-white">Track Forever</h3>
-            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-              Pass expires after 24 hours, but your saved jobs, status updates, and notes remain permanent.
+          <div className="p-5 rounded-lg border border-black/10 dark:border-white/15 bg-card space-y-2">
+            <span className="text-[11px] text-[#fe7141] font-bold">[STEP 04]</span>
+            <h3 className="font-bold text-sm text-foreground">ARCHIVE</h3>
+            <p className="text-muted-foreground leading-relaxed">
+              Discovery locks after 24h, but your applications, status updates, and notes remain permanent.
             </p>
           </div>
         </div>
       </section>
 
-      {/* Bottom Conversion Card */}
-      <section className="p-8 sm:p-10 rounded-3xl border border-slate-200 dark:border-slate-800 bg-slate-900 text-white text-center space-y-5">
-        <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+      {/* Bottom Architectural Callout */}
+      <section className="p-8 sm:p-12 rounded-lg border border-black/15 dark:border-white/20 bg-card text-center space-y-5">
+        <div className="inline-block font-mono text-[11px] text-[#fe7141] font-bold border border-[#fe7141]/30 bg-[#fe7141]/10 px-2.5 py-1 rounded-xs">
+          [TIME_BOXED_DISCOVERY // LIFETIME_RETENTION]
+        </div>
+        <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-foreground font-sans">
           Ready for your 24-hour job hunt?
         </h2>
-        <p className="text-sm text-slate-300 max-w-lg mx-auto leading-relaxed">
-          Unlock 150+ fresher opportunities and transparent match percentages for ₹199. Keep your application records forever.
+        <p className="font-mono text-xs text-muted-foreground max-w-md mx-auto">
+          ₹199 unlocks the complete fresher database and AI match breakdown instantly. Keep application records forever.
         </p>
 
-        <div className="pt-2">
-          <Button
-            size="lg"
-            className="h-11 px-8 text-sm font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm gap-2"
+        <div className="pt-2 flex justify-center">
+          <button
+            type="button"
             onClick={() => setIsPaymentModalOpen(true)}
+            className="font-mono text-xs font-bold px-6 py-3 rounded-sm bg-[#fe7141] hover:bg-[#e05828] text-white transition-colors flex items-center gap-2 shadow-2xs"
           >
-            <Zap className="w-4 h-4 fill-amber-300 text-amber-300" />
-            <span>Unlock 24 Hours for ₹199</span>
-            <ArrowRight className="w-4 h-4" />
-          </Button>
+            <Zap className="w-4 h-4 fill-current" />
+            <span>[ UNLOCK 24-HOUR PASS — ₹199 ]</span>
+            <ArrowUpRight className="w-4 h-4" />
+          </button>
         </div>
       </section>
     </div>

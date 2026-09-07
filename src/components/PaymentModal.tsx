@@ -8,15 +8,12 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import {
-  Zap,
   ShieldCheck,
   Check,
   QrCode,
   CreditCard,
   Building2,
-  Sparkles,
   Clock,
   ArrowRight,
 } from 'lucide-react'
@@ -36,144 +33,157 @@ export const PaymentModal: React.FC = () => {
 
   return (
     <Dialog open={isPaymentModalOpen} onOpenChange={setIsPaymentModalOpen}>
-      <DialogContent onClose={() => setIsPaymentModalOpen(false)} className="max-w-md">
-        <DialogHeader className="text-left">
-          <div className="flex items-center justify-between">
-            <Badge variant="matchMid" className="px-3 py-1 text-xs uppercase tracking-wider font-bold">
-              24-Hour Job Hunt Pass
-            </Badge>
-            <span className="text-2xl font-extrabold text-foreground">₹199</span>
-          </div>
-          <DialogTitle className="text-xl mt-2 text-foreground">
-            Unlock 24 Hours of Focused Job Discovery
-          </DialogTitle>
-          <DialogDescription>
-            The 24-hour sprint begins immediately upon payment. Find, save, and apply to curated fresher opportunities.
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent onClose={() => setIsPaymentModalOpen(false)} className="max-w-lg p-0 overflow-hidden border border-black/10 dark:border-white/15 bg-card">
+        {/* Editorial Top Bar */}
+        <div className="border-b border-black/10 dark:border-white/15 px-6 py-4 bg-muted/20 flex items-center justify-between">
+          <span className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
+            [CHECKOUT // PASS_ACTIVATION]
+          </span>
+          <span className="font-mono text-[11px] font-bold text-vermilion uppercase tracking-wider">
+            [24-HR SPRINT WINDOW]
+          </span>
+        </div>
 
-        <div className="space-y-4 py-2">
-          {/* Highlights */}
-          <div className="rounded-xl bg-indigo-50/70 p-3.5 border border-indigo-100 dark:bg-indigo-950/30 dark:border-indigo-900 space-y-2">
-            <div className="flex items-center gap-2 text-xs font-semibold text-indigo-900 dark:text-indigo-200">
-              <Sparkles className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
-              <span>What's included in this sprint:</span>
+        <div className="p-6 space-y-6">
+          <DialogHeader className="text-left space-y-2">
+            <div className="flex items-baseline justify-between">
+              <DialogTitle className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">
+                24-Hour Pass
+              </DialogTitle>
+              <div className="text-right">
+                <div className="text-3xl font-black text-foreground font-mono">₹199</div>
+                <div className="font-mono text-[10px] text-muted-foreground uppercase tracking-wider">
+                  Flat Rate // No Renewal
+                </div>
+              </div>
             </div>
-            <ul className="text-xs space-y-1.5 text-slate-700 dark:text-slate-300">
+            <DialogDescription className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+              Begins immediately upon completion. Provides 24 continuous hours of unrestricted fresher job discovery and AI match breakdown.
+            </DialogDescription>
+          </DialogHeader>
+
+          {/* Included Features Grid */}
+          <div className="border border-black/10 dark:border-white/15 p-4 bg-muted/10 space-y-2.5">
+            <div className="font-mono text-[11px] font-bold text-foreground uppercase tracking-wider mb-2">
+              Sprint Inclusions:
+            </div>
+            <ul className="text-xs space-y-2 text-foreground/90 font-mono">
               <li className="flex items-center gap-2">
-                <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span>Full access to the fresher & college student job database</span>
+                <Check className="w-3.5 h-3.5 text-vermilion shrink-0" />
+                <span>Full access to 150+ verified fresher openings</span>
               </li>
               <li className="flex items-center gap-2">
-                <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span>Personalized AI Match scores and reasons breakdown</span>
+                <Check className="w-3.5 h-3.5 text-vermilion shrink-0" />
+                <span>AI score & requirement compatibility matrix</span>
               </li>
               <li className="flex items-center gap-2">
-                <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span>Save unlimited jobs & apply directly via official employer links</span>
+                <Check className="w-3.5 h-3.5 text-vermilion shrink-0" />
+                <span>Direct employer application links & verified CTC</span>
               </li>
-              <li className="flex items-center gap-2 font-medium text-emerald-800 dark:text-emerald-300">
+              <li className="flex items-center gap-2 font-semibold text-foreground pt-1 border-t border-black/5 dark:border-white/10">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span><strong>Permanent Access:</strong> Saved jobs & application tracker stay yours forever!</span>
+                <span>RULE 11: Saved jobs & tracker stay accessible forever</span>
               </li>
             </ul>
           </div>
 
           {/* Payment Method Selector */}
-          <div className="space-y-2">
-            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Select Payment Method (Simulated)
-            </label>
+          <div className="space-y-2.5">
+            <div className="flex items-center justify-between">
+              <label className="font-mono text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
+                Payment Channel (Simulated)
+              </label>
+              <span className="font-mono text-[10px] text-muted-foreground">SELECT 1 OF 3</span>
+            </div>
             <div className="grid grid-cols-3 gap-2">
               <button
                 type="button"
                 onClick={() => setSelectedMethod('UPI')}
-                className={`p-2.5 rounded-xl border text-left flex flex-col items-center justify-center gap-1.5 transition-colors ${
+                className={`p-3 border text-left flex flex-col items-center justify-center gap-1.5 transition-colors font-mono ${
                   selectedMethod === 'UPI'
-                    ? 'border-indigo-600 bg-indigo-50/50 text-indigo-900 font-semibold shadow-xs dark:bg-indigo-950/60 dark:text-indigo-200 dark:border-indigo-500'
-                    : 'border-border hover:bg-accent text-muted-foreground'
+                    ? 'border-black dark:border-white bg-foreground text-background font-bold shadow-xs'
+                    : 'border-black/10 dark:border-white/15 hover:bg-muted/40 text-muted-foreground'
                 }`}
               >
-                <QrCode className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                <span className="text-xs">UPI / QR</span>
+                <QrCode className="w-4 h-4" />
+                <span className="text-[11px] tracking-wider uppercase">UPI / QR</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setSelectedMethod('Card')}
-                className={`p-2.5 rounded-xl border text-left flex flex-col items-center justify-center gap-1.5 transition-colors ${
+                className={`p-3 border text-left flex flex-col items-center justify-center gap-1.5 transition-colors font-mono ${
                   selectedMethod === 'Card'
-                    ? 'border-indigo-600 bg-indigo-50/50 text-indigo-900 font-semibold shadow-xs dark:bg-indigo-950/60 dark:text-indigo-200 dark:border-indigo-500'
-                    : 'border-border hover:bg-accent text-muted-foreground'
+                    ? 'border-black dark:border-white bg-foreground text-background font-bold shadow-xs'
+                    : 'border-black/10 dark:border-white/15 hover:bg-muted/40 text-muted-foreground'
                 }`}
               >
-                <CreditCard className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                <span className="text-xs">Card</span>
+                <CreditCard className="w-4 h-4" />
+                <span className="text-[11px] tracking-wider uppercase">CARD</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setSelectedMethod('NetBanking')}
-                className={`p-2.5 rounded-xl border text-left flex flex-col items-center justify-center gap-1.5 transition-colors ${
+                className={`p-3 border text-left flex flex-col items-center justify-center gap-1.5 transition-colors font-mono ${
                   selectedMethod === 'NetBanking'
-                    ? 'border-indigo-600 bg-indigo-50/50 text-indigo-900 font-semibold shadow-xs dark:bg-indigo-950/60 dark:text-indigo-200 dark:border-indigo-500'
-                    : 'border-border hover:bg-accent text-muted-foreground'
+                    ? 'border-black dark:border-white bg-foreground text-background font-bold shadow-xs'
+                    : 'border-black/10 dark:border-white/15 hover:bg-muted/40 text-muted-foreground'
                 }`}
               >
-                <Building2 className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                <span className="text-xs">NetBanking</span>
+                <Building2 className="w-4 h-4" />
+                <span className="text-[11px] tracking-wider uppercase">NETBANK</span>
               </button>
             </div>
           </div>
 
-          {/* Pricing Summary */}
-          <div className="p-3 rounded-lg border bg-muted/30 text-xs space-y-1.5">
+          {/* Pricing Ledger */}
+          <div className="border-t border-b border-black/10 dark:border-white/15 py-3 font-mono text-xs space-y-1.5">
             <div className="flex justify-between text-muted-foreground">
-              <span>Pass Duration:</span>
-              <span className="font-semibold text-foreground flex items-center gap-1">
-                <Clock className="w-3.5 h-3.5 text-indigo-600" /> 24 Hours from completion
+              <span>ACTIVE_PERIOD</span>
+              <span className="text-foreground font-semibold flex items-center gap-1">
+                <Clock className="w-3 h-3 text-vermilion" /> 24:00:00 (TIMER STARTS ON CONFIRM)
               </span>
             </div>
             <div className="flex justify-between text-muted-foreground">
-              <span>Subtotal:</span>
-              <span>₹199.00</span>
+              <span>BASE_FEE</span>
+              <span className="text-foreground">₹199.00</span>
             </div>
             <div className="flex justify-between text-muted-foreground">
-              <span>Platform Fee & Taxes:</span>
-              <span className="text-emerald-600 font-medium">Included (₹0.00)</span>
+              <span>TAX_SURCHARGE</span>
+              <span className="text-emerald-600 font-medium">₹0.00 (INCLUDED)</span>
             </div>
-            <div className="border-t pt-1.5 flex justify-between font-bold text-sm text-foreground">
-              <span>Total Payable:</span>
-              <span className="text-indigo-600 dark:text-indigo-400">₹199</span>
+            <div className="flex justify-between font-bold text-sm text-foreground pt-1 border-t border-black/5 dark:border-white/10">
+              <span>TOTAL DUE</span>
+              <span className="text-vermilion">₹199.00</span>
             </div>
           </div>
-        </div>
 
-        {/* CTA Pay Button */}
-        <div className="pt-2">
-          <Button
-            size="lg"
-            className="w-full h-12 text-sm sm:text-base font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs gap-2"
-            onClick={handlePay}
-            disabled={isProcessing}
-          >
-            {isProcessing ? (
-              <span className="flex items-center gap-2">
-                <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                Simulating Payment Confirmation...
-              </span>
-            ) : (
-              <span className="flex items-center gap-2">
-                <Zap className="w-4 h-4 fill-amber-300 text-amber-300" />
-                <span>Pay ₹199 & Unlock 24-Hour Pass</span>
-                <ArrowRight className="w-4 h-4" />
-              </span>
-            )}
-          </Button>
+          {/* CTA Pay Button */}
+          <div>
+            <Button
+              size="lg"
+              className="w-full h-12 text-xs sm:text-sm font-mono font-bold uppercase tracking-wider bg-vermilion hover:bg-vermilion-hover text-white rounded-none border-0 transition-colors shadow-none gap-2"
+              onClick={handlePay}
+              disabled={isProcessing}
+            >
+              {isProcessing ? (
+                <span className="flex items-center gap-2">
+                  <span className="h-3.5 w-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  AUTHENTICATING TRANSACTION...
+                </span>
+              ) : (
+                <span className="flex items-center gap-2">
+                  <span>PAY ₹199 & UNLOCK 24 HOURS</span>
+                  <ArrowRight className="w-4 h-4" />
+                </span>
+              )}
+            </Button>
 
-          <p className="text-[11px] text-center text-muted-foreground mt-2">
-            Simulated Sandbox Payment Flow for MVP · Activates pass instantly
-          </p>
+            <p className="font-mono text-[10px] text-center text-muted-foreground mt-3 uppercase tracking-wider">
+              [SANDBOX ENVIRONMENT · INSTANT DEMO ACTIVATION]
+            </p>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
