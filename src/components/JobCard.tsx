@@ -71,7 +71,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSelect }) => {
                   : 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300'
               }`}
             >
-              [MATCH {job.match.score}%]
+              {job.match.score}% MATCH
             </span>
 
             <button
@@ -111,7 +111,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSelect }) => {
               key={idx}
               className="px-2 py-0.5 rounded-xs bg-slate-100 dark:bg-slate-800 text-foreground font-mono text-[10px] uppercase tracking-tight border border-black/5 dark:border-white/10"
             >
-              [{skill}]
+              {skill}
             </span>
           ))}
           {job.skills.length > 4 && (

@@ -29,7 +29,7 @@ export const AccountPage: React.FC = () => {
       {/* Editorial Header */}
       <div className="border-b border-black/10 dark:border-white/15 pb-6">
         <div className="font-mono text-xs uppercase tracking-widest text-muted-foreground mb-2">
-          [STUDENT_ACCOUNT // SPRINT_LEDGER]
+          Student Account • Sprint Ledger
         </div>
         <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-4">
           <div className="space-y-1">
@@ -42,7 +42,7 @@ export const AccountPage: React.FC = () => {
           </div>
 
           <div className="font-mono text-xs px-3 py-1.5 border border-black/10 dark:border-white/15 bg-muted/20 text-foreground">
-            [{student.email}]
+            {student.email}
           </div>
         </div>
       </div>
@@ -59,9 +59,9 @@ export const AccountPage: React.FC = () => {
                     : 'border-black/20 dark:border-white/20 text-muted-foreground'
                 }`}
               >
-                {isPassActive ? '[PASS_ACTIVE]' : '[PASS_EXPIRED]'}
+                {isPassActive ? 'PASS ACTIVE' : 'PASS EXPIRED'}
               </span>
-              <span className="text-muted-foreground">// ₹199 FLAT 24-HOUR SPRINT</span>
+              <span className="text-muted-foreground">• ₹199 Flat 24-Hour Sprint</span>
             </div>
             <h2 className="text-xl sm:text-2xl font-black text-foreground font-sans tracking-tight">
               {isPassActive ? '24-Hour Job Hunt In Progress' : 'Job Hunt Discovery Concluded'}
@@ -72,7 +72,7 @@ export const AccountPage: React.FC = () => {
             onClick={() => setIsPaymentModalOpen(true)}
             className="px-6 py-2.5 bg-vermilion hover:bg-vermilion-hover text-white text-xs font-mono font-bold uppercase tracking-wider transition-colors shrink-0"
           >
-            {isPassActive ? '[RENEW / EXTEND 24H]' : '[UNLOCK 24H PASS — ₹199]'}
+            {isPassActive ? 'Extend Pass (24H)' : 'Unlock 24H Pass — ₹199'}
           </button>
         </div>
 
@@ -80,7 +80,7 @@ export const AccountPage: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-black/10 dark:bg-white/15 border border-black/10 dark:border-white/15 font-mono">
             <div className="p-4 bg-card space-y-1">
               <span className="text-[10px] text-muted-foreground uppercase tracking-wider flex items-center gap-1">
-                <Clock className="w-3 h-3 text-vermilion" /> REMAINING_TIME
+                <Clock className="w-3 h-3 text-vermilion" /> Remaining Time
               </span>
               <p className="text-sm font-bold text-foreground">
                 {isPassActive ? remainingTime.formatted : '00h 00m 00s (EXPIRED)'}
@@ -89,7 +89,7 @@ export const AccountPage: React.FC = () => {
 
             <div className="p-4 bg-card space-y-1">
               <span className="text-[10px] text-muted-foreground uppercase tracking-wider flex items-center gap-1">
-                <Calendar className="w-3 h-3 text-foreground" /> ACTIVATION_TIMESTAMP
+                <Calendar className="w-3 h-3 text-foreground" /> Activation Time
               </span>
               <p className="text-xs font-bold text-foreground">
                 {accessPeriod
@@ -103,7 +103,7 @@ export const AccountPage: React.FC = () => {
 
             <div className="p-4 bg-card space-y-1">
               <span className="text-[10px] text-muted-foreground uppercase tracking-wider flex items-center gap-1">
-                <Calendar className="w-3 h-3 text-foreground" /> EXPIRATION_TIMESTAMP
+                <Calendar className="w-3 h-3 text-foreground" /> Expiration Time
               </span>
               <p className="text-xs font-bold text-foreground">
                 {accessPeriod
@@ -120,7 +120,7 @@ export const AccountPage: React.FC = () => {
             <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
             <div className="space-y-0.5">
               <span className="font-bold text-foreground uppercase tracking-wider">
-                RULE 11 // PERMANENT RECORD GUARANTEE
+                Rule 11: Permanent Record Guarantee
               </span>
               <p className="text-muted-foreground font-sans text-xs leading-relaxed">
                 The ₹199 pass controls active search querying and AI scoring for new openings. Your student account, past applications, saved jobs, and interview stages remain yours forever.
@@ -134,7 +134,7 @@ export const AccountPage: React.FC = () => {
       <div className="border border-black/10 dark:border-white/15 bg-card">
         <div className="p-5 border-b border-black/10 dark:border-white/15 font-mono">
           <div className="text-xs font-bold text-foreground uppercase tracking-wider">
-            TRANSACTION_LEDGER // PAYMENT RECEIPTS
+            Transaction Ledger • Payment Receipts
           </div>
           <div className="text-[11px] text-muted-foreground mt-0.5">
             Verified simulated ₹199 transaction logs for this account
@@ -154,14 +154,14 @@ export const AccountPage: React.FC = () => {
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-foreground">₹{p.amount}.00</span>
                       <span className="px-1.5 py-0.2 border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 text-[10px] font-bold uppercase">
-                        [{p.status}]
+                        {p.status}
                       </span>
                       <span className="text-muted-foreground">
-                        METHOD: [{p.payment_method}]
+                        Method: {p.payment_method}
                       </span>
                     </div>
                     <p className="text-[11px] text-muted-foreground">
-                      TXN_ID: {p.transaction_id} // {new Date(p.created_at).toLocaleString([], {
+                      Txn ID: {p.transaction_id} • {new Date(p.created_at).toLocaleString([], {
                         dateStyle: 'medium',
                         timeStyle: 'short',
                       })}
@@ -169,7 +169,7 @@ export const AccountPage: React.FC = () => {
                   </div>
 
                   <div className="text-right text-[11px] text-vermilion font-bold uppercase">
-                    [24-HR PASS GRANTED]
+                    24-Hr Pass Granted
                   </div>
                 </div>
               ))}
@@ -183,14 +183,14 @@ export const AccountPage: React.FC = () => {
         <div className="p-5 border-b border-black/10 dark:border-white/15 bg-muted/20 font-mono flex items-center justify-between">
           <div>
             <div className="text-xs font-bold text-foreground uppercase tracking-wider">
-              APPEARANCE // INTERFACE THEME
+              Appearance • Interface Theme
             </div>
             <div className="text-[11px] text-muted-foreground mt-0.5">
               Select your visual presentation mode for CollegeCentre
             </div>
           </div>
           <span className="font-mono text-[10px] text-muted-foreground uppercase hidden sm:inline">
-            [ACTIVE: {resolvedTheme.toUpperCase()}]
+            Active: {resolvedTheme.toUpperCase()}
           </span>
         </div>
 
@@ -217,7 +217,7 @@ export const AccountPage: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <Icon className="w-4 h-4 text-foreground" />
                     {isSelected && (
-                      <span className="text-[10px] font-bold text-vermilion uppercase">[ACTIVE]</span>
+                      <span className="text-[10px] font-bold text-vermilion uppercase">Active</span>
                     )}
                   </div>
                   <div className="text-xs font-bold text-foreground uppercase">{option.label}</div>
@@ -237,7 +237,7 @@ export const AccountPage: React.FC = () => {
           className="text-xs text-muted-foreground hover:text-red-600 flex items-center gap-1 uppercase tracking-wider"
         >
           <RotateCcw className="w-3 h-3" />
-          <span>[RESET DEMO DATA]</span>
+          <span>Reset Demo Data</span>
         </button>
       </div>
     </div>

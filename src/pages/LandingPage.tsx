@@ -20,10 +20,10 @@ export const LandingPage: React.FC = () => {
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-black/10 dark:border-white/15 pb-3 text-[11px] font-mono text-muted-foreground uppercase">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-[#fe7141]" />
-            <span className="text-foreground font-bold">[VOL. 02 // SPRINT REPORT]</span>
+            <span className="text-foreground font-bold">Vol. 02 • Sprint Report</span>
           </div>
           <span>CAMPUS RECRUITING & FRESHER DISCOVERY</span>
-          <span className="hidden sm:inline">[BATCHES: 2024 / 2025 / 2026]</span>
+          <span className="hidden sm:inline">Batches: 2024 / 2025 / 2026</span>
         </div>
 
         {/* Editorial Headline */}
@@ -45,7 +45,7 @@ export const LandingPage: React.FC = () => {
                 onClick={() => setCurrentView('dashboard')}
                 className="font-mono text-xs font-bold px-5 py-3 rounded-sm bg-black dark:bg-white text-white dark:text-black hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors flex items-center gap-2"
               >
-                <span>[ GO TO ACTIVE DASHBOARD ]</span>
+                <span>Go to Active Dashboard</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             ) : (
@@ -55,7 +55,7 @@ export const LandingPage: React.FC = () => {
                 className="font-mono text-xs font-bold px-5 py-3 rounded-sm bg-[#fe7141] hover:bg-[#e05828] text-white transition-colors flex items-center gap-2 shadow-2xs"
               >
                 <Zap className="w-4 h-4 fill-current" />
-                <span>[ UNLOCK 24-HOUR PASS — ₹199 ]</span>
+                <span>Unlock 24-Hour Pass — ₹199</span>
                 <ArrowUpRight className="w-4 h-4" />
               </button>
             )}
@@ -69,7 +69,7 @@ export const LandingPage: React.FC = () => {
               }}
               className="font-mono text-xs font-semibold px-4 py-3 rounded-sm border border-black/15 dark:border-white/20 hover:border-black dark:hover:border-white transition-colors text-foreground"
             >
-              [ HOW IT WORKS ]
+              How It Works
             </button>
           </div>
 
@@ -100,7 +100,7 @@ export const LandingPage: React.FC = () => {
         {/* Hairline Section Divider with Monospace Tag */}
         <div className="flex items-center justify-between border-t border-b border-black/15 dark:border-white/20 py-2.5 font-mono text-xs text-foreground">
           <div className="flex items-center gap-2">
-            <span className="font-bold">01 //</span>
+            <span className="font-bold">01.</span>
             <span className="uppercase tracking-wider font-semibold">LIVE RECRUITING DATABASE</span>
           </div>
           <button
@@ -108,7 +108,7 @@ export const LandingPage: React.FC = () => {
             onClick={() => setCurrentView('jobs')}
             className="text-xs hover:underline flex items-center gap-1 font-bold text-[#fe7141]"
           >
-            <span>[ VIEW ALL {jobs.length} ROLES ]</span>
+            <span>View All {jobs.length} Roles</span>
             <ArrowUpRight className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -130,10 +130,10 @@ export const LandingPage: React.FC = () => {
         {/* Hairline Section Divider */}
         <div className="flex items-center justify-between border-t border-b border-black/15 dark:border-white/20 py-2.5 font-mono text-xs text-foreground">
           <div className="flex items-center gap-2">
-            <span className="font-bold">02 //</span>
+            <span className="font-bold">02.</span>
             <span className="uppercase tracking-wider font-semibold">THE 24-HOUR SPRINT ARCHITECTURE</span>
           </div>
-          <span className="text-muted-foreground hidden sm:inline">[RULE_11 // GUARANTEED_RETENTION]</span>
+          <span className="text-muted-foreground hidden sm:inline">Guaranteed Data Retention</span>
         </div>
 
         {/* Comparison Grid */}
@@ -141,7 +141,7 @@ export const LandingPage: React.FC = () => {
           {/* Card A: During Sprint */}
           <div className="p-6 rounded-lg border border-black/10 dark:border-white/15 bg-card space-y-4">
             <div className="flex items-center justify-between border-b border-black/10 dark:border-white/10 pb-2 font-mono text-xs">
-              <span className="font-bold text-foreground">[THE 24-HOUR PASS — ₹199]</span>
+              <span className="font-bold text-foreground">The 24-Hour Pass — ₹199</span>
               <span className="text-emerald-700 dark:text-emerald-300 font-bold">DISCOVERY ACTIVE</span>
             </div>
             <ul className="space-y-2.5 font-mono text-xs text-muted-foreground">
@@ -167,7 +167,7 @@ export const LandingPage: React.FC = () => {
           {/* Card B: After Expiration */}
           <div className="p-6 rounded-lg border border-black/10 dark:border-white/15 bg-card space-y-4">
             <div className="flex items-center justify-between border-b border-black/10 dark:border-white/10 pb-2 font-mono text-xs">
-              <span className="font-bold text-foreground">[PERMANENT CAREER ARCHIVE]</span>
+              <span className="font-bold text-foreground">Permanent Career Archive</span>
               <span className="text-[#fe7141] font-bold">LIFETIME ACCESS</span>
             </div>
             <ul className="space-y-2.5 font-mono text-xs text-muted-foreground">
@@ -197,15 +197,15 @@ export const LandingPage: React.FC = () => {
         {/* Hairline Section Divider */}
         <div className="flex items-center justify-between border-t border-b border-black/15 dark:border-white/20 py-2.5 font-mono text-xs text-foreground">
           <div className="flex items-center gap-2">
-            <span className="font-bold">03 //</span>
+            <span className="font-bold">03.</span>
             <span className="uppercase tracking-wider font-semibold">STUDENT WORKFLOW</span>
           </div>
-          <span className="text-muted-foreground hidden sm:inline">[ZERO_RESUME_PARSING_ERRORS]</span>
+          <span className="text-muted-foreground hidden sm:inline">Zero Resume Parsing Errors</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 font-mono text-xs">
           <div className="p-5 rounded-lg border border-black/10 dark:border-white/15 bg-card space-y-2">
-            <span className="text-[11px] text-[#fe7141] font-bold">[STEP 01]</span>
+            <span className="text-[11px] text-[#fe7141] font-bold">Step 01</span>
             <h3 className="font-bold text-sm text-foreground">PROFILE</h3>
             <p className="text-muted-foreground leading-relaxed">
               Specify degree, branch, passing year, and technical skills. No resume upload required.
@@ -213,7 +213,7 @@ export const LandingPage: React.FC = () => {
           </div>
 
           <div className="p-5 rounded-lg border border-black/10 dark:border-white/15 bg-card space-y-2">
-            <span className="text-[11px] text-[#fe7141] font-bold">[STEP 02]</span>
+            <span className="text-[11px] text-[#fe7141] font-bold">Step 02</span>
             <h3 className="font-bold text-sm text-foreground">₹199 PASS</h3>
             <p className="text-muted-foreground leading-relaxed">
               Instant activation via UPI QR or Card. A single flat fee with zero recurring monthly charges.
@@ -221,7 +221,7 @@ export const LandingPage: React.FC = () => {
           </div>
 
           <div className="p-5 rounded-lg border border-black/10 dark:border-white/15 bg-card space-y-2">
-            <span className="text-[11px] text-[#fe7141] font-bold">[STEP 03]</span>
+            <span className="text-[11px] text-[#fe7141] font-bold">Step 03</span>
             <h3 className="font-bold text-sm text-foreground">DISCOVERY</h3>
             <p className="text-muted-foreground leading-relaxed">
               Inspect transparent match breakdown, check criteria, and apply directly to employer portals.
@@ -229,7 +229,7 @@ export const LandingPage: React.FC = () => {
           </div>
 
           <div className="p-5 rounded-lg border border-black/10 dark:border-white/15 bg-card space-y-2">
-            <span className="text-[11px] text-[#fe7141] font-bold">[STEP 04]</span>
+            <span className="text-[11px] text-[#fe7141] font-bold">Step 04</span>
             <h3 className="font-bold text-sm text-foreground">ARCHIVE</h3>
             <p className="text-muted-foreground leading-relaxed">
               Discovery locks after 24h, but your applications, status updates, and notes remain permanent.
@@ -241,7 +241,7 @@ export const LandingPage: React.FC = () => {
       {/* Bottom Architectural Callout */}
       <section className="p-8 sm:p-12 rounded-lg border border-black/15 dark:border-white/20 bg-card text-center space-y-5">
         <div className="inline-block font-mono text-[11px] text-[#fe7141] font-bold border border-[#fe7141]/30 bg-[#fe7141]/10 px-2.5 py-1 rounded-xs">
-          [TIME_BOXED_DISCOVERY // LIFETIME_RETENTION]
+          Time-Boxed Discovery • Lifetime Retention
         </div>
         <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-foreground font-sans">
           Ready for your 24-hour job hunt?
@@ -257,7 +257,7 @@ export const LandingPage: React.FC = () => {
             className="font-mono text-xs font-bold px-6 py-3 rounded-sm bg-[#fe7141] hover:bg-[#e05828] text-white transition-colors flex items-center gap-2 shadow-2xs"
           >
             <Zap className="w-4 h-4 fill-current" />
-            <span>[ UNLOCK 24-HOUR PASS — ₹199 ]</span>
+            <span>Unlock 24-Hour Pass — ₹199</span>
             <ArrowUpRight className="w-4 h-4" />
           </button>
         </div>

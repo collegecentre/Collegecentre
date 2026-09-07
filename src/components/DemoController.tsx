@@ -31,10 +31,10 @@ export const DemoController: React.FC<DemoControllerProps> = ({ open, onOpenChan
         {/* Editorial Top Bar */}
         <div className="border-b border-black/10 dark:border-white/15 px-6 py-3 bg-muted/20 flex items-center justify-between font-mono text-[11px]">
           <span className="text-muted-foreground uppercase tracking-widest">
-            [SYS_CONTROL // PASS_SIMULATOR]
+            Dev Tools • Pass Simulator
           </span>
           <span className="font-bold text-vermilion uppercase tracking-wider">
-            [DEBUG_PANEL]
+            Debug Panel
           </span>
         </div>
 
@@ -51,7 +51,7 @@ export const DemoController: React.FC<DemoControllerProps> = ({ open, onOpenChan
           {/* Current Status Box */}
           <div className="border border-black/10 dark:border-white/15 p-4 bg-muted/10 font-mono space-y-2 text-xs">
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground uppercase tracking-wider text-[10px]">CURRENT_STATE:</span>
+              <span className="text-muted-foreground uppercase tracking-wider text-[10px]">Current State:</span>
               <span
                 className={`px-2 py-0.5 border text-[10px] font-bold uppercase tracking-wider ${
                   isPassActive
@@ -59,18 +59,18 @@ export const DemoController: React.FC<DemoControllerProps> = ({ open, onOpenChan
                     : 'border-red-500/30 bg-red-500/10 text-red-600'
                 }`}
               >
-                {isPassActive ? '[ACTIVE_24H]' : '[EXPIRED_LOCKED]'}
+                {isPassActive ? 'ACTIVE (24H)' : 'EXPIRED (LOCKED)'}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground uppercase tracking-wider text-[10px]">COUNTDOWN_TIMER:</span>
+              <span className="text-muted-foreground uppercase tracking-wider text-[10px]">Countdown Timer:</span>
               <span className="font-bold text-foreground">
                 {isPassActive ? remainingTime.formatted : '00h 00m 00s (LOCKED)'}
               </span>
             </div>
             {accessPeriod && (
               <div className="flex items-center justify-between text-[10px] text-muted-foreground border-t border-black/10 dark:border-white/10 pt-2">
-                <span>EXPIRES:</span>
+                <span>Expires:</span>
                 <span>{new Date(accessPeriod.expires_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
               </div>
             )}
@@ -79,7 +79,7 @@ export const DemoController: React.FC<DemoControllerProps> = ({ open, onOpenChan
           {/* Simulation Actions */}
           <div className="space-y-2 font-mono">
             <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-              SIMULATE LIFECYCLE STATE:
+              Simulate Lifecycle State:
             </div>
 
             <div className="space-y-2">
@@ -92,7 +92,7 @@ export const DemoController: React.FC<DemoControllerProps> = ({ open, onOpenChan
                 }}
               >
                 <Zap className="w-3.5 h-3.5 text-vermilion" />
-                <span>ACTIVATE FULL 24-HOUR SPRINT</span>
+                <span>Activate Full 24-Hour Sprint</span>
               </button>
 
               <button
@@ -104,7 +104,7 @@ export const DemoController: React.FC<DemoControllerProps> = ({ open, onOpenChan
                 }}
               >
                 <Clock className="w-3.5 h-3.5 text-amber-500" />
-                <span>SET 15 MINUTES REMAINING</span>
+                <span>Set 15 Minutes Remaining</span>
               </button>
 
               <button
@@ -116,7 +116,7 @@ export const DemoController: React.FC<DemoControllerProps> = ({ open, onOpenChan
                 }}
               >
                 <AlertTriangle className="w-3.5 h-3.5" />
-                <span>SIMULATE PASS EXPIRY (TEST LOCK)</span>
+                <span>Simulate Pass Expiry (Test Lock)</span>
               </button>
             </div>
           </div>
@@ -125,7 +125,7 @@ export const DemoController: React.FC<DemoControllerProps> = ({ open, onOpenChan
           <div className="border border-black/10 dark:border-white/15 p-3 bg-muted/10 text-xs flex items-start gap-2.5 font-mono">
             <ShieldCheck className="w-4 h-4 mt-0.5 shrink-0 text-emerald-600" />
             <span className="text-[11px] text-muted-foreground leading-relaxed">
-              <strong className="text-foreground uppercase">RULE 11:</strong> When sprint locks, saved positions and recruitment stages stay permanently intact.
+              <strong className="text-foreground uppercase">Rule 11:</strong> When sprint locks, saved positions and recruitment stages stay permanently intact.
             </span>
           </div>
 
@@ -137,14 +137,14 @@ export const DemoController: React.FC<DemoControllerProps> = ({ open, onOpenChan
               className="text-muted-foreground hover:text-red-600 flex items-center gap-1 uppercase tracking-wider"
             >
               <RotateCcw className="w-3 h-3" />
-              <span>[RESET DEMO DATA]</span>
+              <span>Reset Demo Data</span>
             </button>
             <button
               type="button"
               onClick={() => onOpenChange(false)}
               className="px-4 py-1.5 border border-black/15 dark:border-white/20 text-foreground hover:bg-muted/40 uppercase tracking-wider"
             >
-              CLOSE
+              Close
             </button>
           </div>
         </div>

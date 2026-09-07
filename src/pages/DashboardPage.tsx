@@ -51,7 +51,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onSelectJob }) => 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-black/10 dark:border-white/15 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="font-mono text-xs text-[#fe7141] font-bold">[STUDENT_PORTAL]</span>
+            <span className="font-mono text-xs text-[#fe7141] font-bold">Student Portal</span>
             <span className="font-mono text-xs text-muted-foreground">/</span>
             <span className="font-mono text-xs text-muted-foreground">{student.graduation_year} BATCH</span>
           </div>
@@ -69,7 +69,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onSelectJob }) => 
           className="font-mono text-xs px-3 py-2 rounded-sm border border-black/15 dark:border-white/20 hover:border-black dark:hover:border-white transition-colors text-foreground flex items-center gap-1.5 self-start sm:self-auto"
         >
           <User className="w-3.5 h-3.5" />
-          <span>[ UPDATE CANDIDATE PROFILE ]</span>
+          <span>Update Profile</span>
         </button>
       </div>
 
@@ -78,7 +78,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onSelectJob }) => 
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-black/10 dark:border-white/10">
           <div>
             <div className="flex items-center gap-2 font-mono text-xs">
-              <span className="text-muted-foreground uppercase">[STATUS]</span>
+              <span className="text-muted-foreground uppercase">Status:</span>
               <span
                 className={`font-bold px-1.5 py-0.2 rounded-xs ${
                   isPassActive
@@ -115,7 +115,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onSelectJob }) => 
                 onClick={() => setCurrentView('jobs')}
                 className="font-mono text-xs font-bold px-4 py-2.5 rounded-sm bg-black dark:bg-white text-white dark:text-black hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors flex items-center gap-2"
               >
-                <span>[ BROWSE ALL JOBS ]</span>
+                <span>Browse All Jobs</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             ) : (
@@ -125,7 +125,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onSelectJob }) => 
                 className="font-mono text-xs font-bold px-4 py-2.5 rounded-sm bg-[#fe7141] hover:bg-[#e05828] text-white transition-colors flex items-center gap-2 shadow-2xs"
               >
                 <Zap className="w-4 h-4 fill-current" />
-                <span>[ UNLOCK 24 HOURS — ₹199 ]</span>
+                <span>Unlock 24 Hours — ₹199</span>
                 <ArrowUpRight className="w-4 h-4" />
               </button>
             )}
@@ -184,9 +184,9 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onSelectJob }) => 
             </div>
             <div>
               <div className="flex items-center gap-2 font-mono">
-                <h3 className="text-xs font-bold text-foreground">[SAVED JOBS]</h3>
+                <h3 className="text-xs font-bold text-foreground">Saved Jobs</h3>
                 <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">
-                  RULE 11: PERMANENT
+                  Permanent Archive
                 </span>
               </div>
               <p className="text-xs text-muted-foreground mt-0.5">
@@ -207,9 +207,9 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onSelectJob }) => 
             </div>
             <div>
               <div className="flex items-center gap-2 font-mono">
-                <h3 className="text-xs font-bold text-foreground">[APPLICATION TRACKER]</h3>
+                <h3 className="text-xs font-bold text-foreground">Application Tracker</h3>
                 <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">
-                  RULE 11: PERMANENT
+                  Permanent Archive
                 </span>
               </div>
               <p className="text-xs text-muted-foreground mt-0.5">
@@ -225,7 +225,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onSelectJob }) => 
       <div className="space-y-4">
         <div className="flex items-center justify-between border-t border-b border-black/15 dark:border-white/20 py-2.5 font-mono text-xs">
           <div className="flex items-center gap-2">
-            <span className="font-bold text-[#fe7141]">02 //</span>
+            <span className="font-bold text-[#fe7141]">02.</span>
             <span className="font-bold text-foreground uppercase tracking-wider">TOP MATCHES FOR YOUR DEGREE</span>
           </div>
 
@@ -234,7 +234,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onSelectJob }) => 
             onClick={() => setCurrentView('jobs')}
             className="text-xs font-bold hover:underline flex items-center gap-1 text-[#fe7141]"
           >
-            <span>[ VIEW ALL ({jobs.length}) ]</span>
+            <span>View All ({jobs.length})</span>
             <ArrowUpRight className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -253,7 +253,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onSelectJob }) => 
               onClick={() => setIsPaymentModalOpen(true)}
               className="px-3 py-1.5 rounded-sm bg-[#fe7141] hover:bg-[#e05828] text-white font-bold shrink-0 shadow-2xs"
             >
-              [ UNLOCK 24H — ₹199 ]
+              Unlock 24H — ₹199
             </button>
           </div>
         )}

@@ -24,17 +24,17 @@ export const ExpiredAccessScreen: React.FC = () => {
         {/* Editorial Top Bar */}
         <div className="border-b border-black/10 dark:border-white/15 px-6 py-4 bg-muted/20 flex items-center justify-between font-mono text-[11px]">
           <span className="text-muted-foreground uppercase tracking-widest">
-            {isNeverActivated ? '[ACCESS_GATE // SPRINT_PASS_REQUIRED]' : '[ACCESS_GATE // SPRINT_WINDOW_CLOSED]'}
+            {isNeverActivated ? 'Access Status • Pass Required' : 'Access Status • Sprint Window Closed'}
           </span>
           <span className="font-bold text-vermilion uppercase tracking-wider">
-            {isNeverActivated ? '[STATUS: PASS INACTIVE]' : '[STATUS: SPRINT EXPIRED]'}
+            {isNeverActivated ? 'Pass Inactive' : 'Sprint Expired'}
           </span>
         </div>
 
         {/* Hero Section */}
         <div className="p-6 md:p-10 border-b border-black/10 dark:border-white/15 space-y-4">
           <div className="font-mono text-xs text-muted-foreground uppercase tracking-wider">
-            {isNeverActivated ? 'STUDENT DISCOVERY PASS // ₹199 FLAT' : 'SPRINT CONCLUSION // 24 HOURS ELAPSED'}
+            {isNeverActivated ? 'Student Discovery Pass • ₹199 Flat' : 'Sprint Conclusion • 24 Hours Elapsed'}
           </div>
           <h2 className="text-3xl md:text-4xl font-black text-foreground tracking-tight">
             {isNeverActivated ? '24-Hour Job Hunt Pass Required' : 'Your 24-Hour Pass Has Expired'}
@@ -60,7 +60,7 @@ export const ExpiredAccessScreen: React.FC = () => {
         <div className="p-6 md:p-8 bg-muted/10 border-b border-black/10 dark:border-white/15 space-y-2">
           <div className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider text-foreground">
             <ShieldCheck className="w-4 h-4 text-emerald-600" />
-            <span>RULE 11 // PERMANENT DESK GUARANTEE</span>
+            <span>Rule 11: Permanent Career Desk Guarantee</span>
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed">
             CollegeCentre never locks or revokes access to your saved positions, application pipeline stages, interview notes, or student credentials. Passes are strictly transactional: ₹199 only when you wish to execute a new 24-hour job search cycle.
@@ -82,7 +82,7 @@ export const ExpiredAccessScreen: React.FC = () => {
               <div className="space-y-1">
                 <div className="flex items-center gap-2 text-foreground font-bold text-xs">
                   <Bookmark className="w-3.5 h-3.5 text-vermilion" />
-                  <span>[01] SAVED POSITIONS</span>
+                  <span>Saved Positions</span>
                 </div>
                 <p className="text-[11px] text-muted-foreground">
                   {savedJobs.length} roles preserved on desk
@@ -99,7 +99,7 @@ export const ExpiredAccessScreen: React.FC = () => {
               <div className="space-y-1">
                 <div className="flex items-center gap-2 text-foreground font-bold text-xs">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>[02] APPLICATION TRACKER</span>
+                  <span>Application Tracker</span>
                 </div>
                 <p className="text-[11px] text-muted-foreground">
                   {applications.length} pipeline records

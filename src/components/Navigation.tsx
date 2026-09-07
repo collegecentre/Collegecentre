@@ -67,9 +67,6 @@ export const Navigation: React.FC<NavigationProps> = ({ onOpenDemo }) => {
               <span className="font-mono font-bold text-sm tracking-tight text-black dark:text-white uppercase">
                 COLLEGECENTRE
               </span>
-              <span className="font-mono text-[10px] text-slate-500 dark:text-slate-400 hidden sm:inline">
-                [2026_EDITION]
-              </span>
             </div>
           </button>
 
@@ -82,13 +79,13 @@ export const Navigation: React.FC<NavigationProps> = ({ onOpenDemo }) => {
                   key={item.id}
                   type="button"
                   onClick={() => setCurrentView(item.id as any)}
-                  className={`px-2.5 py-1 transition-colors relative flex items-center gap-1 ${
+                  className={`px-2.5 py-1 transition-colors relative flex items-center gap-1.5 rounded-sm ${
                     isActive
-                      ? 'text-black dark:text-white font-bold bg-slate-100 dark:bg-slate-900 rounded-sm'
+                      ? 'text-black dark:text-white font-bold bg-slate-100 dark:bg-slate-900'
                       : 'text-slate-500 hover:text-black dark:text-slate-400 dark:hover:text-white'
                   }`}
                 >
-                  <span>{isActive ? `[ ${item.label} ]` : item.label}</span>
+                  <span>{item.label}</span>
                   {typeof item.count === 'number' && item.count > 0 && (
                     <span className="text-[10px] px-1 py-0.2 rounded-xs bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold">
                       {item.count}
@@ -106,17 +103,17 @@ export const Navigation: React.FC<NavigationProps> = ({ onOpenDemo }) => {
               <button
                 type="button"
                 onClick={() => setCurrentView('profile')}
-                className="font-mono text-[11px] text-muted-foreground hover:text-foreground hidden sm:flex items-center gap-1 px-2 py-1 border border-black/10 dark:border-white/15 rounded-sm"
+                className="font-mono text-[11px] text-muted-foreground hover:text-foreground hidden sm:flex items-center gap-1 px-2.5 py-1 border border-black/10 dark:border-white/15 rounded-sm"
               >
-                <span>[{student.name.split(' ')[0].toUpperCase()}]</span>
+                <span>{student.name.split(' ')[0]}</span>
               </button>
             ) : (
               <button
                 type="button"
                 onClick={() => setCurrentView('login')}
-                className="font-mono text-[11px] text-muted-foreground hover:text-foreground hidden sm:flex items-center gap-1 px-2 py-1"
+                className="font-mono text-[11px] text-muted-foreground hover:text-foreground hidden sm:flex items-center gap-1 px-2.5 py-1"
               >
-                <span>[SIGN IN]</span>
+                <span>Sign In</span>
               </button>
             )}
 
@@ -150,7 +147,7 @@ export const Navigation: React.FC<NavigationProps> = ({ onOpenDemo }) => {
                 title="Test pass timer and expiration simulator (Dev only)"
               >
                 <SlidersHorizontal className="w-3 h-3" />
-                <span className="hidden sm:inline">SIMULATOR</span>
+                <span className="hidden sm:inline">Dev Simulator</span>
               </button>
             )}
 
@@ -175,7 +172,7 @@ export const Navigation: React.FC<NavigationProps> = ({ onOpenDemo }) => {
                 aria-label="Unlock 24-hour job hunt pass for ₹199"
               >
                 <Zap className="w-3.5 h-3.5 fill-current" />
-                <span>UNLOCK [₹199]</span>
+                <span>Unlock Pass (₹199)</span>
               </button>
             )}
           </div>

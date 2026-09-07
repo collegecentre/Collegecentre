@@ -117,7 +117,7 @@ export const JobSearchPage: React.FC<JobSearchPageProps> = ({ onSelectJob }) => 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-black/10 dark:border-white/15 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="font-mono text-xs text-[#fe7141] font-bold">[DISCOVERY_FEED]</span>
+            <span className="font-mono text-xs text-[#fe7141] font-bold">Discovery Feed</span>
             <span className="font-mono text-xs text-muted-foreground">/</span>
             <span className="font-mono text-xs text-foreground font-bold">{filteredJobs.length} RESULTS</span>
           </div>
@@ -205,7 +205,7 @@ export const JobSearchPage: React.FC<JobSearchPageProps> = ({ onSelectJob }) => 
           {/* Work Mode */}
           <div className="space-y-1">
             <label htmlFor="filter-work-mode" className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-              [WORK_MODE]
+              Work Mode
             </label>
             <select
               id="filter-work-mode"
@@ -223,7 +223,7 @@ export const JobSearchPage: React.FC<JobSearchPageProps> = ({ onSelectJob }) => 
           {/* Location */}
           <div className="space-y-1">
             <label htmlFor="filter-location" className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-              [METRO_REGION]
+              Metro Region
             </label>
             <select
               id="filter-location"
@@ -242,7 +242,7 @@ export const JobSearchPage: React.FC<JobSearchPageProps> = ({ onSelectJob }) => 
           {/* Category */}
           <div className="space-y-1">
             <label htmlFor="filter-category" className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-              [JOB_CATEGORY]
+              Job Category
             </label>
             <select
               id="filter-category"
@@ -269,7 +269,7 @@ export const JobSearchPage: React.FC<JobSearchPageProps> = ({ onSelectJob }) => 
                   : 'border-black/15 dark:border-white/20 text-muted-foreground hover:bg-muted/40'
               }`}
             >
-              <span>{fresherOnly ? '[✓ FRESHER ELIGIBLE]' : '[+ FRESHER ONLY]'}</span>
+              <span>{fresherOnly ? '✓ Fresher Eligible' : '+ Fresher Only'}</span>
             </button>
 
             {hasActiveFilters && (
@@ -279,7 +279,7 @@ export const JobSearchPage: React.FC<JobSearchPageProps> = ({ onSelectJob }) => 
                 className="h-9 px-2.5 border border-black/15 dark:border-white/20 text-xs font-mono text-muted-foreground hover:text-foreground hover:bg-muted/40 uppercase tracking-wider"
                 title="Reset filters"
               >
-                [RESET]
+                Reset
               </button>
             )}
           </div>
@@ -304,7 +304,7 @@ export const JobSearchPage: React.FC<JobSearchPageProps> = ({ onSelectJob }) => 
             onClick={resetFilters}
             className="px-4 py-2 border border-black dark:border-white text-xs font-mono font-bold uppercase tracking-wider hover:bg-muted/40 transition-colors"
           >
-            [RESET ALL FILTERS]
+            Reset All Filters
           </button>
         </div>
       ) : (

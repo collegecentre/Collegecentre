@@ -609,7 +609,7 @@ export const db = {
     jobId: string,
     status: ApplicationStatus,
     notes?: string,
-    studentId: string = 'student_101'
+    studentId: string = 'guest_student'
   ): Application {
     const list = this.getApplications(studentId)
     const existingIndex = list.findIndex((a) => a.job_id === jobId)

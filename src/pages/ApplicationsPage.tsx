@@ -50,7 +50,7 @@ export const ApplicationsPage: React.FC = () => {
       {/* Editorial Header */}
       <div className="border-b border-black/10 dark:border-white/15 pb-6">
         <div className="font-mono text-xs uppercase tracking-widest text-muted-foreground mb-2">
-          [TRACKER // LIFETIME_RECORDS]
+          Permanent Pipeline • Interview Tracker
         </div>
         <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-4">
           <div className="space-y-1">
@@ -63,7 +63,7 @@ export const ApplicationsPage: React.FC = () => {
           </div>
 
           <div className="font-mono text-xs px-3 py-1.5 border border-black/10 dark:border-white/15 bg-muted/20 text-foreground">
-            [{applications.length} TOTAL_ENTRIES]
+            {applications.length} Applications
           </div>
         </div>
       </div>
@@ -73,10 +73,10 @@ export const ApplicationsPage: React.FC = () => {
         <ShieldCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
         <div className="space-y-1">
           <div className="font-mono text-xs font-bold uppercase tracking-wider text-foreground">
-            RULE 11 // LIFETIME PIPELINE ACCESS
+            Rule 11: Lifetime Pipeline Access Guarantee
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Your application history and stages are permanently accessible. You can return weeks or months later to transition roles from <span className="font-mono font-bold text-foreground">[APPLIED]</span> to <span className="font-mono font-bold text-foreground">[SHORTLISTED]</span> or <span className="font-mono font-bold text-foreground">[OFFERED]</span> without purchasing another pass. Passes are only required for discovering new opportunities.
+            Your application history and stages are permanently accessible. You can return weeks or months later to transition roles from <span className="font-mono font-bold text-foreground">Applied</span> to <span className="font-mono font-bold text-foreground">Shortlisted</span> or <span className="font-mono font-bold text-foreground">Selected</span> without purchasing another pass. Passes are only required for discovering new opportunities.
           </p>
         </div>
       </div>
@@ -91,7 +91,7 @@ export const ApplicationsPage: React.FC = () => {
               : 'border-black/10 dark:border-white/15 text-muted-foreground hover:text-foreground'
           }`}
         >
-          [ALL ({applications.length})]
+          All ({applications.length})
         </button>
 
         {statusStages.map((stage) => {
@@ -107,7 +107,7 @@ export const ApplicationsPage: React.FC = () => {
                   : 'border-black/10 dark:border-white/15 text-muted-foreground hover:text-foreground'
               }`}
             >
-              <span>[{stage.toUpperCase()}]</span>
+              <span>{stage.toUpperCase()}</span>
               {count > 0 && <span className="text-[10px] opacity-80">({count})</span>}
             </button>
           )
@@ -156,7 +156,7 @@ export const ApplicationsPage: React.FC = () => {
 
                   <div className="flex items-center gap-2 self-start sm:self-auto font-mono text-xs">
                     <span className="px-2.5 py-1 border border-black/15 dark:border-white/15 bg-muted/20 text-foreground font-bold uppercase">
-                      [{app.status.toUpperCase()}]
+                      {app.status.toUpperCase()}
                     </span>
                     <button
                       onClick={() => deleteApp(app.id)}
@@ -180,7 +180,7 @@ export const ApplicationsPage: React.FC = () => {
                   <div className="flex items-center justify-between font-mono text-xs">
                     <span className="text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
                       <FileText className="w-3.5 h-3.5 text-vermilion" />
-                      INTERVIEW LOGS & TEST LINKS:
+                      Interview Logs & Test Links:
                     </span>
                     {!isEditingNotes && (
                       <button
@@ -188,7 +188,7 @@ export const ApplicationsPage: React.FC = () => {
                         className="text-foreground hover:text-vermilion underline flex items-center gap-1 text-[11px] uppercase tracking-wider font-bold"
                       >
                         <Edit3 className="w-3 h-3" />
-                        [EDIT LOG]
+                        Edit Log
                       </button>
                     )}
                   </div>
@@ -221,7 +221,7 @@ export const ApplicationsPage: React.FC = () => {
                     </div>
                   ) : (
                     <p className="text-xs text-foreground/90 bg-muted/10 p-3 border border-black/5 dark:border-white/10 font-mono leading-relaxed">
-                      {app.notes || 'NO NOTES RECORDED. SELECT [EDIT LOG] TO ADD INTERVIEW DETAILS.'}
+                      {app.notes || 'No notes recorded yet. Click "Edit Log" to add interview details or test links.'}
                     </p>
                   )}
                 </div>

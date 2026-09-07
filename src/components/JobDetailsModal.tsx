@@ -55,10 +55,10 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }
         {/* Editorial Top Bar */}
         <div className="border-b border-black/10 dark:border-white/15 px-6 py-3 bg-muted/20 flex items-center justify-between font-mono text-[11px]">
           <span className="text-muted-foreground uppercase tracking-widest">
-            [ROLE_SPEC // JOB_{job.id.padStart(4, '0')}]
+            Job Specification • #{job.id}
           </span>
           <span className="font-bold text-vermilion uppercase tracking-wider">
-            [MATCH: {job.match.score}%]
+            {job.match.score}% Match
           </span>
         </div>
 
@@ -94,7 +94,7 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }
               >
                 <span className="flex items-center gap-1.5">
                   <Bookmark className={`w-3.5 h-3.5 ${saved ? 'fill-current' : ''}`} />
-                  <span>{saved ? '[SAVED]' : '[+SAVE]'}</span>
+                  <span>{saved ? 'Saved' : 'Save'}</span>
                 </span>
               </button>
             </div>
@@ -104,7 +104,7 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }
           <div className="border border-black/10 dark:border-white/15 p-5 bg-muted/10 space-y-4">
             <div className="flex items-baseline justify-between">
               <span className="font-mono text-xs font-bold text-foreground uppercase tracking-wider">
-                01 // AI COMPATIBILITY MATRIX
+                01. AI COMPATIBILITY MATRIX
               </span>
               <span className="font-mono text-xs font-bold text-vermilion">
                 OVERALL: {job.match.score}%
@@ -115,7 +115,7 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 font-mono">
               <div className="space-y-1">
                 <div className="flex justify-between text-[11px]">
-                  <span className="text-muted-foreground">SKILLS_ALIGNMENT:</span>
+                  <span className="text-muted-foreground">Skills Alignment:</span>
                   <span className="font-bold text-foreground">
                     {job.match.breakdown.skillsMatch}%
                   </span>
@@ -125,7 +125,7 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }
 
               <div className="space-y-1">
                 <div className="flex justify-between text-[11px]">
-                  <span className="text-muted-foreground">DEGREE_ELIGIBILITY:</span>
+                  <span className="text-muted-foreground">Degree Eligibility:</span>
                   <span className="font-bold text-foreground">
                     {job.match.breakdown.educationMatch}%
                   </span>
@@ -135,7 +135,7 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }
 
               <div className="space-y-1">
                 <div className="flex justify-between text-[11px]">
-                  <span className="text-muted-foreground">FRESHER_BATCH:</span>
+                  <span className="text-muted-foreground">Fresher Batch:</span>
                   <span className="font-bold text-foreground">
                     {job.match.breakdown.fresherMatch}%
                   </span>
@@ -145,7 +145,7 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }
 
               <div className="space-y-1">
                 <div className="flex justify-between text-[11px]">
-                  <span className="text-muted-foreground">LOCATION_PREF:</span>
+                  <span className="text-muted-foreground">Location Preference:</span>
                   <span className="font-bold text-foreground">
                     {job.match.breakdown.locationMatch}%
                   </span>
@@ -173,7 +173,7 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }
           {/* Job Specifications */}
           <div>
             <div className="font-mono text-xs font-bold text-foreground uppercase tracking-wider mb-2">
-              02 // ROLE ATTRIBUTES
+              02. ROLE ATTRIBUTES
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-black/10 dark:bg-white/15 border border-black/10 dark:border-white/15">
               <div className="p-3 bg-card font-mono space-y-0.5">
@@ -198,7 +198,7 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }
           {/* Required Skills */}
           <div className="space-y-2">
             <div className="font-mono text-xs font-bold text-foreground uppercase tracking-wider">
-              03 // TECHNICAL SKILLS
+              03. TECHNICAL SKILLS
             </div>
             <div className="flex flex-wrap gap-1.5 font-mono text-xs">
               {job.skills.map((skill, index) => (
@@ -206,7 +206,7 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }
                   key={index}
                   className="px-2 py-0.5 border border-black/15 dark:border-white/15 bg-muted/20 text-foreground"
                 >
-                  [{skill.toUpperCase()}]
+                  {skill.toUpperCase()}
                 </span>
               ))}
             </div>
@@ -215,7 +215,7 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }
           {/* Role Description */}
           <div className="space-y-2">
             <div className="font-mono text-xs font-bold text-foreground uppercase tracking-wider">
-              04 // POSITION DESCRIPTION
+              04. POSITION DESCRIPTION
             </div>
             <p className="text-xs sm:text-sm text-foreground/90 leading-relaxed whitespace-pre-line border border-black/10 dark:border-white/15 p-4 bg-muted/10 font-sans">
               {job.description}
@@ -226,7 +226,7 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }
           {existingApp && (
             <div className="p-3 border border-emerald-500/30 bg-emerald-50/50 dark:bg-emerald-950/20 font-mono text-xs flex items-center justify-between">
               <div className="text-foreground">
-                [TRACKED] CURRENT STATUS: <span className="font-bold underline uppercase">{existingApp.status}</span>
+                Current Status: <span className="font-bold underline uppercase">{existingApp.status}</span>
               </div>
               <span className="text-[11px] text-muted-foreground">
                 RECORDED {new Date(existingApp.applied_at).toLocaleDateString()}
@@ -252,7 +252,7 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }
                   : 'border-black/20 dark:border-white/20 hover:bg-muted/40 text-foreground'
               }`}
             >
-              {saved ? '[SAVED TO DESK]' : '[+ SAVE JOB]'}
+              {saved ? 'Saved to Desk' : '+ Save Job'}
             </button>
 
             <Button
@@ -260,7 +260,7 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }
               onClick={handleApply}
               className="flex-1 sm:flex-initial h-9 px-6 text-xs font-mono font-bold uppercase tracking-wider bg-vermilion hover:bg-vermilion-hover text-white rounded-none border-0 transition-colors shadow-none gap-2"
             >
-              <span>APPLY ON OFFICIAL SITE</span>
+              <span>Apply on Official Site</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </Button>
           </div>

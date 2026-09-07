@@ -31,7 +31,7 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
       <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-black/10 dark:border-white/10 font-mono text-xs">
         <div className="flex items-center gap-2">
           <span className="text-muted-foreground uppercase tracking-widest text-[11px]">
-            PIPELINE_STATUS:
+            Status:
           </span>
           <span
             className={cn(
@@ -43,7 +43,7 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
                 : 'border-vermilion/40 bg-vermilion-light text-vermilion dark:bg-vermilion/10'
             )}
           >
-            [{application.status.toUpperCase()}]
+            {application.status.toUpperCase()}
           </span>
         </div>
 
@@ -76,7 +76,7 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
             >
               <div className="flex items-center justify-between text-[10px]">
                 <span className={isCurrent ? 'text-background/70' : 'text-muted-foreground'}>
-                  [{stage.code}]
+                  {stage.code}
                 </span>
                 {isCompleted && !isCurrent && <Check className="w-3 h-3 text-vermilion" />}
               </div>
@@ -100,7 +100,7 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
               : 'border-red-500/20 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30'
           )}
         >
-          {isRejected ? '[RESTORE TO APPLIED]' : '[MARK DECLINED / REJECTED]'}
+          {isRejected ? 'Restore to Applied' : 'Mark as Rejected'}
         </button>
 
         <button
@@ -109,7 +109,7 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
           className="text-foreground hover:text-vermilion underline flex items-center gap-1 uppercase tracking-wider"
         >
           <FileText className="w-3 h-3" />
-          <span>[EDIT INTERVIEW NOTES]</span>
+          <span>Edit Interview Notes</span>
         </button>
       </div>
     </div>

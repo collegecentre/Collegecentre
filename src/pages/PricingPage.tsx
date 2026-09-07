@@ -39,7 +39,7 @@ export const PricingPage: React.FC = () => {
       {/* Header */}
       <div className="space-y-4 text-center">
         <div className="inline-block font-mono text-[11px] text-[#fe7141] font-bold border border-[#fe7141]/30 bg-[#fe7141]/10 px-2.5 py-1 rounded-xs uppercase">
-          [PRICING_SPECIFICATION // NO_AUTO_DEBIT]
+          Single Payment • No Auto-Debit
         </div>
         <h1 className="text-3xl sm:text-5xl font-black text-foreground uppercase tracking-tight font-sans">
           ₹199 / 24-Hour Job Hunt Pass
@@ -54,7 +54,7 @@ export const PricingPage: React.FC = () => {
         <div className="border border-black/15 dark:border-white/20 shadow-xs overflow-hidden rounded-lg bg-card">
           <div className="bg-black dark:bg-white text-white dark:text-black p-6 text-center space-y-2 font-mono">
             <span className="text-[10px] uppercase font-bold tracking-widest border border-white/20 dark:border-black/20 px-2.5 py-0.5 rounded-xs">
-              [DISCOVERY SPRINT PASS]
+              Discovery Sprint Pass
             </span>
             <div className="flex items-baseline justify-center gap-1 pt-1">
               <span className="text-4xl sm:text-5xl font-black tracking-tight">₹199</span>
@@ -91,7 +91,7 @@ export const PricingPage: React.FC = () => {
               className="w-full py-3 text-xs font-mono font-bold bg-[#fe7141] hover:bg-[#e05828] text-white rounded-sm transition-colors flex items-center justify-center gap-2 shadow-2xs"
             >
               <Zap className="w-3.5 h-3.5 fill-current" />
-              <span>{isPassActive ? '[ GO TO ACTIVE DASHBOARD ]' : '[ UNLOCK PASS — ₹199 ]'}</span>
+              <span>{isPassActive ? 'Go to Active Dashboard' : 'Unlock Pass — ₹199'}</span>
               <ArrowUpRight className="w-4 h-4" />
             </button>
 
@@ -106,8 +106,8 @@ export const PricingPage: React.FC = () => {
       {/* Comparison: Active vs Expired Pass Breakdown */}
       <div className="space-y-4">
         <div className="border-t border-b border-black/15 dark:border-white/20 py-2.5 font-mono text-xs flex items-center justify-between">
-          <span className="font-bold uppercase text-foreground">01 // ACCESS BOUNDARIES</span>
-          <span className="text-muted-foreground">[SPRINT VS PERMANENT ARCHIVE]</span>
+          <span className="font-bold uppercase text-foreground">01. ACCESS BOUNDARIES</span>
+          <span className="text-muted-foreground">Sprint vs. Permanent Archive</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-xs">
@@ -146,7 +146,7 @@ export const PricingPage: React.FC = () => {
       {/* FAQs */}
       <div className="space-y-4">
         <div className="border-t border-b border-black/15 dark:border-white/20 py-2.5 font-mono text-xs flex items-center gap-2">
-          <span className="font-bold text-[#fe7141]">02 //</span>
+          <span className="font-bold text-[#fe7141]">02.</span>
           <span className="font-bold text-foreground uppercase tracking-wider">FREQUENTLY ASKED QUESTIONS</span>
         </div>
 

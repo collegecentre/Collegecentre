@@ -75,11 +75,11 @@ export const ProfilePage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'all' | 'personal' | 'academics' | 'skills' | 'preferences'>('all')
 
   const profileTabs = [
-    { id: 'all', label: 'ALL SECTIONS' },
-    { id: 'personal', label: '01 // PERSONAL' },
-    { id: 'academics', label: '02 // ACADEMICS' },
-    { id: 'skills', label: '03 // SKILLS MATRIX' },
-    { id: 'preferences', label: '04 // PREFERENCES' },
+    { id: 'all', label: 'All Sections' },
+    { id: 'personal', label: '01. Personal' },
+    { id: 'academics', label: '02. Academics' },
+    { id: 'skills', label: '03. Skills Matrix' },
+    { id: 'preferences', label: '04. Preferences' },
   ] as const
 
   return (
@@ -87,7 +87,7 @@ export const ProfilePage: React.FC = () => {
       {/* Editorial Header */}
       <div className="border-b border-black/10 dark:border-white/15 pb-6">
         <div className="font-mono text-xs uppercase tracking-widest text-muted-foreground mb-2">
-          [STUDENT_RECORD // MATCH_PARAMETERS]
+          Candidate Profile • Match Parameters
         </div>
         <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-4">
           <div className="space-y-1">
@@ -106,7 +106,7 @@ export const ProfilePage: React.FC = () => {
             className="px-6 py-3 bg-vermilion hover:bg-vermilion-hover text-white font-mono text-xs font-bold uppercase tracking-wider transition-colors shrink-0 flex items-center gap-2 shadow-xs"
           >
             <Save className="w-3.5 h-3.5" />
-            <span>{savedFeedback ? '[✓ PROFILE UPDATED]' : '[ SAVE CANDIDATE PROFILE ]'}</span>
+            <span>{savedFeedback ? '✓ Profile Updated' : 'Save Profile'}</span>
           </button>
         </div>
       </div>
@@ -117,7 +117,7 @@ export const ProfilePage: React.FC = () => {
           <div className="flex items-center gap-2.5">
             <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
             <span className="font-bold uppercase">
-              [STATUS: SAVED] CANDIDATE PROFILE AND MATCH CRITERIA UPDATED SUCCESSFULLY.
+              Profile and match criteria updated successfully.
             </span>
           </div>
           <span className="text-[10px] uppercase font-bold text-muted-foreground hidden sm:inline">
@@ -152,7 +152,7 @@ export const ProfilePage: React.FC = () => {
                 : 'border-black/10 dark:border-white/15 text-muted-foreground hover:text-foreground'
             }`}
           >
-            [{tab.label}]
+            {tab.label}
           </button>
         ))}
       </div>
@@ -163,10 +163,10 @@ export const ProfilePage: React.FC = () => {
           <div className="border border-black/10 dark:border-white/15 bg-card p-6 space-y-6">
             <div className="flex items-baseline justify-between pb-3 border-b border-black/10 dark:border-white/10">
               <div className="font-mono text-xs font-bold text-foreground uppercase tracking-wider">
-                01 // PERSONAL CREDENTIALS
+                01. PERSONAL CREDENTIALS
               </div>
               <span className="font-mono text-[10px] text-muted-foreground uppercase">
-                [VERIFIED IDENTITY]
+                Identity Details
               </span>
             </div>
 
@@ -179,7 +179,7 @@ export const ProfilePage: React.FC = () => {
                   id="profile-full-name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="Aarav Sharma"
+                  placeholder="e.g. Rahul Sharma"
                   className="h-10 rounded-none border-black/15 dark:border-white/20 font-mono text-xs"
                   required
                 />
@@ -206,7 +206,7 @@ export const ProfilePage: React.FC = () => {
                   id="profile-phone"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  placeholder="+91 98765 43210"
+                  placeholder="e.g. +91 98765 00000"
                   className="h-10 rounded-none border-black/15 dark:border-white/20 font-mono text-xs"
                 />
               </div>
@@ -223,14 +223,14 @@ export const ProfilePage: React.FC = () => {
                     className="px-4 py-2 bg-vermilion hover:bg-vermilion-hover text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2"
                   >
                     <Save className="w-3.5 h-3.5" />
-                    <span>SAVE 01 // PERSONAL</span>
+                    <span>Save Personal Info</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setActiveTab('academics')}
                     className="px-4 py-2 border border-black dark:border-white hover:bg-muted/40 text-xs font-bold uppercase tracking-wider"
                   >
-                    NEXT: 02 // ACADEMICS →
+                    Next: Academics →
                   </button>
                 </div>
               </div>
@@ -243,10 +243,10 @@ export const ProfilePage: React.FC = () => {
           <div className="border border-black/10 dark:border-white/15 bg-card p-6 space-y-6">
             <div className="flex items-baseline justify-between pb-3 border-b border-black/10 dark:border-white/10">
               <div className="font-mono text-xs font-bold text-foreground uppercase tracking-wider">
-                02 // COLLEGE & ACADEMIC DATA
+                02. COLLEGE & ACADEMIC DATA
               </div>
               <span className="font-mono text-[10px] text-muted-foreground uppercase">
-                [DEGREE & BATCH ALIGNMENT]
+                Degree & Graduation Batch
               </span>
             </div>
 
@@ -259,7 +259,7 @@ export const ProfilePage: React.FC = () => {
                   id="profile-college"
                   value={formData.college}
                   onChange={(e) => setFormData({ ...formData, college: e.target.value })}
-                  placeholder="National Institute of Technology"
+                  placeholder="e.g. BITS Pilani / NIT / Anna University"
                   className="h-10 rounded-none border-black/15 dark:border-white/20 font-mono text-xs"
                   required
                 />
@@ -319,7 +319,7 @@ export const ProfilePage: React.FC = () => {
                   onClick={() => setActiveTab('personal')}
                   className="px-4 py-2 border border-black/20 dark:border-white/20 hover:bg-muted/40 text-xs font-bold uppercase tracking-wider"
                 >
-                  ← PREV: 01 // PERSONAL
+                  ← Prev: Personal
                 </button>
                 <div className="flex items-center gap-3">
                   <button
@@ -327,14 +327,14 @@ export const ProfilePage: React.FC = () => {
                     className="px-4 py-2 bg-vermilion hover:bg-vermilion-hover text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2"
                   >
                     <Save className="w-3.5 h-3.5" />
-                    <span>SAVE 02 // ACADEMICS</span>
+                    <span>Save Academics</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setActiveTab('skills')}
                     className="px-4 py-2 border border-black dark:border-white hover:bg-muted/40 text-xs font-bold uppercase tracking-wider"
                   >
-                    NEXT: 03 // SKILLS →
+                    Next: Skills →
                   </button>
                 </div>
               </div>
@@ -347,10 +347,10 @@ export const ProfilePage: React.FC = () => {
           <div className="border border-black/10 dark:border-white/15 bg-card p-6 space-y-6">
             <div className="flex items-baseline justify-between pb-3 border-b border-black/10 dark:border-white/10">
               <div className="font-mono text-xs font-bold text-foreground uppercase tracking-wider">
-                03 // TECHNICAL SKILLS MATRIX
+                03. TECHNICAL SKILLS MATRIX
               </div>
               <div className="font-mono text-[10px] text-muted-foreground uppercase">
-                [WEIGHT: 40% OF AI MATCH SCORE]
+                Weight: 40% of Match Score
               </div>
             </div>
 
@@ -361,7 +361,7 @@ export const ProfilePage: React.FC = () => {
                     key={skill}
                     className="inline-flex items-center gap-1.5 px-2 py-1 border border-black/15 dark:border-white/20 bg-card text-foreground text-xs uppercase"
                   >
-                    <span>[{skill}]</span>
+                    <span>{skill}</span>
                     <button
                       type="button"
                       onClick={() => handleRemoveSkill(skill)}
@@ -379,7 +379,7 @@ export const ProfilePage: React.FC = () => {
                   id="profile-new-skill"
                   value={newSkill}
                   onChange={(e) => setNewSkill(e.target.value)}
-                  placeholder="TYPE SKILL (REACT, PYTHON, POSTGRESQL, DOCKER) & PRESS ENTER..."
+                  placeholder="Type skill (React, Python, PostgreSQL, Docker) and press Enter..."
                   className="h-10 rounded-none border-black/15 dark:border-white/20 font-mono text-xs uppercase placeholder:normal-case"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
@@ -393,7 +393,7 @@ export const ProfilePage: React.FC = () => {
                   onClick={handleAddSkill}
                   className="px-4 py-2 border border-black dark:border-white text-xs font-mono font-bold uppercase tracking-wider hover:bg-muted/40 transition-colors shrink-0"
                 >
-                  [+ ADD SKILL]
+                  + Add Skill
                 </button>
               </div>
             </div>
@@ -405,7 +405,7 @@ export const ProfilePage: React.FC = () => {
                   onClick={() => setActiveTab('academics')}
                   className="px-4 py-2 border border-black/20 dark:border-white/20 hover:bg-muted/40 text-xs font-bold uppercase tracking-wider"
                 >
-                  ← PREV: 02 // ACADEMICS
+                  ← Prev: Academics
                 </button>
                 <div className="flex items-center gap-3">
                   <button
@@ -413,14 +413,14 @@ export const ProfilePage: React.FC = () => {
                     className="px-4 py-2 bg-vermilion hover:bg-vermilion-hover text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2"
                   >
                     <Save className="w-3.5 h-3.5" />
-                    <span>SAVE 03 // SKILLS</span>
+                    <span>Save Skills</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setActiveTab('preferences')}
                     className="px-4 py-2 border border-black dark:border-white hover:bg-muted/40 text-xs font-bold uppercase tracking-wider"
                   >
-                    NEXT: 04 // PREFERENCES →
+                    Next: Preferences →
                   </button>
                 </div>
               </div>
@@ -433,17 +433,17 @@ export const ProfilePage: React.FC = () => {
           <div className="border border-black/10 dark:border-white/15 bg-card p-6 space-y-6">
             <div className="flex items-baseline justify-between pb-3 border-b border-black/10 dark:border-white/10">
               <div className="font-mono text-xs font-bold text-foreground uppercase tracking-wider">
-                04 // LOCATION & WORK MODE PREFERENCES
+                04. LOCATION & WORK PREFERENCES
               </div>
               <span className="font-mono text-[10px] text-muted-foreground uppercase">
-                [GEOGRAPHY & COMMUTE]
+                Geography & Commute
               </span>
             </div>
 
             {/* Work Mode */}
             <div className="space-y-2 font-mono">
               <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                [TARGET_WORK_MODE]
+                Target Work Mode
               </label>
               <div className="flex flex-wrap gap-2">
                 {availableModes.map((mode) => {
@@ -459,7 +459,7 @@ export const ProfilePage: React.FC = () => {
                           : 'border-black/15 dark:border-white/20 text-muted-foreground hover:bg-muted/40'
                       }`}
                     >
-                      [{mode.toUpperCase()}]
+                      {mode.toUpperCase()}
                     </button>
                   )
                 })}
@@ -469,7 +469,7 @@ export const ProfilePage: React.FC = () => {
             {/* Preferred Locations */}
             <div className="space-y-2 font-mono">
               <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                [TARGET_METRO_REGIONS]
+                Target Metro Regions
               </label>
               <div className="flex flex-wrap gap-1.5">
                 {formData.preferred_locations.map((loc) => (
@@ -477,7 +477,7 @@ export const ProfilePage: React.FC = () => {
                     key={loc}
                     className="inline-flex items-center gap-1.5 px-2 py-1 border border-black/15 dark:border-white/20 bg-card text-foreground text-xs uppercase"
                   >
-                    <span>[{loc}]</span>
+                    <span>{loc}</span>
                     <button
                       type="button"
                       onClick={() => handleRemoveLocation(loc)}
@@ -494,7 +494,7 @@ export const ProfilePage: React.FC = () => {
                   id="profile-new-city"
                   value={newLocation}
                   onChange={(e) => setNewLocation(e.target.value)}
-                  placeholder="ADD CITY (BENGALURU, HYDERABAD, PUNE, REMOTE)..."
+                  placeholder="Add city (Bengaluru, Hyderabad, Pune, Remote)..."
                   className="h-10 rounded-none border-black/15 dark:border-white/20 font-mono text-xs uppercase placeholder:normal-case"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
@@ -508,7 +508,7 @@ export const ProfilePage: React.FC = () => {
                   onClick={handleAddLocation}
                   className="px-4 py-2 border border-black dark:border-white text-xs font-mono font-bold uppercase tracking-wider hover:bg-muted/40 transition-colors shrink-0"
                 >
-                  [+ ADD CITY]
+                  + Add City
                 </button>
               </div>
             </div>
@@ -520,14 +520,14 @@ export const ProfilePage: React.FC = () => {
                   onClick={() => setActiveTab('skills')}
                   className="px-4 py-2 border border-black/20 dark:border-white/20 hover:bg-muted/40 text-xs font-bold uppercase tracking-wider"
                 >
-                  ← PREV: 03 // SKILLS
+                  ← Prev: Skills
                 </button>
                 <button
                   type="submit"
                   className="px-4 py-2 bg-vermilion hover:bg-vermilion-hover text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2"
                 >
                   <Save className="w-3.5 h-3.5" />
-                  <span>SAVE 04 // PREFERENCES</span>
+                  <span>Save Preferences</span>
                 </button>
               </div>
             )}
@@ -550,7 +550,7 @@ export const ProfilePage: React.FC = () => {
             className="w-full sm:w-auto h-12 px-10 font-mono text-xs font-bold uppercase tracking-wider bg-vermilion hover:bg-vermilion-hover text-white transition-colors flex items-center justify-center gap-2 shadow-sm shrink-0"
           >
             <Save className="w-4 h-4" />
-            <span>{savedFeedback ? '[✓ PROFILE SAVED]' : 'SAVE CANDIDATE PROFILE'}</span>
+            <span>{savedFeedback ? '✓ Profile Saved' : 'Save Profile'}</span>
           </button>
         </div>
       </form>
@@ -567,7 +567,7 @@ export const ProfilePage: React.FC = () => {
             className="px-6 py-2.5 bg-vermilion hover:bg-vermilion-hover text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-2 shadow-xs"
           >
             <Save className="w-3.5 h-3.5" />
-            <span>{savedFeedback ? '[✓ PROFILE SAVED]' : '[ SAVE PROFILE ]'}</span>
+            <span>{savedFeedback ? '✓ Profile Saved' : 'Save Profile'}</span>
           </button>
         </div>
       </div>

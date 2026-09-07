@@ -79,10 +79,10 @@ export const PaymentModal: React.FC = () => {
         {/* Editorial Top Bar */}
         <div className="border-b border-black/10 dark:border-white/15 px-6 py-4 bg-muted/20 flex items-center justify-between">
           <span className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
-            [CHECKOUT // PASS_ACTIVATION]
+            Pass Checkout
           </span>
           <span className="font-mono text-[11px] font-bold text-vermilion uppercase tracking-wider">
-            [24-HR SPRINT WINDOW]
+            24-Hour Sprint Window
           </span>
         </div>
 
@@ -95,7 +95,7 @@ export const PaymentModal: React.FC = () => {
               <div className="text-right">
                 <div className="text-3xl font-black text-foreground font-mono">₹199</div>
                 <div className="font-mono text-[10px] text-muted-foreground uppercase tracking-wider">
-                  Flat Rate // No Renewal
+                  Flat Rate • No Renewal
                 </div>
               </div>
             </div>
@@ -124,7 +124,7 @@ export const PaymentModal: React.FC = () => {
               </li>
               <li className="flex items-center gap-2 font-semibold text-foreground pt-1 border-t border-black/5 dark:border-white/10">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span>RULE 11: Saved jobs & tracker stay accessible forever</span>
+                <span>Permanent Retention: Saved jobs & tracker stay accessible forever</span>
               </li>
             </ul>
           </div>
@@ -255,21 +255,21 @@ export const PaymentModal: React.FC = () => {
           {/* Pricing Ledger */}
           <div className="border-t border-b border-black/10 dark:border-white/15 py-3 font-mono text-xs space-y-1.5">
             <div className="flex justify-between text-muted-foreground">
-              <span>ACTIVE_PERIOD</span>
+              <span>Active Period</span>
               <span className="text-foreground font-semibold flex items-center gap-1">
-                <Clock className="w-3 h-3 text-vermilion" /> 24:00:00 (TIMER STARTS ON CONFIRM)
+                <Clock className="w-3 h-3 text-vermilion" /> 24 Hours (starts immediately)
               </span>
             </div>
             <div className="flex justify-between text-muted-foreground">
-              <span>BASE_FEE</span>
+              <span>Base Amount</span>
               <span className="text-foreground">₹168.64</span>
             </div>
             <div className="flex justify-between text-muted-foreground">
-              <span>GST (18% INCLUDED)</span>
+              <span>GST (18% included)</span>
               <span className="text-foreground">₹30.36</span>
             </div>
             <div className="flex justify-between font-bold text-sm text-foreground pt-1 border-t border-black/5 dark:border-white/10">
-              <span>TOTAL DUE (FLAT)</span>
+              <span>Total Amount</span>
               <span className="text-vermilion">₹199.00</span>
             </div>
           </div>
@@ -296,7 +296,7 @@ export const PaymentModal: React.FC = () => {
             </Button>
 
             <p className="font-mono text-[10px] text-center text-muted-foreground mt-3 uppercase tracking-wider">
-              [SANDBOX ENVIRONMENT · INSTANT DEMO ACTIVATION]
+              Instant Activation • Secure Payment
             </p>
           </div>
         </div>
