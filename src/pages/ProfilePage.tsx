@@ -117,8 +117,9 @@ export const ProfilePage: React.FC = () => {
           </CardHeader>
           <CardContent className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-muted-foreground">Full Name</label>
+              <label htmlFor="profile-full-name" className="text-xs font-bold text-muted-foreground">Full Name</label>
               <Input
+                id="profile-full-name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Aarav Sharma"
@@ -126,8 +127,9 @@ export const ProfilePage: React.FC = () => {
               />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-muted-foreground">College Email ID</label>
+              <label htmlFor="profile-email" className="text-xs font-bold text-muted-foreground">College Email ID</label>
               <Input
+                id="profile-email"
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -136,8 +138,9 @@ export const ProfilePage: React.FC = () => {
               />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-muted-foreground">Mobile Phone</label>
+              <label htmlFor="profile-phone" className="text-xs font-bold text-muted-foreground">Mobile Phone</label>
               <Input
+                id="profile-phone"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 placeholder="+91 98765 43210"
@@ -159,8 +162,9 @@ export const ProfilePage: React.FC = () => {
           </CardHeader>
           <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-muted-foreground">College / University</label>
+              <label htmlFor="profile-college" className="text-xs font-bold text-muted-foreground">College / University</label>
               <Input
+                id="profile-college"
                 value={formData.college}
                 onChange={(e) => setFormData({ ...formData, college: e.target.value })}
                 placeholder="National Institute of Technology"
@@ -169,8 +173,9 @@ export const ProfilePage: React.FC = () => {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-muted-foreground">Degree / Major</label>
+              <label htmlFor="profile-degree" className="text-xs font-bold text-muted-foreground">Degree / Major</label>
               <Input
+                id="profile-degree"
                 value={formData.degree}
                 onChange={(e) => setFormData({ ...formData, degree: e.target.value })}
                 placeholder="Computer Science & Engineering"
@@ -179,8 +184,9 @@ export const ProfilePage: React.FC = () => {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-muted-foreground">Education Level</label>
+              <label htmlFor="profile-education-level" className="text-xs font-bold text-muted-foreground">Education Level</label>
               <Input
+                id="profile-education-level"
                 value={formData.education_level}
                 onChange={(e) => setFormData({ ...formData, education_level: e.target.value })}
                 placeholder="Undergraduate (B.Tech / B.E.)"
@@ -188,8 +194,9 @@ export const ProfilePage: React.FC = () => {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-muted-foreground">Graduation Batch</label>
+              <label htmlFor="profile-grad-year" className="text-xs font-bold text-muted-foreground">Graduation Batch</label>
               <select
+                id="profile-grad-year"
                 value={formData.graduation_year}
                 onChange={(e) =>
                   setFormData({ ...formData, graduation_year: parseInt(e.target.value) })
@@ -227,7 +234,8 @@ export const ProfilePage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => handleRemoveSkill(skill)}
-                    className="hover:text-rose-600 transition-colors p-0.5"
+                    aria-label={`Remove skill ${skill}`}
+                    className="hover:text-rose-600 transition-colors p-0.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-rose-500 rounded"
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>
@@ -235,27 +243,30 @@ export const ProfilePage: React.FC = () => {
               ))}
             </div>
 
-            <div className="flex gap-2">
-              <Input
-                value={newSkill}
-                onChange={(e) => setNewSkill(e.target.value)}
-                placeholder="Type skill and press Add (e.g. React, Next.js, Python, PostgreSQL, Docker)..."
-                className="text-xs"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault()
-                    handleAddSkill(e)
-                  }
-                }}
-              />
-              <Button
-                type="button"
-                onClick={handleAddSkill}
-                variant="secondary"
-                className="text-xs font-bold shrink-0"
-              >
-                <Plus className="w-4 h-4 mr-1" /> Add Skill
-              </Button>
+            <div className="space-y-1">
+              <label htmlFor="profile-new-skill" className="sr-only">Add new skill</label>
+              <div className="flex gap-2">
+                <Input
+                  id="profile-new-skill"
+                  value={newSkill}
+                  onChange={(e) => setNewSkill(e.target.value)}
+                  placeholder="Type skill and press Add (e.g. React, Next.js, Python, PostgreSQL, Docker)..."
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      handleAddSkill(e)
+                    }
+                  }}
+                />
+                <Button
+                  type="button"
+                  onClick={handleAddSkill}
+                  variant="secondary"
+                  className="text-xs font-bold shrink-0"
+                >
+                  <Plus className="w-4 h-4 mr-1" /> Add Skill
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -283,7 +294,7 @@ export const ProfilePage: React.FC = () => {
                       key={mode}
                       type="button"
                       onClick={() => toggleWorkMode(mode)}
-                      className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all ${
+                      className={`px-4 py-2 rounded-xl text-xs font-bold border transition-colors ${
                         isSelected
                           ? 'border-indigo-600 bg-indigo-50 text-indigo-700 shadow-xs dark:bg-indigo-950 dark:text-indigo-300'
                           : 'border-border text-muted-foreground hover:bg-accent'
@@ -319,27 +330,30 @@ export const ProfilePage: React.FC = () => {
                 ))}
               </div>
 
-              <div className="flex gap-2 pt-1">
-                <Input
-                  value={newLocation}
-                  onChange={(e) => setNewLocation(e.target.value)}
-                  placeholder="Add city (e.g. Bengaluru, Hyderabad, Pune, Remote, Gurugram)..."
-                  className="text-xs"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault()
-                      handleAddLocation(e)
-                    }
-                  }}
-                />
-                <Button
-                  type="button"
-                  onClick={handleAddLocation}
-                  variant="secondary"
-                  className="text-xs font-bold shrink-0"
-                >
-                  <Plus className="w-4 h-4 mr-1" /> Add City
-                </Button>
+              <div className="space-y-1">
+                <label htmlFor="profile-new-city" className="sr-only">Add new city</label>
+                <div className="flex gap-2 pt-1">
+                  <Input
+                    id="profile-new-city"
+                    value={newLocation}
+                    onChange={(e) => setNewLocation(e.target.value)}
+                    placeholder="Add city (e.g. Bengaluru, Hyderabad, Pune, Remote, Gurugram)..."
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault()
+                        handleAddLocation(e)
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    onClick={handleAddLocation}
+                    variant="secondary"
+                    className="text-xs font-bold shrink-0"
+                  >
+                    <Plus className="w-4 h-4 mr-1" /> Add City
+                  </Button>
+                </div>
               </div>
             </div>
           </CardContent>

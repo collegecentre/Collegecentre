@@ -9,30 +9,90 @@ interface DialogProps {
 }
 
 const Dialog: React.FC<DialogProps> = ({ open, onOpenChange, children }) => {
+  const dialogRef = React.useRef<HTMLDivElement>(null)
+  const previousActiveElement = React.useRef<HTMLElement | null>(null)
+
   React.useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onOpenChange(false)
-    }
     if (open) {
+      previousActiveElement.current = document.activeElement as HTMLElement
       document.body.style.overflow = "hidden"
-      window.addEventListener("keydown", handleKeyDown)
+
+      // Focus the first interactive element or dialog itself
+      const timer = setTimeout(() => {
+        if (dialogRef.current) {
+          const focusables = dialogRef.current.querySelectorAll<HTMLElement>(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+          )
+          if (focusables.length > 0) {
+            focusables[0].focus()
+          } else {
+            dialogRef.current.focus()
+          }
+        }
+      }, 50)
+
+      return () => clearTimeout(timer)
     } else {
       document.body.style.overflow = "unset"
+      if (previousActiveElement.current) {
+        previousActiveElement.current.focus()
+      }
     }
-    return () => {
-      document.body.style.overflow = "unset"
-      window.removeEventListener("keydown", handleKeyDown)
+  }, [open])
+
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!open) return
+
+      if (e.key === "Escape") {
+        onOpenChange(false)
+        return
+      }
+
+      // Trap focus inside modal
+      if (e.key === "Tab" && dialogRef.current) {
+        const focusables = Array.from(
+          dialogRef.current.querySelectorAll<HTMLElement>(
+            'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+          )
+        )
+        if (focusables.length === 0) return
+
+        const first = focusables[0]
+        const last = focusables[focusables.length - 1]
+
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            e.preventDefault()
+            last.focus()
+          }
+        } else {
+          if (document.activeElement === last) {
+            e.preventDefault()
+            first.focus()
+          }
+        }
+      }
     }
+
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
   }, [open, onOpenChange])
 
   if (!open) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+    <div
+      ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto overscroll-contain"
+    >
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity animate-in fade-in"
         onClick={() => onOpenChange(false)}
+        aria-hidden="true"
       />
       {/* Content wrapper */}
       <div className="relative z-10 w-full my-auto flex items-center justify-center">
@@ -49,7 +109,7 @@ const DialogContent = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "relative w-full max-w-lg rounded-2xl border bg-card p-6 shadow-2xl transition-all duration-200 animate-in zoom-in-95 max-h-[90vh] overflow-y-auto",
+      "relative w-full max-w-lg rounded-2xl border bg-card p-6 shadow-2xl transition-[transform,opacity] duration-200 animate-in zoom-in-95 max-h-[90vh] overflow-y-auto",
       className
     )}
     onClick={(e) => e.stopPropagation()}
@@ -58,11 +118,12 @@ const DialogContent = React.forwardRef<
     {children}
     {onClose && (
       <button
+        type="button"
         onClick={onClose}
-        className="absolute right-4 top-4 rounded-full p-1 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+        aria-label="Close dialog"
+        className="absolute right-4 top-4 rounded-full p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary transition-colors"
       >
         <X className="h-4 w-4" />
-        <span className="sr-only">Close</span>
       </button>
     )}
   </div>

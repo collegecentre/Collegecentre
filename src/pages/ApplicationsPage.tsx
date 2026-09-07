@@ -220,7 +220,7 @@ export const ApplicationsPage: React.FC = () => {
                           <button
                             key={stage}
                             onClick={() => changeAppStatus(app.id, stage, app.notes)}
-                            className={`px-2.5 py-1 rounded-lg text-xs transition-all ${
+                            className={`px-2.5 py-1 rounded-lg text-xs transition-[color,background-color,border-color,transform] ${
                               isCurrent
                                 ? 'bg-indigo-600 text-white font-bold shadow-xs scale-105'
                                 : 'bg-background border border-border text-foreground hover:bg-accent'
@@ -282,7 +282,7 @@ export const ApplicationsPage: React.FC = () => {
                       </div>
                     ) : (
                       <p className="text-xs text-foreground/80 bg-background/60 p-2.5 rounded-lg border border-border/50 italic leading-relaxed">
-                        {app.notes || 'No notes added yet. Click edit to record interview dates and test links.'}
+                        {app.notes || 'No notes added yet. Select edit to record interview dates and test links.'}
                       </p>
                     )}
                   </div>

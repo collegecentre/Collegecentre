@@ -140,7 +140,7 @@ export const JobSearchPage: React.FC<JobSearchPageProps> = ({ onSelectJob }) => 
           <div className="inline-flex rounded-lg border bg-card p-0.5">
             <button
               onClick={() => setSortBy('match')}
-              className={`px-2.5 py-1 text-xs rounded-md font-medium transition-all ${
+              className={`px-2.5 py-1 text-xs rounded-md font-medium transition-colors ${
                 sortBy === 'match'
                   ? 'bg-indigo-600 text-white font-bold'
                   : 'text-muted-foreground hover:text-foreground'
@@ -150,7 +150,7 @@ export const JobSearchPage: React.FC<JobSearchPageProps> = ({ onSelectJob }) => 
             </button>
             <button
               onClick={() => setSortBy('newest')}
-              className={`px-2.5 py-1 text-xs rounded-md font-medium transition-all ${
+              className={`px-2.5 py-1 text-xs rounded-md font-medium transition-colors ${
                 sortBy === 'newest'
                   ? 'bg-indigo-600 text-white font-bold'
                   : 'text-muted-foreground hover:text-foreground'
@@ -165,18 +165,22 @@ export const JobSearchPage: React.FC<JobSearchPageProps> = ({ onSelectJob }) => 
       {/* Search Bar and Quick Mobile Filter Toggle */}
       <div className="flex items-center gap-2">
         <div className="relative flex-1">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <label htmlFor="search-jobs-input" className="sr-only">Search jobs by title, skill, or company</label>
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
           <Input
+            id="search-jobs-input"
             type="text"
             placeholder="Search by job title, skill (e.g. React, Python), or company..."
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
-            className="pl-9 h-11 text-sm bg-card border-border/80 shadow-xs"
+            className="pl-9 h-11 text-base sm:text-sm bg-card border-border/80 shadow-xs"
           />
           {keyword && (
             <button
+              type="button"
               onClick={() => setKeyword('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground"
+              aria-label="Clear search input"
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary rounded"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -206,10 +210,11 @@ export const JobSearchPage: React.FC<JobSearchPageProps> = ({ onSelectJob }) => 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {/* Work Mode */}
           <div className="space-y-1">
-            <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+            <label htmlFor="filter-work-mode" className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
               Work Mode
             </label>
             <select
+              id="filter-work-mode"
               value={selectedWorkMode}
               onChange={(e) => setSelectedWorkMode(e.target.value)}
               className="w-full h-9 rounded-lg border border-input bg-background px-3 py-1 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
@@ -223,10 +228,11 @@ export const JobSearchPage: React.FC<JobSearchPageProps> = ({ onSelectJob }) => 
 
           {/* Location */}
           <div className="space-y-1">
-            <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+            <label htmlFor="filter-location" className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
               Location
             </label>
             <select
+              id="filter-location"
               value={selectedLocation}
               onChange={(e) => setSelectedLocation(e.target.value)}
               className="w-full h-9 rounded-lg border border-input bg-background px-3 py-1 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
@@ -241,10 +247,11 @@ export const JobSearchPage: React.FC<JobSearchPageProps> = ({ onSelectJob }) => 
 
           {/* Category */}
           <div className="space-y-1">
-            <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+            <label htmlFor="filter-category" className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
               Job Category
             </label>
             <select
+              id="filter-category"
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
               className="w-full h-9 rounded-lg border border-input bg-background px-3 py-1 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
@@ -262,7 +269,7 @@ export const JobSearchPage: React.FC<JobSearchPageProps> = ({ onSelectJob }) => 
             <button
               type="button"
               onClick={() => setFresherOnly(!fresherOnly)}
-              className={`flex-1 h-9 px-3 rounded-lg border text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
+              className={`flex-1 h-9 px-3 rounded-lg border text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors ${
                 fresherOnly
                   ? 'border-emerald-500 bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300'
                   : 'border-border text-muted-foreground hover:bg-accent'

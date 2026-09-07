@@ -45,7 +45,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSelect }) => {
     <SpotlightCard
       onClick={() => onSelect(job)}
       spotlightColor={job.match.score >= 85 ? 'rgba(16, 185, 129, 0.14)' : 'rgba(99, 102, 241, 0.14)'}
-      className="group cursor-pointer hover:shadow-lg transition-all duration-300"
+      className="group cursor-pointer hover:shadow-lg transition-shadow duration-300"
     >
       <div className="p-5 sm:p-6 space-y-4">
         {/* Header: Company, Title & Save */}
@@ -72,12 +72,12 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSelect }) => {
           <button
             type="button"
             onClick={handleSaveClick}
-            className={`p-2.5 rounded-xl transition-all shrink-0 ${
+            aria-label={saved ? `Remove ${job.title} at ${job.company} from saved jobs` : `Save ${job.title} at ${job.company}`}
+            className={`p-2.5 rounded-xl transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
               saved
                 ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-950 dark:text-indigo-300'
                 : 'text-muted-foreground hover:bg-accent/80 hover:text-foreground'
             }`}
-            title={saved ? 'Remove from Saved' : 'Save Job'}
           >
             <Bookmark className={`w-4 h-4 ${saved ? 'fill-current' : ''}`} />
           </button>
@@ -109,7 +109,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSelect }) => {
         {/* Salary and Education fit */}
         <div className="space-y-2 pt-1 border-t border-border/50">
           <div className="flex items-center justify-between text-xs pt-2">
-            <span className="font-extrabold text-emerald-700 dark:text-emerald-400 text-sm tracking-tight">
+            <span className="font-extrabold text-emerald-700 dark:text-emerald-400 text-sm tracking-tight tabular-nums">
               {job.salary}
             </span>
             <span className="text-muted-foreground flex items-center gap-1 text-[11px]">
@@ -150,12 +150,12 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSelect }) => {
               className="h-8 text-xs px-3 font-semibold hover:bg-accent"
               onClick={() => onSelect(job)}
             >
-              Details
+              View details
             </Button>
             <Button
               variant="default"
               size="sm"
-              className="h-8 text-xs px-3.5 gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-xs shadow-indigo-500/20"
+              className="h-8 text-xs ps-3.5 pe-3 gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-xs shadow-indigo-500/20"
               onClick={handleApplyClick}
             >
               <span>Apply</span>

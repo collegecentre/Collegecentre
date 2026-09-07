@@ -19,7 +19,7 @@ export const ShinyText: React.FC<ShinyTextProps> = ({
   return (
     <span
       className={cn(
-        'inline-block bg-clip-text text-transparent transition-all duration-300',
+        'inline-block bg-clip-text text-transparent transition-opacity duration-300',
         disabled
           ? 'text-foreground'
           : 'bg-gradient-to-r from-indigo-500 via-emerald-400 to-indigo-600 bg-[200%_auto] animate-shimmer',

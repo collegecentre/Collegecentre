@@ -81,7 +81,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onSelectJob }) => 
       {/* Main Situation & 24-Hour Pass Banner */}
       <SpotlightCard
         spotlightColor="rgba(99, 102, 241, 0.25)"
-        className={`rounded-3xl border transition-all ${
+        className={`rounded-3xl border transition-colors ${
           isPassActive
             ? 'bg-gradient-to-r from-indigo-950 via-slate-900 to-indigo-900 text-white border-indigo-700/60 shadow-xl'
             : 'bg-card border-border text-card-foreground shadow-sm'
@@ -199,7 +199,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onSelectJob }) => 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <SpotlightCard
           onClick={() => setCurrentView('saved')}
-          className="cursor-pointer hover:border-indigo-300 transition-all bg-card"
+          className="cursor-pointer hover:border-indigo-300 transition-colors bg-card"
         >
           <div className="p-4 sm:p-5 flex items-center justify-between">
             <div className="flex items-center gap-3.5">
@@ -219,7 +219,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onSelectJob }) => 
 
         <SpotlightCard
           onClick={() => setCurrentView('applications')}
-          className="cursor-pointer hover:border-emerald-300 transition-all bg-card"
+          className="cursor-pointer hover:border-emerald-300 transition-colors bg-card"
         >
           <div className="p-4 sm:p-5 flex items-center justify-between">
             <div className="flex items-center gap-3.5">

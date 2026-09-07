@@ -59,7 +59,7 @@ export const AuthPages: React.FC<AuthPagesProps> = ({ initialMode = 'signup' }) 
             <button
               type="button"
               onClick={() => setIsLogin(false)}
-              className={`flex-1 py-2 text-xs font-bold text-center border-b-2 transition-all ${
+              className={`flex-1 py-2 text-xs font-bold text-center border-b-2 transition-colors ${
                 !isLogin
                   ? 'border-indigo-600 text-indigo-600 font-extrabold'
                   : 'border-transparent text-muted-foreground hover:text-foreground'
@@ -70,7 +70,7 @@ export const AuthPages: React.FC<AuthPagesProps> = ({ initialMode = 'signup' }) 
             <button
               type="button"
               onClick={() => setIsLogin(true)}
-              className={`flex-1 py-2 text-xs font-bold text-center border-b-2 transition-all ${
+              className={`flex-1 py-2 text-xs font-bold text-center border-b-2 transition-colors ${
                 isLogin
                   ? 'border-indigo-600 text-indigo-600 font-extrabold'
                   : 'border-transparent text-muted-foreground hover:text-foreground'
@@ -85,8 +85,9 @@ export const AuthPages: React.FC<AuthPagesProps> = ({ initialMode = 'signup' }) 
           <form onSubmit={handleSubmit} className="space-y-3.5">
             {!isLogin && (
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-muted-foreground">Full Name</label>
+                <label htmlFor="auth-name" className="text-xs font-semibold text-muted-foreground">Full Name</label>
                 <Input
+                  id="auth-name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g. Aarav Sharma"
@@ -96,8 +97,9 @@ export const AuthPages: React.FC<AuthPagesProps> = ({ initialMode = 'signup' }) 
             )}
 
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-muted-foreground">College Email ID</label>
+              <label htmlFor="auth-email" className="text-xs font-semibold text-muted-foreground">College Email ID</label>
               <Input
+                id="auth-email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -109,8 +111,9 @@ export const AuthPages: React.FC<AuthPagesProps> = ({ initialMode = 'signup' }) 
             {!isLogin && (
               <>
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-muted-foreground">College / University</label>
+                  <label htmlFor="auth-college" className="text-xs font-semibold text-muted-foreground">College / University</label>
                   <Input
+                    id="auth-college"
                     value={college}
                     onChange={(e) => setCollege(e.target.value)}
                     placeholder="e.g. NIT Surathkal / IIT / Delhi University"
@@ -120,8 +123,9 @@ export const AuthPages: React.FC<AuthPagesProps> = ({ initialMode = 'signup' }) 
 
                 <div className="grid grid-cols-2 gap-2">
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-muted-foreground">Degree / Branch</label>
+                    <label htmlFor="auth-degree" className="text-xs font-semibold text-muted-foreground">Degree / Branch</label>
                     <Input
+                      id="auth-degree"
                       value={degree}
                       onChange={(e) => setDegree(e.target.value)}
                       placeholder="B.Tech CSE"
@@ -129,8 +133,9 @@ export const AuthPages: React.FC<AuthPagesProps> = ({ initialMode = 'signup' }) 
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-muted-foreground">Grad Year</label>
+                    <label htmlFor="auth-grad-year" className="text-xs font-semibold text-muted-foreground">Grad Year</label>
                     <select
+                      id="auth-grad-year"
                       value={gradYear}
                       onChange={(e) => setGradYear(parseInt(e.target.value))}
                       className="w-full h-10 rounded-lg border border-input bg-background px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"

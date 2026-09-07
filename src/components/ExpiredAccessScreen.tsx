@@ -88,7 +88,7 @@ export const ExpiredAccessScreen: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setCurrentView('saved')}
-                className="group flex items-center justify-between p-4 rounded-2xl border border-border bg-card hover:bg-accent/60 transition-all text-left"
+                className="group flex items-center justify-between p-4 rounded-2xl border border-border bg-card hover:bg-accent/60 transition-colors text-left"
               >
                 <div className="flex items-center gap-3">
                   <div className="p-2.5 rounded-xl bg-indigo-50 text-indigo-600 dark:bg-indigo-950 dark:text-indigo-400 group-hover:scale-105 transition-transform">
@@ -99,13 +99,13 @@ export const ExpiredAccessScreen: React.FC = () => {
                     <p className="text-xs text-muted-foreground">{savedJobs.length} opportunities saved</p>
                   </div>
                 </div>
-                <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+                <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-transform" />
               </button>
 
               <button
                 type="button"
                 onClick={() => setCurrentView('applications')}
-                className="group flex items-center justify-between p-4 rounded-2xl border border-border bg-card hover:bg-accent/60 transition-all text-left"
+                className="group flex items-center justify-between p-4 rounded-2xl border border-border bg-card hover:bg-accent/60 transition-colors text-left"
               >
                 <div className="flex items-center gap-3">
                   <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400 group-hover:scale-105 transition-transform">
@@ -116,7 +116,7 @@ export const ExpiredAccessScreen: React.FC = () => {
                     <p className="text-xs text-muted-foreground">{applications.length} active applications</p>
                   </div>
                 </div>
-                <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+                <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-transform" />
               </button>
             </div>
           </div>

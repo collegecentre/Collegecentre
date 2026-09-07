@@ -88,7 +88,7 @@ export const PaymentModal: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setSelectedMethod('UPI')}
-                className={`p-2.5 rounded-xl border text-left flex flex-col items-center justify-center gap-1.5 transition-all ${
+                className={`p-2.5 rounded-xl border text-left flex flex-col items-center justify-center gap-1.5 transition-colors ${
                   selectedMethod === 'UPI'
                     ? 'border-indigo-600 bg-indigo-50/50 text-indigo-900 font-semibold shadow-xs dark:bg-indigo-950/60 dark:text-indigo-200 dark:border-indigo-500'
                     : 'border-border hover:bg-accent text-muted-foreground'
@@ -101,7 +101,7 @@ export const PaymentModal: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setSelectedMethod('Card')}
-                className={`p-2.5 rounded-xl border text-left flex flex-col items-center justify-center gap-1.5 transition-all ${
+                className={`p-2.5 rounded-xl border text-left flex flex-col items-center justify-center gap-1.5 transition-colors ${
                   selectedMethod === 'Card'
                     ? 'border-indigo-600 bg-indigo-50/50 text-indigo-900 font-semibold shadow-xs dark:bg-indigo-950/60 dark:text-indigo-200 dark:border-indigo-500'
                     : 'border-border hover:bg-accent text-muted-foreground'
@@ -114,7 +114,7 @@ export const PaymentModal: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setSelectedMethod('NetBanking')}
-                className={`p-2.5 rounded-xl border text-left flex flex-col items-center justify-center gap-1.5 transition-all ${
+                className={`p-2.5 rounded-xl border text-left flex flex-col items-center justify-center gap-1.5 transition-colors ${
                   selectedMethod === 'NetBanking'
                     ? 'border-indigo-600 bg-indigo-50/50 text-indigo-900 font-semibold shadow-xs dark:bg-indigo-950/60 dark:text-indigo-200 dark:border-indigo-500'
                     : 'border-border hover:bg-accent text-muted-foreground'

@@ -75,7 +75,7 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }
                     {job.location} ({job.work_mode})
                   </span>
                   <span>•</span>
-                  <span className="text-emerald-700 font-extrabold dark:text-emerald-400">
+                  <span className="text-emerald-700 font-extrabold tabular-nums dark:text-emerald-400">
                     {job.salary}
                   </span>
                 </div>
@@ -91,6 +91,7 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }
                   : 'border-border hover:bg-accent text-muted-foreground'
               }`}
               title={saved ? 'Remove from Saved' : 'Save Job'}
+              aria-label={saved ? 'Remove job from saved' : 'Save job'}
             >
               <Bookmark className={`w-5 h-5 ${saved ? 'fill-current' : ''}`} />
             </button>

@@ -80,7 +80,7 @@ export const SavedJobsPage: React.FC<SavedJobsPageProps> = ({ onSelectJob }) => 
           <Bookmark className="w-10 h-10 text-muted-foreground mx-auto stroke-[1.5]" />
           <h3 className="text-base font-bold text-foreground">No saved jobs yet</h3>
           <p className="text-xs text-muted-foreground max-w-sm mx-auto">
-            When you browse opportunities, click the bookmark icon on any card to save it permanently for later review.
+            When you browse opportunities, select the bookmark icon on any card to save it permanently for later review.
           </p>
           <Button
             variant="default"
