@@ -1,8 +1,6 @@
 import React from 'react'
 import { useApp } from '@/context/AppContext'
 import { Button } from '@/components/ui/button'
-import { ShinyText } from '@/components/reactbits/ShinyText'
-import { StarBorder } from '@/components/reactbits/StarBorder'
 import {
   Briefcase,
   Clock,
@@ -42,27 +40,27 @@ export const Navigation: React.FC<NavigationProps> = ({ onOpenDemo }) => {
       {/* Top Navigation */}
       <header className="sticky top-0 z-40 w-full border-b border-border/80 bg-background/80 backdrop-blur-xl shadow-xs">
         <div className="container max-w-7xl mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
-          {/* Brand Logo - Semantic Button */}
+          {/* Brand Logo */}
           <button
             type="button"
-            className="flex items-center gap-3 text-left select-none group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-xl p-1 -m-1"
+            className="flex items-center gap-2.5 text-left select-none group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-xl p-1 -m-1"
             onClick={() => setCurrentView('landing')}
             aria-label="CollegeCentre Home"
           >
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-emerald-500 flex items-center justify-center text-white font-black shadow-md shadow-indigo-500/25 group-hover:scale-105 transition-transform">
-              <span className="text-xl tracking-tighter">CC</span>
+            <div className="h-9 w-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black text-sm tracking-tight shadow-xs">
+              CC
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-extrabold text-lg tracking-tight text-foreground">
+                <span className="font-extrabold text-base tracking-tight text-foreground">
                   CollegeCentre
                 </span>
-                <span className="text-[10px] uppercase font-bold tracking-widest px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300 border border-indigo-200/50 dark:border-indigo-800/60">
-                  Sprint
+                <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.2 rounded bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-border">
+                  Freshers
                 </span>
               </div>
-              <p className="text-[11px] text-muted-foreground hidden sm:block">
-                <ShinyText text="₹199 / 24-Hour Job Hunt Pass" speed={5} />
+              <p className="text-[11px] text-muted-foreground hidden sm:block font-medium">
+                ₹199 / 24-Hour Job Hunt Pass
               </p>
             </div>
           </button>
@@ -190,16 +188,15 @@ export const Navigation: React.FC<NavigationProps> = ({ onOpenDemo }) => {
                 </span>
               </button>
             ) : (
-              <StarBorder
+              <Button
+                size="sm"
                 onClick={() => setIsPaymentModalOpen(true)}
-                className="text-xs"
-                color="#6366f1"
-                speed="5s"
+                className="h-9 px-3.5 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs gap-1.5"
                 aria-label="Unlock 24-hour job hunt pass for ₹199"
               >
                 <Zap className="w-3.5 h-3.5 fill-amber-300 text-amber-300" aria-hidden="true" />
-                <span className="font-bold text-xs">Unlock Pass ₹199</span>
-              </StarBorder>
+                <span>Unlock Pass · ₹199</span>
+              </Button>
             )}
           </div>
         </div>

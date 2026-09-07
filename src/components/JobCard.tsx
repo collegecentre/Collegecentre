@@ -1,6 +1,5 @@
 import React from 'react'
 import { JobWithMatch, useApp } from '@/context/AppContext'
-import { SpotlightCard } from '@/components/reactbits/SpotlightCard'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -42,10 +41,9 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSelect }) => {
     job.match.score >= 85 ? 'matchHigh' : job.match.score >= 70 ? 'matchMid' : 'matchNormal'
 
   return (
-    <SpotlightCard
+    <div
       onClick={() => onSelect(job)}
-      spotlightColor={job.match.score >= 85 ? 'rgba(16, 185, 129, 0.14)' : 'rgba(99, 102, 241, 0.14)'}
-      className="group cursor-pointer hover:shadow-lg transition-shadow duration-300"
+      className="group cursor-pointer rounded-2xl border border-border/80 bg-card hover:border-indigo-400/60 dark:hover:border-indigo-500/60 hover:shadow-md transition-[border-color,box-shadow] duration-200"
     >
       <div className="p-5 sm:p-6 space-y-4">
         {/* Header: Company, Title & Save */}
@@ -164,6 +162,6 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSelect }) => {
           </div>
         </div>
       </div>
-    </SpotlightCard>
+    </div>
   )
 }

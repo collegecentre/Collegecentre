@@ -2,10 +2,6 @@ import React from 'react'
 import { useApp } from '@/context/AppContext'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { SpotlightCard } from '@/components/reactbits/SpotlightCard'
-import { ShinyText } from '@/components/reactbits/ShinyText'
-import { MovingBorder } from '@/components/aceternity/MovingBorder'
-import { BackgroundBeams } from '@/components/aceternity/BackgroundBeams'
 import {
   Zap,
   CheckCircle2,
@@ -16,6 +12,7 @@ import {
   Sparkles,
   Lock,
   Unlock,
+  Check,
 } from 'lucide-react'
 
 export const PricingPage: React.FC = () => {
@@ -32,7 +29,7 @@ export const PricingPage: React.FC = () => {
     },
     {
       q: 'Can I update application statuses (e.g. Applied → Shortlisted) after my pass expires?',
-      a: 'Yes, absolutely! You can log back in days, weeks, or months later to update stages, add notes, and track your interview progress completely free.',
+      a: 'Yes, absolutely. You can log back in days, weeks, or months later to update stages, add notes, and track your interview progress completely free without buying another pass.',
     },
     {
       q: 'When do I need to buy another pass?',
@@ -45,28 +42,25 @@ export const PricingPage: React.FC = () => {
   ]
 
   return (
-    <div className="relative max-w-4xl mx-auto px-4 py-8 md:py-12 space-y-12 overflow-hidden">
-      {/* Background Ambient Beams */}
-      <BackgroundBeams />
-
+    <div className="max-w-4xl mx-auto px-4 py-8 md:py-12 space-y-12">
       {/* Header */}
-      <div className="relative z-10 text-center space-y-3">
-        <Badge variant="matchMid" className="px-4 py-1 text-xs font-bold uppercase tracking-wider">
-          <ShinyText text="Transparent Student Pricing" speed={4} />
+      <div className="text-center space-y-3">
+        <Badge variant="outline" className="px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800">
+          Transparent Pricing
         </Badge>
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-foreground tracking-tight">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight">
           ₹199 Per 24-Hour Job Hunt Sprint
         </h1>
-        <p className="text-base sm:text-lg text-muted-foreground max-w-xl mx-auto">
+        <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 max-w-xl mx-auto">
           No predatory recurring subscriptions. Pay for intense discovery sprints when you need them. Keep your tracker forever.
         </p>
       </div>
 
-      {/* Pricing Card with Moving Border */}
-      <div className="relative z-10 max-w-md mx-auto">
-        <div className="border-2 border-indigo-500/80 shadow-2xl overflow-hidden rounded-3xl bg-card">
-          <div className="bg-gradient-to-r from-indigo-600 to-indigo-700 text-white p-7 text-center space-y-2">
-            <span className="text-xs uppercase font-extrabold tracking-widest bg-white/20 px-3.5 py-1 rounded-full">
+      {/* Pricing Card */}
+      <div className="max-w-md mx-auto">
+        <div className="border border-slate-300 dark:border-slate-700 shadow-lg overflow-hidden rounded-3xl bg-card">
+          <div className="bg-indigo-600 text-white p-7 text-center space-y-2">
+            <span className="text-xs uppercase font-extrabold tracking-wider bg-white/20 px-3.5 py-1 rounded-full">
               Full Discovery Pass
             </span>
             <div className="flex items-baseline justify-center gap-1 pt-2">
@@ -81,46 +75,42 @@ export const PricingPage: React.FC = () => {
           <div className="p-6 sm:p-7 space-y-6">
             <div className="space-y-3 text-sm">
               <div className="flex items-start gap-3">
-                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-                <span className="text-foreground text-xs sm:text-sm">
+                <Check className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <span className="text-slate-800 dark:text-slate-200 text-xs sm:text-sm">
                   <strong>24 Hours of Unlimited Discovery:</strong> Browse all fresher jobs & internships.
                 </span>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-                <span className="text-foreground text-xs sm:text-sm">
+                <Check className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <span className="text-slate-800 dark:text-slate-200 text-xs sm:text-sm">
                   <strong>AI Match Algorithm:</strong> Tailored percentage breakdown against your college profile.
                 </span>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-                <span className="text-foreground text-xs sm:text-sm">
+                <Check className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <span className="text-slate-800 dark:text-slate-200 text-xs sm:text-sm">
                   <strong>Direct Employer Applications:</strong> Verified official links and career portals.
                 </span>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-                <span className="text-foreground text-xs sm:text-sm">
+                <Check className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <span className="text-slate-800 dark:text-slate-200 text-xs sm:text-sm">
                   <strong>Permanent Data Guarantee:</strong> Saved jobs and application tracker stay permanent.
                 </span>
               </div>
             </div>
 
-            <div className="flex justify-center">
-              <MovingBorder
-                onClick={() => (isPassActive ? setCurrentView('dashboard') : setIsPaymentModalOpen(true))}
-                className="w-full py-3"
-                duration={3000}
-              >
-                <div className="flex items-center justify-center gap-2 text-base font-bold w-full">
-                  <Zap className="w-4 h-4 fill-amber-300 text-amber-300" />
-                  <span>{isPassActive ? 'Go to Active Dashboard' : 'Unlock Pass for ₹199'}</span>
-                  <ArrowRight className="w-4 h-4" />
-                </div>
-              </MovingBorder>
-            </div>
+            <Button
+              size="lg"
+              className="w-full h-11 text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs gap-2"
+              onClick={() => (isPassActive ? setCurrentView('dashboard') : setIsPaymentModalOpen(true))}
+            >
+              <Zap className="w-4 h-4 fill-amber-300 text-amber-300" />
+              <span>{isPassActive ? 'Go to Active Dashboard' : 'Unlock Pass for ₹199'}</span>
+              <ArrowRight className="w-4 h-4" />
+            </Button>
 
-            <div className="p-3 rounded-xl bg-muted/50 border text-xs text-muted-foreground flex items-center gap-2">
+            <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
               <span>No auto-debit · No unexpected renewals · 100% Student friendly</span>
             </div>
@@ -129,19 +119,19 @@ export const PricingPage: React.FC = () => {
       </div>
 
       {/* Comparison: Active vs Expired Pass Breakdown */}
-      <div className="relative z-10 rounded-3xl border bg-card p-6 sm:p-8 space-y-6 shadow-sm">
+      <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-card p-6 sm:p-8 space-y-6 shadow-xs">
         <div className="text-center space-y-1">
-          <h2 className="text-xl sm:text-2xl font-black text-foreground">
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
             What Happens During vs After Your 24-Hour Pass
           </h2>
-          <p className="text-xs sm:text-sm text-muted-foreground">
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
             Complete transparency on our access boundaries
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <SpotlightCard className="p-5 border-emerald-300/80 bg-emerald-50/40 dark:bg-emerald-950/20 dark:border-emerald-800 space-y-3">
-            <div className="flex items-center gap-2 text-emerald-800 dark:text-emerald-300 font-extrabold text-sm">
+          <div className="p-5 rounded-2xl border border-emerald-300 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/20 space-y-3">
+            <div className="flex items-center gap-2 text-emerald-800 dark:text-emerald-300 font-bold text-sm">
               <Unlock className="w-4 h-4" />
               <span>DURING 24-HOUR PASS (ACTIVE)</span>
             </div>
@@ -153,10 +143,10 @@ export const PricingPage: React.FC = () => {
               <li className="flex items-center gap-2">✓ Save new job opportunities</li>
               <li className="flex items-center gap-2">✓ Apply to direct employer portals</li>
             </ul>
-          </SpotlightCard>
+          </div>
 
-          <SpotlightCard className="p-5 border-amber-300/80 bg-amber-50/40 dark:bg-amber-950/20 dark:border-amber-800 space-y-3">
-            <div className="flex items-center gap-2 text-amber-800 dark:text-amber-300 font-extrabold text-sm">
+          <div className="p-5 rounded-2xl border border-amber-300 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-950/20 space-y-3">
+            <div className="flex items-center gap-2 text-amber-800 dark:text-amber-300 font-bold text-sm">
               <Lock className="w-4 h-4" />
               <span>AFTER 24 HOURS (EXPIRED)</span>
             </div>
@@ -168,23 +158,23 @@ export const PricingPage: React.FC = () => {
               <li className="flex items-center gap-2 text-emerald-700 dark:text-emerald-300 font-bold">✓ Add notes, follow-up dates & reminders</li>
               <li className="flex items-center gap-2 text-emerald-700 dark:text-emerald-300 font-bold">✓ Student profile & skills intact</li>
             </ul>
-          </SpotlightCard>
+          </div>
         </div>
       </div>
 
       {/* FAQs */}
-      <div className="relative z-10 space-y-4">
+      <div className="space-y-4">
         <div className="flex items-center gap-2">
           <HelpCircle className="w-5 h-5 text-indigo-600" />
-          <h2 className="text-xl font-black text-foreground">Frequently Asked Questions</h2>
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Frequently Asked Questions</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {faqs.map((faq, index) => (
-            <SpotlightCard key={index} className="p-4 sm:p-5 space-y-1.5 shadow-xs">
-              <h3 className="text-sm font-bold text-foreground">{faq.q}</h3>
-              <p className="text-xs text-muted-foreground leading-relaxed">{faq.a}</p>
-            </SpotlightCard>
+            <div key={index} className="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-card space-y-1.5 shadow-2xs">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">{faq.q}</h3>
+              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{faq.a}</p>
+            </div>
           ))}
         </div>
       </div>

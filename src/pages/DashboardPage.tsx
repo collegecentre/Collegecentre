@@ -1,7 +1,6 @@
 import React from 'react'
 import { useApp, JobWithMatch } from '@/context/AppContext'
 import { JobCard } from '@/components/JobCard'
-import { MovingBorder } from '@/components/aceternity/MovingBorder'
 import { MetricStatCard } from '@/components/enterprise/MetricStatCard'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -131,17 +130,15 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onSelectJob }) => 
                 <ArrowRight className="w-4 h-4" />
               </Button>
             ) : (
-              <MovingBorder
+              <Button
+                size="sm"
                 onClick={() => setIsPaymentModalOpen(true)}
-                duration={3000}
-                className="px-4 py-2"
+                className="h-10 px-4 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs gap-1.5"
               >
-                <div className="flex items-center gap-2 text-xs font-bold">
-                  <Zap className="w-4 h-4 fill-amber-300 text-amber-300" />
-                  <span>Unlock 24 Hours for ₹199</span>
-                  <ArrowRight className="w-4 h-4" />
-                </div>
-              </MovingBorder>
+                <Zap className="w-4 h-4 fill-amber-300 text-amber-300" />
+                <span>Unlock 24 Hours for ₹199</span>
+                <ArrowRight className="w-4 h-4" />
+              </Button>
             )}
           </div>
         </div>
