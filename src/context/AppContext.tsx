@@ -63,7 +63,69 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [applications, setApplications] = useState<Application[]>(() => db.getApplications())
   const [payments, setPayments] = useState<Payment[]>(() => db.getPayments())
   const [accessPeriod, setAccessPeriod] = useState<AccessPeriod | null>(() => db.getAccessPeriod())
-  const [currentView, setCurrentView] = useState<string>('landing')
+  const getInitialView = (): string => {
+    if (typeof window !== 'undefined' && window.location.hash) {
+      const route = window.location.hash.replace(/^#\/?/, '').toLowerCase()
+      const validViews = [
+        'landing',
+        'pricing',
+        'dashboard',
+        'jobs',
+        'saved',
+        'applications',
+        'profile',
+        'account',
+        'login',
+        'signup',
+      ]
+      if (validViews.includes(route)) return route
+    }
+    return 'landing'
+  }
+
+  const [currentView, setCurrentViewState] = useState<string>(getInitialView)
+
+  const setCurrentView = useCallback((view: string) => {
+    setCurrentViewState(view)
+    if (typeof window !== 'undefined') {
+      const targetHash = `#/${view}`
+      if (window.location.hash !== targetHash) {
+        window.location.hash = targetHash
+      }
+    }
+  }, [])
+
+  // Sync with browser back/forward and external hash navigation
+  useEffect(() => {
+    const handleHashChange = () => {
+      const route = window.location.hash.replace(/^#\/?/, '').toLowerCase()
+      const validViews = [
+        'landing',
+        'pricing',
+        'dashboard',
+        'jobs',
+        'saved',
+        'applications',
+        'profile',
+        'account',
+        'login',
+        'signup',
+      ]
+      if (validViews.includes(route)) {
+        setCurrentViewState(route)
+      } else if (!window.location.hash || window.location.hash === '#' || window.location.hash === '#/') {
+        setCurrentViewState('landing')
+      }
+    }
+
+    if (!window.location.hash) {
+      window.location.hash = '#/landing'
+    }
+
+    window.addEventListener('hashchange', handleHashChange)
+    return () => window.removeEventListener('hashchange', handleHashChange)
+  }, [])
+
   const [selectedJob, setSelectedJob] = useState<JobWithMatch | null>(null)
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState<boolean>(false)
 
