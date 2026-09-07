@@ -20,7 +20,6 @@ import {
   ContactPage,
 } from '@/pages/LegalPages'
 import { BackgroundGrid } from '@/components/reactbits/BackgroundGrid'
-import { ShieldCheck, Heart } from 'lucide-react'
 
 const AppContent: React.FC = () => {
   const { currentView, setCurrentView, selectedJob, setSelectedJob } = useApp()

@@ -1,6 +1,6 @@
-﻿import React from 'react'
+import React from 'react'
 import { useApp } from '@/context/AppContext'
-import { ShieldCheck, Mail, ArrowLeft, Clock, FileText } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 
 export const TermsPage: React.FC = () => {
   const { setCurrentView } = useApp()

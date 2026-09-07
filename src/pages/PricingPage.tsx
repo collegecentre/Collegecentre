@@ -2,15 +2,10 @@ import React from 'react'
 import { useApp } from '@/context/AppContext'
 import {
   Zap,
-  CheckCircle2,
-  Clock,
   ShieldCheck,
-  HelpCircle,
-  ArrowRight,
   ArrowUpRight,
   Lock,
   Unlock,
-  Check,
 } from 'lucide-react'
 
 export const PricingPage: React.FC = () => {

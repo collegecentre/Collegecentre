@@ -3,7 +3,6 @@ import { useApp } from '@/context/AppContext'
 import { StudentProfile, WorkMode } from '@/types'
 import { Input } from '@/components/ui/input'
 import {
-  Plus,
   X,
   Save,
   ShieldCheck,

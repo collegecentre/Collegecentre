@@ -2,7 +2,6 @@ import React from 'react'
 import { JobWithMatch, useApp } from '@/context/AppContext'
 import {
   MapPin,
-  ExternalLink,
   Bookmark,
   Calendar,
   ArrowUpRight,

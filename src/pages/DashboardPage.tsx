@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useMemo } from 'react'
 import { useApp, JobWithMatch } from '@/context/AppContext'
 import { JobCard } from '@/components/JobCard'
 import {
@@ -14,7 +14,6 @@ import {
   CheckCircle2,
   Lock,
   User,
-  ShieldCheck,
 } from 'lucide-react'
 
 interface DashboardPageProps {
@@ -33,13 +32,16 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onSelectJob }) => 
     setCurrentView,
   } = useApp()
 
+  const [mountTime] = useState(() => Date.now())
   const totalMatchedJobs = jobs.length
-  const highMatchJobs = jobs.filter((j) => j.match.score >= 85).length
-  const remoteJobs = jobs.filter((j) => j.work_mode === 'Remote').length
-  const jobsPostedToday = jobs.filter((j) => {
-    const postedTime = new Date(j.posted_at).getTime()
-    return Date.now() - postedTime < 24 * 3600 * 1000
-  }).length
+  const highMatchJobs = useMemo(() => jobs.filter((j) => j.match.score >= 85).length, [jobs])
+  const remoteJobs = useMemo(() => jobs.filter((j) => j.work_mode === 'Remote').length, [jobs])
+  const jobsPostedToday = useMemo(() => {
+    return jobs.filter((j) => {
+      const postedTime = new Date(j.posted_at).getTime()
+      return mountTime - postedTime < 24 * 3600 * 1000
+    }).length
+  }, [jobs, mountTime])
 
   const recommendedJobs = jobs.slice(0, 6)
 

@@ -332,7 +332,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       // Switch view to dashboard or job search
       setCurrentView('dashboard')
     },
-    [student.id, showToast]
+    [student.id, showToast, setCurrentView]
   )
 
   const simulatePassExpiry = useCallback(() => {

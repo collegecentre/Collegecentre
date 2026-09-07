@@ -3,15 +3,8 @@ import { useApp } from '@/context/AppContext'
 import { JobCard } from '@/components/JobCard'
 import {
   Zap,
-  ShieldCheck,
-  CheckCircle2,
-  Clock,
   ArrowRight,
   ArrowUpRight,
-  Check,
-  Layers,
-  Search,
-  ExternalLink,
 } from 'lucide-react'
 
 export const LandingPage: React.FC = () => {

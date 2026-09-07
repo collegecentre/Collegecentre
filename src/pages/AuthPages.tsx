@@ -31,7 +31,7 @@ export const AuthPages: React.FC<AuthPagesProps> = ({ initialMode = 'signup' }) 
       if (error) {
         showToast(error.message, 'warning')
       }
-    } catch (err: any) {
+    } catch {
       showToast('Google authentication error', 'warning')
     } finally {
       setIsAuthenticating(false)

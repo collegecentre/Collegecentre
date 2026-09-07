@@ -3,15 +3,10 @@ import { useApp, JobWithMatch } from '@/context/AppContext'
 import { JobCard } from '@/components/JobCard'
 import { ExpiredAccessScreen } from '@/components/ExpiredAccessScreen'
 import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import {
   Search,
-  SlidersHorizontal,
-  MapPin,
   Briefcase,
   X,
-  Sparkles,
   Filter,
 } from 'lucide-react'
 
@@ -21,11 +16,6 @@ interface JobSearchPageProps {
 
 export const JobSearchPage: React.FC<JobSearchPageProps> = ({ onSelectJob }) => {
   const { jobs, isPassActive } = useApp()
-
-  // If pass is not active or expired, enforce access restriction
-  if (!isPassActive) {
-    return <ExpiredAccessScreen />
-  }
 
   // Filter States
   const [keyword, setKeyword] = useState<string>('')
@@ -115,6 +105,11 @@ export const JobSearchPage: React.FC<JobSearchPageProps> = ({ onSelectJob }) => 
     selectedWorkMode !== 'All' ||
     selectedCategory !== 'All' ||
     fresherOnly
+
+  // If pass is not active or expired, enforce access restriction
+  if (!isPassActive) {
+    return <ExpiredAccessScreen />
+  }
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-6 md:py-8 space-y-6">

@@ -1,16 +1,13 @@
 import React from 'react'
 import { useApp } from '@/context/AppContext'
-import { Button } from '@/components/ui/button'
 import {
   Briefcase,
-  Clock,
   Compass,
   Bookmark,
   CheckCircle2,
   User,
   Zap,
   SlidersHorizontal,
-  ArrowUpRight,
   Sun,
   Moon,
 } from 'lucide-react'
