@@ -9,7 +9,8 @@ import {
   SavedJob,
   StudentProfile,
 } from '@/types'
-import { db } from '@/services/db'
+import { db, INITIAL_STUDENT } from '@/services/db'
+import { supabase } from '@/services/supabase'
 import { calculateJobMatch } from '@/services/matching'
 import confetti from 'canvas-confetti'
 
@@ -24,6 +25,7 @@ export interface RemainingTime {
   seconds: number
   formatted: string
   isExpired: boolean
+  isInactive?: boolean
 }
 
 export type ThemeMode = 'light' | 'dark' | 'system'
@@ -53,6 +55,7 @@ interface AppContextType {
   simulatePassExpiry: () => void
   simulateRemainingTime: (minutes: number) => void
   resetData: () => void
+  signOut: () => Promise<void>
   showToast: (message: string, type?: 'success' | 'info' | 'warning') => void
   theme: ThemeMode
   resolvedTheme: 'light' | 'dark'
@@ -79,10 +82,43 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   }, [])
 
+  // Supabase Auth session synchronization
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }: { data: any }) => {
+      const session = data?.session
+      if (session?.user) {
+        setStudent((prev) => ({
+          ...prev,
+          id: session.user.id,
+          email: session.user.email || prev.email,
+          name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || prev.name,
+        }))
+      }
+    })
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
+      if (session?.user) {
+        setStudent((prev) => ({
+          ...prev,
+          id: session.user.id,
+          email: session.user.email || prev.email,
+          name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || prev.name,
+        }))
+      }
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
+
   const [savedJobs, setSavedJobs] = useState<SavedJob[]>(() => db.getSavedJobs())
   const [applications, setApplications] = useState<Application[]>(() => db.getApplications())
   const [payments, setPayments] = useState<Payment[]>(() => db.getPayments())
   const [accessPeriod, setAccessPeriod] = useState<AccessPeriod | null>(() => db.getAccessPeriod())
+  const [selectedJob, setSelectedJob] = useState<JobWithMatch | null>(null)
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState<boolean>(false)
+
   const getInitialView = (): string => {
     if (typeof window !== 'undefined' && window.location.hash) {
       const route = window.location.hash.replace(/^#\/?/, '').toLowerCase()
@@ -111,6 +147,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const setCurrentView = useCallback((view: string) => {
     setCurrentViewState(view)
+    setIsPaymentModalOpen(false) // Automatically close checkout modal on navigation
     if (typeof window !== 'undefined') {
       const targetHash = `#/${view}`
       if (window.location.hash !== targetHash) {
@@ -139,10 +176,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         'refunds',
         'contact',
       ]
+      setIsPaymentModalOpen(false)
       if (validViews.includes(route)) {
         setCurrentViewState(route)
-      } else if (!window.location.hash || window.location.hash === '#' || window.location.hash === '#/') {
+      } else {
         setCurrentViewState('landing')
+        if (window.location.hash !== '#/landing') {
+          window.location.hash = '#/landing'
+        }
       }
     }
 
@@ -153,9 +194,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     window.addEventListener('hashchange', handleHashChange)
     return () => window.removeEventListener('hashchange', handleHashChange)
   }, [])
-
-  const [selectedJob, setSelectedJob] = useState<JobWithMatch | null>(null)
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState<boolean>(false)
 
   // Theme state & dark mode persistence
   const [theme, setThemeState] = useState<ThemeMode>(() => {
@@ -222,20 +260,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, [resolvedTheme, setTheme, showToast])
 
   // Calculate live countdown timer
-  const [remainingTime, setRemainingTime] = useState<RemainingTime>(() => {
-    return calculateTimeRemaining(accessPeriod)
-  })
-
   function calculateTimeRemaining(period: AccessPeriod | null): RemainingTime {
-    if (!period || period.status !== 'active') {
-      return { totalSeconds: 0, hours: 0, minutes: 0, seconds: 0, formatted: 'Expired', isExpired: true }
+    if (!period) {
+      return { totalSeconds: 0, hours: 0, minutes: 0, seconds: 0, formatted: 'Inactive', isExpired: false, isInactive: true }
+    }
+    if (period.status !== 'active') {
+      return { totalSeconds: 0, hours: 0, minutes: 0, seconds: 0, formatted: 'Expired', isExpired: true, isInactive: false }
     }
     const expiresAt = new Date(period.expires_at).getTime()
     const now = Date.now()
     const diffMs = expiresAt - now
 
     if (diffMs <= 0) {
-      return { totalSeconds: 0, hours: 0, minutes: 0, seconds: 0, formatted: 'Expired', isExpired: true }
+      return { totalSeconds: 0, hours: 0, minutes: 0, seconds: 0, formatted: 'Expired', isExpired: true, isInactive: false }
     }
 
     const totalSeconds = Math.floor(diffMs / 1000)
@@ -244,8 +281,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const seconds = totalSeconds % 60
 
     const formatted = `${hours}h ${minutes}m ${seconds}s remaining`
-    return { totalSeconds, hours, minutes, seconds, formatted, isExpired: false }
+    return { totalSeconds, hours, minutes, seconds, formatted, isExpired: false, isInactive: false }
   }
+
+  const [remainingTime, setRemainingTime] = useState<RemainingTime>(() => {
+    return calculateTimeRemaining(accessPeriod)
+  })
 
   // Interval timer tick every second
   useEffect(() => {
@@ -362,8 +403,33 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setApplications(db.getApplications())
     setPayments(db.getPayments())
     setAccessPeriod(db.getAccessPeriod())
-    showToast('Data reset to default demo values.', 'info')
+    showToast('Data reset to default values.', 'info')
   }, [showToast])
+
+  const signOut = useCallback(async () => {
+    try {
+      await supabase.auth.signOut()
+    } catch {
+      // ignore
+    }
+    db.resetAllData()
+    setStudent(INITIAL_STUDENT)
+    setSavedJobs([])
+    setApplications([])
+    setPayments([])
+    setAccessPeriod(null)
+    setRemainingTime({
+      totalSeconds: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+      formatted: 'Inactive',
+      isExpired: false,
+      isInactive: true,
+    })
+    showToast('Signed out of session.', 'info')
+    setCurrentView('landing')
+  }, [showToast, setCurrentView])
 
   return (
     <AppContext.Provider
@@ -392,6 +458,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         simulatePassExpiry,
         simulateRemainingTime,
         resetData,
+        signOut,
         showToast,
         theme,
         resolvedTheme,
@@ -403,14 +470,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
       {/* Floating Toast Notification */}
       {toastInfo && (
-        <div className="fixed bottom-20 md:bottom-6 right-4 z-50 animate-in slide-in-from-bottom-5 duration-200 max-w-sm">
+        <div className="fixed bottom-16 sm:bottom-6 right-4 left-4 sm:left-auto z-50 animate-in slide-in-from-bottom-5 duration-200 max-w-sm sm:max-w-md mx-auto sm:mx-0">
           <div
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg border text-sm font-medium ${
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg shadow-xl border text-xs sm:text-sm font-mono font-medium ${
               toastInfo.type === 'success'
-                ? 'bg-emerald-900/90 text-white border-emerald-700'
+                ? 'bg-emerald-950 text-emerald-100 border-emerald-600'
                 : toastInfo.type === 'warning'
-                ? 'bg-amber-900/90 text-white border-amber-700'
-                : 'bg-slate-900/90 text-white border-slate-700'
+                ? 'bg-amber-950 text-amber-100 border-amber-600'
+                : 'bg-slate-950 text-slate-100 border-slate-700'
             }`}
           >
             <span>{toastInfo.message}</span>

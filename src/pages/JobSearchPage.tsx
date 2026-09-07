@@ -36,13 +36,12 @@ export const JobSearchPage: React.FC<JobSearchPageProps> = ({ onSelectJob }) => 
   const locations = useMemo(() => {
     const set = new Set<string>()
     jobs.forEach((j) => {
-      if (j.location.includes('Bengaluru')) set.add('Bengaluru')
-      if (j.location.includes('Hyderabad')) set.add('Hyderabad')
-      if (j.location.includes('Pune')) set.add('Pune')
-      if (j.location.includes('Remote')) set.add('Remote')
-      if (j.location.includes('Chennai')) set.add('Chennai')
+      const parts = j.location.split(/[/,•]/).map((p) => p.trim())
+      parts.forEach((p) => {
+        if (p) set.add(p)
+      })
     })
-    return ['All', ...Array.from(set)]
+    return ['All', ...Array.from(set).sort()]
   }, [jobs])
 
   // Filtered and sorted jobs
@@ -56,7 +55,8 @@ export const JobSearchPage: React.FC<JobSearchPageProps> = ({ onSelectJob }) => 
           const matchesCompany = job.company.toLowerCase().includes(q)
           const matchesSkills = job.skills.some((s) => s.toLowerCase().includes(q))
           const matchesCategory = job.category.toLowerCase().includes(q)
-          if (!matchesTitle && !matchesCompany && !matchesSkills && !matchesCategory) return false
+          const matchesDescription = job.description?.toLowerCase().includes(q)
+          if (!matchesTitle && !matchesCompany && !matchesSkills && !matchesCategory && !matchesDescription) return false
         }
 
         // Location filter

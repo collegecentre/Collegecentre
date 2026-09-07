@@ -56,10 +56,10 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onSelectJob }) => 
             <span className="font-mono text-xs text-muted-foreground">{student.graduation_year} BATCH</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight mt-1">
-            Welcome back, {student.name.split(' ')[0]}
+            {student.name ? `Welcome back, ${student.name.split(' ')[0]}` : 'Welcome to your Sprint Desk'}
           </h1>
           <p className="font-mono text-xs text-muted-foreground mt-0.5">
-            {student.degree} · {student.college}
+            {student.degree} {student.college ? `· ${student.college}` : '· College Placement & Fresher Matching'}
           </p>
         </div>
 
@@ -83,25 +83,27 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onSelectJob }) => 
                 className={`font-bold px-1.5 py-0.2 rounded-xs ${
                   isPassActive
                     ? 'bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-300'
+                    : remainingTime.isInactive
+                    ? 'bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-slate-200'
                     : 'bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300'
                 }`}
               >
-                {isPassActive ? '24-HOUR PASS ACTIVE' : 'PASS EXPIRED / SEARCH LOCKED'}
+                {isPassActive
+                  ? '24-HOUR PASS ACTIVE'
+                  : remainingTime.isInactive
+                  ? 'PASS INACTIVE / SPRINT READY'
+                  : 'PASS EXPIRED / SEARCH LOCKED'}
               </span>
             </div>
 
             <div className="flex items-baseline gap-2.5 mt-2">
-              <Clock className={`w-4 h-4 shrink-0 ${isPassActive ? 'text-emerald-600' : 'text-amber-600'}`} />
+              <Clock className={`w-4 h-4 shrink-0 ${isPassActive ? 'text-emerald-600' : 'text-muted-foreground'}`} />
               <div className="text-xl sm:text-2xl font-mono font-bold tracking-tight tabular-nums text-foreground">
-                {isPassActive ? (
-                  <span>
-                    ⏱ {remainingTime.hours}H {remainingTime.minutes}M {remainingTime.seconds}S REMAINING
-                  </span>
-                ) : (
-                  <span className="text-base text-muted-foreground font-medium">
-                    New job search is locked. Saved jobs & tracker remain permanent.
-                  </span>
-                )}
+                {isPassActive
+                  ? `${remainingTime.hours}h ${remainingTime.minutes}m ${remainingTime.seconds}s remaining`
+                  : remainingTime.isInactive
+                  ? 'Sprint Pass Not Activated'
+                  : 'Sprint Window Closed (Preserved Forever)'}
               </div>
             </div>
           </div>

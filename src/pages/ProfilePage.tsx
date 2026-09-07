@@ -541,7 +541,7 @@ export const ProfilePage: React.FC = () => {
               COMMIT CANDIDATE PROFILE CHANGES
             </div>
             <p className="text-[11px] text-muted-foreground">
-              Saving recalculates match scores across all active 150+ fresher openings immediately.
+              Saving recalculates match scores across all active curated fresher openings immediately.
             </p>
           </div>
 

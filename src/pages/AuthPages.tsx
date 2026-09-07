@@ -9,7 +9,7 @@ interface AuthPagesProps {
 }
 
 export const AuthPages: React.FC<AuthPagesProps> = ({ initialMode = 'signup' }) => {
-  const { student, updateStudent, setCurrentView, setIsPaymentModalOpen, showToast } = useApp()
+  const { student, updateStudent, setCurrentView, showToast } = useApp()
   const [isLogin, setIsLogin] = useState<boolean>(initialMode === 'login')
 
   const [name, setName] = useState<string>(student.name)
@@ -42,15 +42,15 @@ export const AuthPages: React.FC<AuthPagesProps> = ({ initialMode = 'signup' }) 
     e.preventDefault()
     updateStudent({
       ...student,
-      name,
-      email,
-      college,
-      degree,
+      name: name.trim() || student.name || 'Fresher Student',
+      email: email.trim() || student.email,
+      college: college.trim() || student.college,
+      degree: degree.trim() || student.degree,
       graduation_year: gradYear,
     })
 
+    showToast(isLogin ? 'Logged into student profile!' : 'Account registered successfully!', 'success')
     setCurrentView('dashboard')
-    setIsPaymentModalOpen(true)
   }
 
   return (

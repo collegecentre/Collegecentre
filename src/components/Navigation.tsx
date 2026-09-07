@@ -18,6 +18,7 @@ interface NavigationProps {
 
 export const Navigation: React.FC<NavigationProps> = ({ onOpenDemo }) => {
   const {
+    student,
     currentView,
     setCurrentView,
     isPassActive,
@@ -40,7 +41,7 @@ export const Navigation: React.FC<NavigationProps> = ({ onOpenDemo }) => {
   ]
 
   const mobileNavItems = [
-    { id: 'dashboard', label: 'Home', icon: Compass },
+    { id: 'landing', label: 'Overview', icon: Compass },
     { id: 'jobs', label: 'Jobs', icon: Briefcase },
     { id: 'saved', label: 'Saved', icon: Bookmark, badge: savedJobs.length },
     { id: 'applications', label: 'Tracker', icon: CheckCircle2, badge: applications.length },
@@ -100,6 +101,25 @@ export const Navigation: React.FC<NavigationProps> = ({ onOpenDemo }) => {
 
           {/* Right Action Bar */}
           <div className="flex items-center gap-2">
+            {/* Sign In / Profile Quick Link */}
+            {student.name ? (
+              <button
+                type="button"
+                onClick={() => setCurrentView('profile')}
+                className="font-mono text-[11px] text-muted-foreground hover:text-foreground hidden sm:flex items-center gap-1 px-2 py-1 border border-black/10 dark:border-white/15 rounded-sm"
+              >
+                <span>[{student.name.split(' ')[0].toUpperCase()}]</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setCurrentView('login')}
+                className="font-mono text-[11px] text-muted-foreground hover:text-foreground hidden sm:flex items-center gap-1 px-2 py-1"
+              >
+                <span>[SIGN IN]</span>
+              </button>
+            )}
+
             {/* Dark / Light Mode Toggle */}
             <button
               type="button"
@@ -121,16 +141,18 @@ export const Navigation: React.FC<NavigationProps> = ({ onOpenDemo }) => {
               )}
             </button>
 
-            {/* Demo Pass Simulator trigger */}
-            <button
-              type="button"
-              onClick={onOpenDemo}
-              className="font-mono text-[10px] uppercase tracking-wider px-2 py-1 rounded-sm border border-dashed border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-black dark:hover:border-white transition-colors flex items-center gap-1"
-              title="Test pass timer and expiration simulator"
-            >
-              <SlidersHorizontal className="w-3 h-3" />
-              <span className="hidden sm:inline">SIMULATOR</span>
-            </button>
+            {/* Demo Pass Simulator trigger - DEV ONLY */}
+            {import.meta.env.DEV && (
+              <button
+                type="button"
+                onClick={onOpenDemo}
+                className="font-mono text-[10px] uppercase tracking-wider px-2 py-1 rounded-sm border border-dashed border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-black dark:hover:border-white transition-colors flex items-center gap-1"
+                title="Test pass timer and expiration simulator (Dev only)"
+              >
+                <SlidersHorizontal className="w-3 h-3" />
+                <span className="hidden sm:inline">SIMULATOR</span>
+              </button>
+            )}
 
             {/* Pass Status / Unlock Button */}
             {isPassActive ? (

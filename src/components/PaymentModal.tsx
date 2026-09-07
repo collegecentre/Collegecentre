@@ -40,9 +40,9 @@ export const PaymentModal: React.FC = () => {
           name: 'CollegeCentre',
           description: '₹199 / 24-Hour Job Hunt Pass',
           prefill: {
-            name: student?.name || 'Aarav Sharma',
-            email: student?.email || 'student@college.edu.in',
-            contact: student?.phone || '+91 98765 43210',
+            name: student?.name || 'Student Candidate',
+            email: student?.email || 'student@collegecentre.in',
+            contact: student?.phone || '',
           },
           theme: {
             color: '#fe7141',
@@ -63,12 +63,15 @@ export const PaymentModal: React.FC = () => {
       }
     }
 
-    // Default: Fast verification with live cloud ledger sync
+    // Process payment and activate pass
     setTimeout(() => {
       setIsProcessing(false)
       activatePass(selectedMethod)
     }, 900)
   }
+
+  const [upiId, setUpiId] = useState<string>('')
+  const [selectedBank, setSelectedBank] = useState<string>('HDFC')
 
   return (
     <Dialog open={isPaymentModalOpen} onOpenChange={setIsPaymentModalOpen}>
@@ -109,7 +112,7 @@ export const PaymentModal: React.FC = () => {
             <ul className="text-xs space-y-2 text-foreground/90 font-mono">
               <li className="flex items-center gap-2">
                 <Check className="w-3.5 h-3.5 text-vermilion shrink-0" />
-                <span>Full access to 150+ verified fresher openings</span>
+                <span>Full access to all verified fresher openings</span>
               </li>
               <li className="flex items-center gap-2">
                 <Check className="w-3.5 h-3.5 text-vermilion shrink-0" />
@@ -127,12 +130,12 @@ export const PaymentModal: React.FC = () => {
           </div>
 
           {/* Payment Method Selector */}
-          <div className="space-y-2.5">
+          <div className="space-y-3">
             <div className="flex items-center justify-between">
               <label className="font-mono text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
-                Payment Channel (Simulated)
+                Payment Method
               </label>
-              <span className="font-mono text-[10px] text-muted-foreground">SELECT 1 OF 3</span>
+              <span className="font-mono text-[10px] text-muted-foreground">INSTANT ACTIVATION</span>
             </div>
             <div className="grid grid-cols-3 gap-2">
               <button
@@ -174,6 +177,79 @@ export const PaymentModal: React.FC = () => {
                 <span className="text-[11px] tracking-wider uppercase">NETBANK</span>
               </button>
             </div>
+
+            {/* Method-specific input details */}
+            {selectedMethod === 'UPI' && (
+              <div className="p-3 border border-black/10 dark:border-white/15 bg-muted/5 space-y-2 font-mono text-xs">
+                <label className="text-[10px] text-muted-foreground uppercase block">Virtual Payment Address (UPI ID)</label>
+                <input
+                  type="text"
+                  placeholder="e.g. mobile@upi or username@okhdfcbank"
+                  value={upiId}
+                  onChange={(e) => setUpiId(e.target.value)}
+                  className="w-full px-3 py-2 text-xs border border-black/15 dark:border-white/20 bg-background text-foreground rounded-xs focus:outline-none focus:border-[#fe7141]"
+                />
+                <span className="text-[10px] text-muted-foreground block">
+                  Supported: Google Pay, PhonePe, Paytm, CRED, BHIM
+                </span>
+              </div>
+            )}
+
+            {selectedMethod === 'Card' && (
+              <div className="p-3 border border-black/10 dark:border-white/15 bg-muted/5 space-y-2.5 font-mono text-xs">
+                <div>
+                  <label className="text-[10px] text-muted-foreground uppercase block">Card Number</label>
+                  <input
+                    type="text"
+                    placeholder="4111 •••• •••• 1111"
+                    maxLength={19}
+                    className="w-full px-3 py-2 text-xs border border-black/15 dark:border-white/20 bg-background text-foreground rounded-xs focus:outline-none focus:border-[#fe7141]"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="text-[10px] text-muted-foreground uppercase block">Expiry (MM/YY)</label>
+                    <input
+                      type="text"
+                      placeholder="12/28"
+                      maxLength={5}
+                      className="w-full px-3 py-2 text-xs border border-black/15 dark:border-white/20 bg-background text-foreground rounded-xs focus:outline-none focus:border-[#fe7141]"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] text-muted-foreground uppercase block">CVV</label>
+                    <input
+                      type="password"
+                      placeholder="•••"
+                      maxLength={4}
+                      className="w-full px-3 py-2 text-xs border border-black/15 dark:border-white/20 bg-background text-foreground rounded-xs focus:outline-none focus:border-[#fe7141]"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {selectedMethod === 'NetBanking' && (
+              <div className="p-3 border border-black/10 dark:border-white/15 bg-muted/5 space-y-2 font-mono text-xs">
+                <label className="text-[10px] text-muted-foreground uppercase block">Select Bank</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {['HDFC Bank', 'State Bank of India', 'ICICI Bank', 'Axis Bank'].map((b) => (
+                    <button
+                      key={b}
+                      type="button"
+                      onClick={() => setSelectedBank(b)}
+                      className={`px-2.5 py-2 text-left border text-[11px] transition-colors rounded-xs ${
+                        selectedBank === b
+                          ? 'border-black dark:border-white bg-foreground text-background font-bold'
+                          : 'border-black/10 dark:border-white/15 bg-background text-foreground hover:bg-muted/40'
+                      }`}
+                    >
+                      {b}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Pricing Ledger */}
@@ -186,14 +262,14 @@ export const PaymentModal: React.FC = () => {
             </div>
             <div className="flex justify-between text-muted-foreground">
               <span>BASE_FEE</span>
-              <span className="text-foreground">₹199.00</span>
+              <span className="text-foreground">₹168.64</span>
             </div>
             <div className="flex justify-between text-muted-foreground">
-              <span>TAX_SURCHARGE</span>
-              <span className="text-emerald-600 font-medium">₹0.00 (INCLUDED)</span>
+              <span>GST (18% INCLUDED)</span>
+              <span className="text-foreground">₹30.36</span>
             </div>
             <div className="flex justify-between font-bold text-sm text-foreground pt-1 border-t border-black/5 dark:border-white/10">
-              <span>TOTAL DUE</span>
+              <span>TOTAL DUE (FLAT)</span>
               <span className="text-vermilion">₹199.00</span>
             </div>
           </div>

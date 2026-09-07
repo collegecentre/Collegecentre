@@ -13,7 +13,10 @@ export const ExpiredAccessScreen: React.FC = () => {
     setCurrentView,
     savedJobs,
     applications,
+    accessPeriod,
   } = useApp()
+
+  const isNeverActivated = !accessPeriod
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8 md:py-16">
@@ -21,31 +24,33 @@ export const ExpiredAccessScreen: React.FC = () => {
         {/* Editorial Top Bar */}
         <div className="border-b border-black/10 dark:border-white/15 px-6 py-4 bg-muted/20 flex items-center justify-between font-mono text-[11px]">
           <span className="text-muted-foreground uppercase tracking-widest">
-            [ACCESS_GATE // SPRINT_WINDOW_CLOSED]
+            {isNeverActivated ? '[ACCESS_GATE // SPRINT_PASS_REQUIRED]' : '[ACCESS_GATE // SPRINT_WINDOW_CLOSED]'}
           </span>
           <span className="font-bold text-vermilion uppercase tracking-wider">
-            [STATUS: EXPIRED]
+            {isNeverActivated ? '[STATUS: PASS INACTIVE]' : '[STATUS: SPRINT EXPIRED]'}
           </span>
         </div>
 
         {/* Hero Section */}
         <div className="p-6 md:p-10 border-b border-black/10 dark:border-white/15 space-y-4">
           <div className="font-mono text-xs text-muted-foreground uppercase tracking-wider">
-            SPRINT CONCLUSION // 24 HOURS ELAPSED
+            {isNeverActivated ? 'STUDENT DISCOVERY PASS // ₹199 FLAT' : 'SPRINT CONCLUSION // 24 HOURS ELAPSED'}
           </div>
           <h2 className="text-3xl md:text-4xl font-black text-foreground tracking-tight">
-            Your 24-Hour Pass Has Expired.
+            {isNeverActivated ? '24-Hour Job Hunt Pass Required' : 'Your 24-Hour Pass Has Expired'}
           </h2>
           <p className="text-sm md:text-base text-muted-foreground max-w-xl leading-relaxed">
-            Discovery access to new job listings and real-time AI scoring has concluded. All positions you saved and applications you tracked remain permanently accessible under your profile.
+            {isNeverActivated
+              ? 'Unlock unrestricted fresher job search, verified company portals, and instant eligibility compatibility matrices. Flat ₹199 rate when you are ready to sprint—no recurring subscription.'
+              : 'Discovery access to new job listings and real-time AI scoring has concluded. All positions you saved and applications you tracked remain permanently accessible under your profile.'}
           </p>
 
           <div className="pt-2">
             <button
               onClick={() => setIsPaymentModalOpen(true)}
-              className="inline-flex items-center gap-2 px-8 py-3 bg-vermilion hover:bg-vermilion-hover text-white text-xs font-mono font-bold uppercase tracking-wider transition-colors"
+              className="inline-flex items-center gap-2 px-8 py-3 bg-vermilion hover:bg-vermilion-hover text-white text-xs font-mono font-bold uppercase tracking-wider transition-colors shadow-xs"
             >
-              <span>UNLOCK NEW 24-HOUR SPRINT — ₹199</span>
+              <span>{isNeverActivated ? 'UNLOCK 24-HOUR PASS — ₹199' : 'UNLOCK NEW 24-HOUR SPRINT — ₹199'}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>

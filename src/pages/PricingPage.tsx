@@ -69,7 +69,7 @@ export const PricingPage: React.FC = () => {
             <div className="space-y-3 font-mono text-xs text-foreground">
               <div className="flex items-start gap-2.5">
                 <span className="text-emerald-600 font-bold">+</span>
-                <span><strong>24 Hours of Discovery:</strong> Search and filter 150+ fresher openings.</span>
+                <span><strong>24 Hours of Discovery:</strong> Search and filter verified fresher openings.</span>
               </div>
               <div className="flex items-start gap-2.5">
                 <span className="text-emerald-600 font-bold">+</span>

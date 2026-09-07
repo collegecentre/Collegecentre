@@ -12,6 +12,15 @@ interface JobCardProps {
   onSelect: (job: JobWithMatch) => void
 }
 
+const formatLocationDisplay = (location: string, workMode: string): string => {
+  if (!location) return workMode
+  const cleanLoc = location.trim()
+  const cleanMode = workMode.trim()
+  if (cleanLoc.toLowerCase() === cleanMode.toLowerCase()) return cleanLoc
+  if (cleanLoc.toLowerCase().includes(cleanMode.toLowerCase())) return cleanLoc
+  return `${cleanLoc} • ${cleanMode}`
+}
+
 export const JobCard: React.FC<JobCardProps> = ({ job, onSelect }) => {
   const { toggleSaveJob, isJobSaved, isPassActive, setIsPaymentModalOpen, createOrUpdateApp } =
     useApp()
@@ -24,7 +33,10 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSelect }) => {
       return
     }
     createOrUpdateApp(job.id, 'Applied', `Applied via ${job.company} portal.`)
-    window.open(job.application_url, '_blank', 'noopener,noreferrer')
+    const popup = window.open(job.application_url, '_blank', 'noopener,noreferrer')
+    if (!popup || popup.closed || typeof popup.closed === 'undefined') {
+      window.location.href = job.application_url
+    }
   }
 
   const handleSaveClick = (e: React.MouseEvent) => {
@@ -45,7 +57,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSelect }) => {
             <span>/</span>
             <span className="flex items-center gap-1">
               <MapPin className="w-3 h-3" />
-              {job.location} ({job.work_mode})
+              {formatLocationDisplay(job.location, job.work_mode)}
             </span>
           </div>
 

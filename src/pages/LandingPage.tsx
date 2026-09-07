@@ -62,7 +62,11 @@ export const LandingPage: React.FC = () => {
 
             <button
               type="button"
-              onClick={() => setCurrentView('pricing')}
+              onClick={() => {
+                const el = document.getElementById('workflow-section')
+                if (el) el.scrollIntoView({ behavior: 'smooth' })
+                else setCurrentView('pricing')
+              }}
               className="font-mono text-xs font-semibold px-4 py-3 rounded-sm border border-black/15 dark:border-white/20 hover:border-black dark:hover:border-white transition-colors text-foreground"
             >
               [ HOW IT WORKS ]
@@ -73,7 +77,7 @@ export const LandingPage: React.FC = () => {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 font-mono text-left">
             <div className="border-l border-black/10 dark:border-white/15 pl-3">
               <span className="text-[10px] text-muted-foreground block uppercase">CURATED ROLES</span>
-              <span className="text-base font-bold text-foreground">150+</span>
+              <span className="text-base font-bold text-foreground">{jobs.length} ACTIVE</span>
             </div>
             <div className="border-l border-black/10 dark:border-white/15 pl-3">
               <span className="text-[10px] text-muted-foreground block uppercase">AVERAGE CTC</span>
@@ -101,10 +105,10 @@ export const LandingPage: React.FC = () => {
           </div>
           <button
             type="button"
-            onClick={() => (isPassActive ? setCurrentView('jobs') : setIsPaymentModalOpen(true))}
+            onClick={() => setCurrentView('jobs')}
             className="text-xs hover:underline flex items-center gap-1 font-bold text-[#fe7141]"
           >
-            <span>[ VIEW ALL 150+ ROLES ]</span>
+            <span>[ VIEW ALL {jobs.length} ROLES ]</span>
             <ArrowUpRight className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -143,7 +147,7 @@ export const LandingPage: React.FC = () => {
             <ul className="space-y-2.5 font-mono text-xs text-muted-foreground">
               <li className="flex items-start gap-2">
                 <span className="text-black dark:text-white font-bold">+</span>
-                <span>Unrestricted search across 150+ fresher openings</span>
+                <span>Unrestricted search across all curated fresher openings</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-black dark:text-white font-bold">+</span>
@@ -189,7 +193,7 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* Section 03: Four-Step Execution */}
-      <section className="space-y-6 pt-4">
+      <section id="workflow-section" className="space-y-6 pt-4">
         {/* Hairline Section Divider */}
         <div className="flex items-center justify-between border-t border-b border-black/15 dark:border-white/20 py-2.5 font-mono text-xs text-foreground">
           <div className="flex items-center gap-2">

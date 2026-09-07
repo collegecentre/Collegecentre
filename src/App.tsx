@@ -44,9 +44,9 @@ const AppContent: React.FC = () => {
       case 'account':
         return <AccountPage />
       case 'login':
-        return <AuthPages initialMode="login" />
+        return <AuthPages key="login" initialMode="login" />
       case 'signup':
-        return <AuthPages initialMode="signup" />
+        return <AuthPages key="signup" initialMode="signup" />
       case 'terms':
         return <TermsPage />
       case 'privacy':
@@ -70,7 +70,7 @@ const AppContent: React.FC = () => {
       <main className="flex-1">{renderCurrentView()}</main>
 
       {/* Global Modals */}
-      <DemoController open={isDemoOpen} onOpenChange={setIsDemoOpen} />
+      {import.meta.env.DEV && <DemoController open={isDemoOpen} onOpenChange={setIsDemoOpen} />}
       <PaymentModal />
       <JobDetailsModal job={selectedJob} onClose={() => setSelectedJob(null)} />
 
@@ -98,12 +98,14 @@ const AppContent: React.FC = () => {
             >
               Pricing & Model
             </button>
-            <button
-              onClick={() => setIsDemoOpen(true)}
-              className="text-vermilion font-semibold hover:underline"
-            >
-              Pass Simulator
-            </button>
+            {import.meta.env.DEV && (
+              <button
+                onClick={() => setIsDemoOpen(true)}
+                className="text-vermilion font-semibold hover:underline"
+              >
+                Pass Simulator
+              </button>
+            )}
             <button
               onClick={() => setCurrentView('profile')}
               className="hover:text-foreground transition-colors"
