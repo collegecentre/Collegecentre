@@ -377,44 +377,53 @@ export async function handleParseResume(req, res) {
     });
   }
 
-  // 6. Invoke Google Gemini API
+  // 6. Invoke Google Gemini API with fallback resilience
   const apiKey = process.env.GEMINI_API_KEY;
-  const model = process.env.GEMINI_MODEL || 'gemini-3.6-flash';
-  const geminiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+  const preferredModel = process.env.GEMINI_MODEL || 'gemini-3.6-flash';
+  const candidateModels = Array.from(
+    new Set([preferredModel, 'gemini-3.6-flash', 'gemini-flash-latest', 'gemini-3.5-flash'])
+  );
+
+  const payload = {
+    contents: [
+      {
+        parts: [
+          {
+            inlineData: {
+              mimeType,
+              data: base64Content,
+            },
+          },
+          {
+            text: GEMINI_SYSTEM_PROMPT,
+          },
+        ],
+      },
+    ],
+    generationConfig: {
+      responseMimeType: 'application/json',
+      temperature: 0.1,
+    },
+  };
 
   try {
-    const payload = {
-      contents: [
-        {
-          parts: [
-            {
-              inlineData: {
-                mimeType,
-                data: base64Content,
-              },
-            },
-            {
-              text: GEMINI_SYSTEM_PROMPT,
-            },
-          ],
-        },
-      ],
-      generationConfig: {
-        responseMimeType: 'application/json',
-        temperature: 0.1,
-      },
-    };
+    let response = null;
+    let lastErr = '';
 
-    const response = await fetch(geminiEndpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
+    for (const modelName of candidateModels) {
+      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
 
-    if (!response.ok) {
-      const errText = await response.text();
+      if (res.ok) {
+        response = res;
+        break;
+      }
+
+      const errText = await res.text();
       let parsedErr = '';
       try {
         const errJson = JSON.parse(errText);
@@ -422,13 +431,26 @@ export async function handleParseResume(req, res) {
       } catch {
         parsedErr = errText;
       }
+      lastErr = parsedErr || errText;
 
-      if (response.status === 429) {
+      // If it's a 404 (e.g. older gemini-2.5-flash retired by Google for new users), try next candidate model
+      if (res.status === 404) {
+        console.warn(`Gemini model ${modelName} returned 404, falling back to next model...`);
+        continue;
+      }
+
+      if (res.status === 429) {
         return res.status(429).json({ error: 'AI parsing rate limit reached. Please wait a moment and try again.' });
       }
 
       return res.status(502).json({
-        error: `AI parsing service error: ${parsedErr || 'Unable to analyze document.'}`,
+        error: `AI parsing service error: ${lastErr || 'Unable to analyze document.'}`,
+      });
+    }
+
+    if (!response) {
+      return res.status(502).json({
+        error: `AI parsing service error: ${lastErr || 'No compatible Gemini model found.'}`,
       });
     }
 
