@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 import { fileURLToPath, URL } from 'node:url'
 import { createOrder, verifyPayment, verifyPassStatus } from './server/razorpayHandlers.js'
 import { getProtectedJobs, getUserSavedAndAppliedJobs } from './server/jobsHandler.js'
+import { handleRegisterUser } from './server/authHandlers.js'
 
 function razorpayDevApiPlugin(env: Record<string, string>) {
   return {
@@ -15,7 +16,8 @@ function razorpayDevApiPlugin(env: Record<string, string>) {
           url === '/api/verify-payment' ||
           url === '/api/verify-pass' ||
           url === '/api/jobs' ||
-          url === '/api/user-jobs'
+          url === '/api/user-jobs' ||
+          url === '/api/register'
         ) {
           // Ensure environment variables are populated in process.env
           process.env.RAZORPAY_KEY_ID =
@@ -63,6 +65,8 @@ function razorpayDevApiPlugin(env: Record<string, string>) {
                 await getProtectedJobs(req, res)
               } else if (url === '/api/user-jobs') {
                 await getUserSavedAndAppliedJobs(req, res)
+              } else if (url === '/api/register') {
+                await handleRegisterUser(req, res)
               }
             } catch (err: any) {
               res.status(500).json({ error: err?.message || 'Internal server error' })
