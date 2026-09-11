@@ -47,7 +47,16 @@ export const isCandidateProfileComplete = (s?: StudentProfile | null): boolean =
 }
 
 export const PaymentModal: React.FC = () => {
-  const { student, updateStudent, isPaymentModalOpen, setIsPaymentModalOpen, activatePass, showToast } = useApp()
+  const {
+    student,
+    updateStudent,
+    isPaymentModalOpen,
+    setIsPaymentModalOpen,
+    activatePass,
+    showToast,
+    isAuthenticated,
+    setCurrentView,
+  } = useApp()
   const [isProcessing, setIsProcessing] = useState<boolean>(false)
   const [timingMode, setTimingMode] = useState<'now' | 'scheduled'>('now')
   const [selectedSchedule, setSelectedSchedule] = useState<string>('')
@@ -68,6 +77,11 @@ export const PaymentModal: React.FC = () => {
   // Sync state whenever modal opens or student profile updates
   useEffect(() => {
     if (isPaymentModalOpen) {
+      if (!isAuthenticated) {
+        setIsPaymentModalOpen(false)
+        setCurrentView('login')
+        return
+      }
       const ready = isCandidateProfileComplete(student)
       setStep(ready ? 2 : 1)
       setProfileName(student?.name || '')
@@ -78,7 +92,7 @@ export const PaymentModal: React.FC = () => {
       setProfileBatch(student?.graduation_year || 2026)
       setFormError('')
     }
-  }, [isPaymentModalOpen, student])
+  }, [isPaymentModalOpen, student, isAuthenticated, setIsPaymentModalOpen, setCurrentView])
 
   // Compute convenient scheduling presets
   const presets = useMemo(() => {

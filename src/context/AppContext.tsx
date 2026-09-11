@@ -84,7 +84,7 @@ const AppInnerComposer: React.FC<{
   const jobs = useJobs()
   const tracker = useTracker()
 
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState<boolean>(false)
+  const [isPaymentModalOpen, setInternalIsPaymentModalOpen] = useState<boolean>(false)
 
   // Route / View state from URL Hash
   const getInitialView = (): string => {
@@ -104,8 +104,20 @@ const AppInnerComposer: React.FC<{
       window.location.hash = `#/${view}`
       window.scrollTo({ top: 0, behavior: 'smooth' })
     }
-    setIsPaymentModalOpen(false)
+    setInternalIsPaymentModalOpen(false)
   }, [])
+
+  const setIsPaymentModalOpen = useCallback(
+    (open: boolean) => {
+      if (open && !auth.isAuthenticated) {
+        showToast('Please sign in or create an account to unlock your Sprint Pass.', 'info')
+        setCurrentView('login')
+        return
+      }
+      setInternalIsPaymentModalOpen(open)
+    },
+    [auth.isAuthenticated, setCurrentView, showToast]
+  )
 
   useEffect(() => {
     const handleHashChange = () => {
@@ -113,7 +125,7 @@ const AppInnerComposer: React.FC<{
       const validViews = ['home', 'landing', 'search', 'saved', 'applications', 'dashboard', 'pricing', 'profile', 'login', 'signup', 'account']
       if (validViews.includes(route)) {
         setInternalCurrentView(route)
-        setIsPaymentModalOpen(false)
+        setInternalIsPaymentModalOpen(false)
       }
     }
     window.addEventListener('hashchange', handleHashChange)
