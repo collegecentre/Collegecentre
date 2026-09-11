@@ -27,6 +27,7 @@ const AppContent: React.FC = () => {
 
   const renderCurrentView = () => {
     switch (currentView) {
+      case 'home':
       case 'landing':
         return <LandingPage />
       case 'pricing':

@@ -33,20 +33,22 @@ export const Navigation: React.FC<NavigationProps> = ({ onOpenDemo }) => {
     toggleTheme,
   } = useApp()
 
-  const navItems = [
-    { id: 'landing', label: 'OVERVIEW' },
+  const publicNavItems = [
+    { id: 'landing', label: 'HOME' },
+    { id: 'jobs', label: 'DISCOVER JOBS' },
     { id: 'pricing', label: 'PRICING' },
+  ]
+
+  const portalNavItems = [
     { id: 'dashboard', label: 'DASHBOARD' },
-    { id: 'jobs', label: 'DISCOVER' },
-    { id: 'saved', label: 'SAVED', count: savedJobs.length },
     { id: 'applications', label: 'TRACKER', count: applications.length },
-    { id: 'profile', label: 'PROFILE' },
+    { id: 'saved', label: 'SAVED', count: savedJobs.length },
   ]
 
   const mobileNavItems = [
-    { id: 'landing', label: 'Overview', icon: Compass },
+    { id: 'landing', label: 'Home', icon: Compass },
     { id: 'jobs', label: 'Jobs', icon: Briefcase },
-    { id: 'saved', label: 'Saved', icon: Bookmark, badge: savedJobs.length },
+    { id: 'dashboard', label: 'Desk', icon: SlidersHorizontal },
     { id: 'applications', label: 'Tracker', icon: CheckCircle2, badge: applications.length },
     { id: 'profile', label: 'Profile', icon: User },
   ]
@@ -59,7 +61,7 @@ export const Navigation: React.FC<NavigationProps> = ({ onOpenDemo }) => {
           {/* Brand Mark */}
           <button
             type="button"
-            className="flex items-center gap-2.5 text-left select-none group focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-black dark:focus-visible:ring-white p-1 -m-1"
+            className="flex items-center gap-2.5 text-left select-none group focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-black dark:focus-visible:ring-white p-1 -m-1 cursor-pointer"
             onClick={() => setCurrentView('landing')}
             aria-label="CollegeCentre Home"
           >
@@ -73,16 +75,39 @@ export const Navigation: React.FC<NavigationProps> = ({ onOpenDemo }) => {
             </div>
           </button>
 
-          {/* Monospace Editorial Nav Links */}
+          {/* Monospace Editorial Nav Links: Separated into Public & App Portal */}
           <nav className="hidden lg:flex items-center gap-1 font-mono text-[11px] tracking-tight" aria-label="Main Navigation">
-            {navItems.map((item) => {
+            {/* Public Section */}
+            {publicNavItems.map((item) => {
               const isActive = currentView === item.id
               return (
                 <button
                   key={item.id}
                   type="button"
                   onClick={() => setCurrentView(item.id as any)}
-                  className={`px-2.5 py-1 transition-colors relative flex items-center gap-1.5 rounded-sm ${
+                  className={`px-2.5 py-1 transition-colors relative flex items-center gap-1.5 rounded-sm cursor-pointer ${
+                    isActive
+                      ? 'text-black dark:text-white font-bold bg-slate-100 dark:bg-slate-900'
+                      : 'text-slate-500 hover:text-black dark:text-slate-400 dark:hover:text-white'
+                  }`}
+                >
+                  <span>{item.label}</span>
+                </button>
+              )
+            })}
+
+            {/* Subtle Vertical Divider */}
+            <span className="h-3.5 w-px bg-black/15 dark:bg-white/20 mx-1.5" />
+
+            {/* Student App Portal Section */}
+            {portalNavItems.map((item) => {
+              const isActive = currentView === item.id
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setCurrentView(item.id as any)}
+                  className={`px-2.5 py-1 transition-colors relative flex items-center gap-1.5 rounded-sm cursor-pointer ${
                     isActive
                       ? 'text-black dark:text-white font-bold bg-slate-100 dark:bg-slate-900'
                       : 'text-slate-500 hover:text-black dark:text-slate-400 dark:hover:text-white'

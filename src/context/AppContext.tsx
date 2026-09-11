@@ -131,6 +131,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (typeof window !== 'undefined' && window.location.hash) {
       const route = window.location.hash.replace(/^#\/?/, '').toLowerCase()
       const validViews = [
+        'home',
         'landing',
         'pricing',
         'dashboard',
@@ -169,6 +170,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const handleHashChange = () => {
       const route = window.location.hash.replace(/^#\/?/, '').toLowerCase()
       const validViews = [
+        'home',
         'landing',
         'pricing',
         'dashboard',
