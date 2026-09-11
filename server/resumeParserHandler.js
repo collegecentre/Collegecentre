@@ -385,11 +385,17 @@ export async function handleParseResume(req, res) {
     });
   }
 
-  // 6. Invoke Google Gemini API with fallback resilience
+  // 6. Invoke Google Gemini API with fallback resilience across available models
   const apiKey = process.env.GEMINI_API_KEY;
-  const preferredModel = process.env.GEMINI_MODEL || 'gemini-3.6-flash';
+  const preferredModel = process.env.GEMINI_MODEL || 'gemini-3.7-flash';
   const candidateModels = Array.from(
-    new Set([preferredModel, 'gemini-3.6-flash', 'gemini-flash-latest', 'gemini-3.5-flash'])
+    new Set([
+      preferredModel,
+      'gemini-3.7-flash',
+      'gemini-3.5-flash',
+      'gemini-3.6-flash',
+      'gemini-flash-latest',
+    ])
   );
 
   const payload = {
@@ -414,6 +420,8 @@ export async function handleParseResume(req, res) {
     },
   };
 
+  console.log(`[ResumeParser] Processing document: fileName="${fileName}", fileType="${fileType}", mimeType="${mimeType}", base64Length=${base64Content.length}`);
+
   try {
     let response = null;
     let lastErr = '';
@@ -436,22 +444,15 @@ export async function handleParseResume(req, res) {
       try {
         const errJson = JSON.parse(errText);
         parsedErr = errJson?.error?.message || '';
+        console.error(`[ResumeParser] Gemini API (${modelName}) returned ${apiRes.status}:`, JSON.stringify(errJson));
       } catch {
         parsedErr = errText;
+        console.error(`[ResumeParser] Gemini API (${modelName}) returned ${apiRes.status}: ${errText}`);
       }
       lastErr = parsedErr || errText;
 
-      // If it's a 404 (e.g. older gemini-2.5-flash retired by Google for new users), try next candidate model
-      if (apiRes.status === 404) {
-        console.warn(`Gemini model ${modelName} returned 404, falling back to next model...`);
-        continue;
-      }
-
-      if (apiRes.status === 429) {
-        return res.status(429).json({ error: 'AI parsing rate limit reached. Please wait a moment and try again.' });
-      }
-
-      console.warn(`Gemini model ${modelName} error (${apiRes.status}): ${lastErr}`);
+      // If a model is deprecated (404), temporarily high demand (503), or rate limited (429), try next model in pool
+      console.warn(`[ResumeParser] Model ${modelName} returned status ${apiRes.status}. Trying next candidate model...`);
     }
 
     if (!response) {
