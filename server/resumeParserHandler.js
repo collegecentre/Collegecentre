@@ -1,4 +1,5 @@
 import { authenticateRequestUser } from './supabaseAdmin.js';
+import { parseResumeWithScript } from './scriptResumeParser.js';
 
 const MAX_FILE_BYTES = 8 * 1024 * 1024; // 8 MB
 
@@ -330,7 +331,7 @@ export async function handleParseResume(req, res) {
     return res.status(401).json({ error: 'Unauthorized: Valid student session required to parse resume' });
   }
 
-  const { fileData, fileName, fileType } = req.body || {};
+  const { fileData, fileName, fileType, parserMode } = req.body || {};
 
   // 2. Validate File Presence
   if (!fileData || typeof fileData !== 'string') {
@@ -467,6 +468,20 @@ export async function handleParseResume(req, res) {
     }
   }
 
+  // If explicit Script mode requested, bypass AI and execute deterministic parser directly
+  if (parserMode === 'script') {
+    console.log('[ResumeParser] Running deterministic Script Parser mode on demand');
+    const textToParse = extractedPdfText || fileName;
+    const scriptProfile = parseResumeWithScript(textToParse, fileName);
+    return res.status(200).json({
+      success: true,
+      profile: scriptProfile,
+      extracted: scriptProfile,
+      parser: 'script',
+      note: 'Parsed instantly using deterministic rule engine.',
+    });
+  }
+
   const hasText = Boolean(extractedPdfText && extractedPdfText.trim().length > 30);
 
   const payload = hasText
@@ -545,8 +560,14 @@ export async function handleParseResume(req, res) {
     }
 
     if (!response) {
-      return res.status(502).json({
-        error: `AI parsing service error: ${lastErr || 'No compatible Gemini model found.'}`,
+      console.warn(`[ResumeParser] AI parsing unavailable (${lastErr}), automatically falling back to Script Parser`);
+      const fallbackProfile = parseResumeWithScript(extractedPdfText || fileName, fileName);
+      return res.status(200).json({
+        success: true,
+        profile: fallbackProfile,
+        extracted: fallbackProfile,
+        parser: 'script-fallback',
+        note: 'Parsed via deterministic resume script engine.',
       });
     }
 
@@ -554,8 +575,14 @@ export async function handleParseResume(req, res) {
     const candidateText = geminiData?.candidates?.[0]?.content?.parts?.[0]?.text;
 
     if (!candidateText) {
-      return res.status(502).json({
-        error: "We couldn't read structured information from this resume. Please ensure it is not an image-only scan and try again.",
+      console.warn('[ResumeParser] Empty candidate text from AI, falling back to Script Parser');
+      const fallbackProfile = parseResumeWithScript(extractedPdfText || fileName, fileName);
+      return res.status(200).json({
+        success: true,
+        profile: fallbackProfile,
+        extracted: fallbackProfile,
+        parser: 'script-fallback',
+        note: 'Parsed via deterministic resume script engine.',
       });
     }
 
@@ -565,8 +592,14 @@ export async function handleParseResume(req, res) {
     try {
       parsedProfile = JSON.parse(cleanJson);
     } catch {
-      return res.status(502).json({
-        error: 'Failed to structure profile data from resume response. Please try again.',
+      console.warn('[ResumeParser] JSON parse error from AI response, falling back to Script Parser');
+      const fallbackProfile = parseResumeWithScript(extractedPdfText || fileName, fileName);
+      return res.status(200).json({
+        success: true,
+        profile: fallbackProfile,
+        extracted: fallbackProfile,
+        parser: 'script-fallback',
+        note: 'Parsed via deterministic resume script engine.',
       });
     }
 
@@ -577,11 +610,17 @@ export async function handleParseResume(req, res) {
       success: true,
       profile: sanitized,
       extracted: sanitized,
+      parser: 'gemini',
     });
   } catch (err) {
-    console.error('Resume parsing execution error:', err.message);
-    return res.status(500).json({
-      error: 'An error occurred while parsing your resume document. Please try again.',
+    console.error('Resume parsing execution error, falling back to Script Parser:', err.message);
+    const fallbackProfile = parseResumeWithScript(extractedPdfText || fileName, fileName);
+    return res.status(200).json({
+      success: true,
+      profile: fallbackProfile,
+      extracted: fallbackProfile,
+      parser: 'script-fallback',
+      note: 'Parsed via deterministic resume script engine.',
     });
   }
 }
