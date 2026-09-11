@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { useApp } from '@/context/AppContext'
 import { StudentProfile, WorkMode } from '@/types'
 import { ResumeExtractedProfile, ProfileMergeSummary } from '@/types/resume'
@@ -10,14 +10,48 @@ import {
   Save,
   ShieldCheck,
   CheckCircle2,
-  Sparkles,
+  AlertCircle,
   ArrowRight,
   Zap,
   Upload,
   Briefcase,
   FolderGit2,
   ExternalLink,
+  Plus,
+  Globe,
+  Link as LinkIcon,
+  Code2,
 } from 'lucide-react'
+
+const POPULAR_SKILLS = [
+  'React',
+  'Python',
+  'Node.js',
+  'TypeScript',
+  'PostgreSQL',
+  'Docker',
+  'SQL',
+  'Java',
+  'Git',
+  'Tailwind CSS',
+  'Next.js',
+  'C++',
+  'AWS',
+  'Express.js',
+  'FastAPI',
+  'MongoDB',
+]
+
+const POPULAR_LOCATIONS = [
+  'Bengaluru',
+  'Hyderabad',
+  'Pune',
+  'Mumbai',
+  'Delhi NCR',
+  'Chennai',
+  'Kochi',
+  'Remote',
+]
 
 export const ProfilePage: React.FC = () => {
   const { student, updateStudent, setCurrentView, setIsPaymentModalOpen } = useApp()
@@ -26,6 +60,7 @@ export const ProfilePage: React.FC = () => {
   useEffect(() => {
     setFormData(student)
   }, [student])
+
   const [newSkill, setNewSkill] = useState<string>('')
   const [newLocation, setNewLocation] = useState<string>('')
   const [savedFeedback, setSavedFeedback] = useState<boolean>(false)
@@ -37,17 +72,92 @@ export const ProfilePage: React.FC = () => {
   const [resumeFileName, setResumeFileName] = useState<string>('')
   const [resumeMergeToast, setResumeMergeToast] = useState<string | null>(null)
 
+  // Manual Project Creation State
+  const [isAddingProject, setIsAddingProject] = useState<boolean>(false)
+  const [newProjectTitle, setNewProjectTitle] = useState<string>('')
+  const [newProjectDesc, setNewProjectDesc] = useState<string>('')
+  const [newProjectTech, setNewProjectTech] = useState<string>('')
+  const [newProjectLink, setNewProjectLink] = useState<string>('')
+
+  // Manual Internship Creation State
+  const [isAddingInternship, setIsAddingInternship] = useState<boolean>(false)
+  const [newInternRole, setNewInternRole] = useState<string>('')
+  const [newInternCompany, setNewInternCompany] = useState<string>('')
+  const [newInternDuration, setNewInternDuration] = useState<string>('')
+  const [newInternTech, setNewInternTech] = useState<string>('')
+  const [newInternDesc, setNewInternDesc] = useState<string>('')
+
   const availableModes: WorkMode[] = ['Remote', 'Hybrid', 'Onsite']
 
-  const handleAddSkill = (e: React.FormEvent) => {
-    e.preventDefault()
+  // Profile Completion Calculation
+  const completionStats = useMemo(() => {
+    let score = 0
+    const missing: string[] = []
+
+    // 1. Personal (20%)
+    if (formData.name && formData.email && formData.phone) {
+      score += 20
+    } else {
+      missing.push('Full contact details')
+    }
+
+    // 2. Academics (25%)
+    if (formData.college?.trim() && formData.degree?.trim()) {
+      score += 25
+    } else {
+      missing.push('College & Degree')
+    }
+
+    // 3. Skills (25%)
+    if (formData.skills && formData.skills.length >= 3) {
+      score += 25
+    } else if (formData.skills && formData.skills.length > 0) {
+      score += 15
+      missing.push('Add at least 3 skills')
+    } else {
+      missing.push('Technical skills')
+    }
+
+    // 4. Links (15%)
+    if (formData.linkedin_url || formData.github_url || formData.portfolio_url) {
+      score += 15
+    } else {
+      missing.push('LinkedIn or GitHub URL')
+    }
+
+    // 5. Projects or Experience (15%)
+    const hasProjects = (formData.projects && formData.projects.length > 0)
+    const hasExp = (formData.internships && formData.internships.length > 0) || (formData.experience && formData.experience.length > 0)
+    if (hasProjects || hasExp) {
+      score += 15
+    } else {
+      missing.push('Key projects or internships')
+    }
+
+    return { score, missing }
+  }, [formData])
+
+  const handleAddSkill = (e?: React.FormEvent) => {
+    if (e) e.preventDefault()
     if (!newSkill.trim()) return
-    if (formData.skills.includes(newSkill.trim())) return
+    const trimmed = newSkill.trim()
+    if (formData.skills.some((s) => s.toLowerCase() === trimmed.toLowerCase())) {
+      setNewSkill('')
+      return
+    }
     setFormData({
       ...formData,
-      skills: [...formData.skills, newSkill.trim()],
+      skills: [...formData.skills, trimmed],
     })
     setNewSkill('')
+  }
+
+  const handleAddQuickSkill = (skill: string) => {
+    if (formData.skills.some((s) => s.toLowerCase() === skill.toLowerCase())) return
+    setFormData({
+      ...formData,
+      skills: [...formData.skills, skill],
+    })
   }
 
   const handleRemoveSkill = (skillToRemove: string) => {
@@ -57,15 +167,27 @@ export const ProfilePage: React.FC = () => {
     })
   }
 
-  const handleAddLocation = (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleAddLocation = (e?: React.FormEvent) => {
+    if (e) e.preventDefault()
     if (!newLocation.trim()) return
-    if (formData.preferred_locations.includes(newLocation.trim())) return
+    const trimmed = newLocation.trim()
+    if (formData.preferred_locations.some((l) => l.toLowerCase() === trimmed.toLowerCase())) {
+      setNewLocation('')
+      return
+    }
     setFormData({
       ...formData,
-      preferred_locations: [...formData.preferred_locations, newLocation.trim()],
+      preferred_locations: [...formData.preferred_locations, trimmed],
     })
     setNewLocation('')
+  }
+
+  const handleAddQuickLocation = (loc: string) => {
+    if (formData.preferred_locations.some((l) => l.toLowerCase() === loc.toLowerCase())) return
+    setFormData({
+      ...formData,
+      preferred_locations: [...formData.preferred_locations, loc],
+    })
   }
 
   const handleRemoveLocation = (locToRemove: string) => {
@@ -84,6 +206,69 @@ export const ProfilePage: React.FC = () => {
       ...formData,
       preferred_work_mode: updated.length ? updated : ['Remote'],
     })
+  }
+
+  const handleSaveProject = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!newProjectTitle.trim()) return
+
+    const techArray = newProjectTech
+      .split(',')
+      .map((t) => t.trim())
+      .filter(Boolean)
+
+    const newProj = {
+      name: newProjectTitle.trim(),
+      title: newProjectTitle.trim(),
+      description: newProjectDesc.trim() || null,
+      technologies: techArray,
+      link: newProjectLink.trim() || null,
+      url: newProjectLink.trim() || null,
+    }
+
+    setFormData({
+      ...formData,
+      projects: [...(formData.projects || []), newProj],
+    })
+
+    // Reset Form
+    setNewProjectTitle('')
+    setNewProjectDesc('')
+    setNewProjectTech('')
+    setNewProjectLink('')
+    setIsAddingProject(false)
+  }
+
+  const handleSaveInternship = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!newInternCompany.trim() || !newInternRole.trim()) return
+
+    const techArray = newInternTech
+      .split(',')
+      .map((t) => t.trim())
+      .filter(Boolean)
+
+    const newIntern = {
+      company: newInternCompany.trim(),
+      role: newInternRole.trim(),
+      duration: newInternDuration.trim() || null,
+      technologies: techArray,
+      skills_used: techArray,
+      description: newInternDesc.trim() || null,
+    }
+
+    setFormData({
+      ...formData,
+      internships: [...(formData.internships || []), newIntern],
+    })
+
+    // Reset Form
+    setNewInternCompany('')
+    setNewInternRole('')
+    setNewInternDuration('')
+    setNewInternTech('')
+    setNewInternDesc('')
+    setIsAddingInternship(false)
   }
 
   const handleSave = (e: React.FormEvent) => {
@@ -121,15 +306,23 @@ export const ProfilePage: React.FC = () => {
 
   const profileTabs = [
     { id: 'all', label: 'All Sections' },
-    { id: 'personal', label: '01. Personal' },
+    { id: 'personal', label: '01. Personal & Links' },
     { id: 'academics', label: '02. Academics' },
-    { id: 'skills', label: '03. Skills Matrix' },
+    { id: 'skills', label: `03. Skills Matrix (${formData.skills?.length || 0})` },
     { id: 'preferences', label: '04. Preferences' },
     { id: 'projects', label: `05. Projects & Exp${totalProjectsAndExp > 0 ? ` (${totalProjectsAndExp})` : ''}` },
   ] as const
 
+  const unusedPopularSkills = POPULAR_SKILLS.filter(
+    (skill) => !formData.skills?.some((s) => s.toLowerCase() === skill.toLowerCase())
+  ).slice(0, 10)
+
+  const unusedPopularLocations = POPULAR_LOCATIONS.filter(
+    (loc) => !formData.preferred_locations?.some((l) => l.toLowerCase() === loc.toLowerCase())
+  ).slice(0, 6)
+
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 space-y-8 relative">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 space-y-8 relative pb-28">
       {/* Editorial Header */}
       <div className="border-b border-black/10 dark:border-white/15 pb-6">
         <div className="font-mono text-xs uppercase tracking-widest text-muted-foreground mb-2">
@@ -157,12 +350,56 @@ export const ProfilePage: React.FC = () => {
         </div>
       </div>
 
-      {/* Step 2 Onboarding Arrangement Banner (Shown after registration when profile is incomplete) */}
+      {/* Profile Health / Readiness Meter */}
+      <div className="border border-black/15 dark:border-white/20 bg-card p-5 font-mono text-xs space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <span className="font-bold uppercase tracking-wider text-foreground">
+              Match Readiness Score
+            </span>
+            <span
+              className={`px-2 py-0.5 border text-[11px] font-bold uppercase ${
+                completionStats.score >= 85
+                  ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                  : completionStats.score >= 60
+                  ? 'border-amber-500/50 bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                  : 'border-red-500/50 bg-red-500/10 text-red-600 dark:text-red-400'
+              }`}
+            >
+              {completionStats.score}% Complete
+            </span>
+          </div>
+
+          <div className="text-[11px] text-muted-foreground">
+            {completionStats.score >= 85 ? (
+              <span className="text-emerald-600 dark:text-emerald-400 font-bold">✓ Ready for 90%+ job match calculation</span>
+            ) : (
+              <span>Add: {completionStats.missing.slice(0, 2).join(', ')}</span>
+            )}
+          </div>
+        </div>
+
+        {/* Progress Track */}
+        <div className="w-full bg-muted/40 h-2 overflow-hidden border border-black/10 dark:border-white/10">
+          <div
+            className={`h-full transition-all duration-500 ${
+              completionStats.score >= 85
+                ? 'bg-emerald-500'
+                : completionStats.score >= 60
+                ? 'bg-[#fe7141]'
+                : 'bg-amber-500'
+            }`}
+            style={{ width: `${Math.max(5, completionStats.score)}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Step 2 Onboarding Arrangement Banner (Shown when profile is incomplete) */}
       {isProfileIncomplete && (
         <div className="border-2 border-[#fe7141] bg-[#fe7141]/10 p-5 font-mono text-xs text-foreground space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div className="flex items-center gap-2 text-[#fe7141] font-bold uppercase tracking-wider text-sm">
-              <Sparkles className="w-4 h-4 shrink-0" />
+              <ShieldCheck className="w-4 h-4 shrink-0" />
               <span>Step 2 of 2: Complete Your Job Profile</span>
             </div>
             <span className="text-[10px] uppercase font-bold text-muted-foreground px-2 py-0.5 border border-[#fe7141]/30 bg-card self-start sm:self-auto">
@@ -171,7 +408,7 @@ export const ProfilePage: React.FC = () => {
           </div>
 
           <p className="text-muted-foreground font-sans text-xs leading-relaxed">
-            Welcome{formData.name ? `, ${formData.name}` : ''}! Your account has been registered. Now update your <strong>Institution & Degree</strong> (Section 02) and add your <strong>Technical Skills</strong> (Section 03) below so our engine can calculate your verified match score across 40+ curated fresher jobs.
+            Welcome{formData.name ? `, ${formData.name}` : ''}! Your account is active. Update your <strong>Institution & Degree</strong> (Section 02) and add your <strong>Technical Skills</strong> (Section 03) below so our engine can calculate your verified match score across 40+ curated fresher jobs.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 font-mono text-[11px]">
@@ -207,7 +444,7 @@ export const ProfilePage: React.FC = () => {
         </div>
       )}
 
-      {/* Success Notification Banner with Post-Save Action Buttons */}
+      {/* Success Notification Banner */}
       {savedFeedback && (
         <div className="border border-emerald-500/50 bg-emerald-500/10 p-4 font-mono text-xs text-foreground flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-in fade-in slide-in-from-top-2 duration-200">
           <div className="flex items-center gap-2.5">
@@ -228,7 +465,7 @@ export const ProfilePage: React.FC = () => {
               className="px-3 py-1.5 bg-black dark:bg-white text-white dark:text-black font-bold uppercase tracking-wider text-[11px] hover:opacity-90 transition-opacity flex items-center gap-1 cursor-pointer"
             >
               <span>View Jobs</span>
-              <ArrowRight className="w-3 h-3" />
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
             <button
               type="button"
@@ -242,8 +479,8 @@ export const ProfilePage: React.FC = () => {
         </div>
       )}
 
-      {/* Deterministic "Build Profile from Resume" Section */}
-      <div className="border-2 border-black/20 dark:border-white/20 bg-muted/20 p-5 sm:p-6 font-mono text-xs text-foreground space-y-4">
+      {/* Deterministic Resume Profile Builder Box */}
+      <div className="border-2 border-black/20 dark:border-white/20 bg-muted/15 p-5 sm:p-6 font-mono text-xs text-foreground space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-wider text-xs">
             <ShieldCheck className="w-4 h-4 shrink-0" />
@@ -305,30 +542,17 @@ export const ProfilePage: React.FC = () => {
         </div>
       )}
 
-      {/* Direct Specification Matching Guarantee Box */}
-      <div className="border border-black/10 dark:border-white/15 p-4 sm:p-5 bg-muted/10 flex items-start gap-4 font-mono text-xs">
-        <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-        <div className="space-y-1">
-          <div className="font-bold text-foreground uppercase tracking-wider">
-            DIRECT SPECIFICATION MATCHING · VERIFIED CRITERIA ENGINE
-          </div>
-          <p className="text-muted-foreground font-sans text-xs leading-relaxed">
-            CollegeCentre combines your verified degree, graduation batch, normalized technical skills matrix, and demonstrated projects to calculate real-time match percentages across all curated fresher openings.
-          </p>
-        </div>
-      </div>
-
       {/* Section Filter Tabs */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-2 border-b border-black/10 dark:border-white/15 font-mono text-xs">
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-2 border-b border-black/10 dark:border-white/15 font-mono text-xs scrollbar-none">
         {profileTabs.map((tab) => (
           <button
             key={tab.id}
             type="button"
             onClick={() => setActiveTab(tab.id)}
-            className={`px-3 py-1.5 border whitespace-nowrap transition-colors uppercase tracking-wider ${
+            className={`px-3 py-1.5 border whitespace-nowrap transition-colors uppercase tracking-wider cursor-pointer ${
               activeTab === tab.id
                 ? 'border-black dark:border-white bg-foreground text-background font-bold'
-                : 'border-black/10 dark:border-white/15 text-muted-foreground hover:text-foreground'
+                : 'border-black/10 dark:border-white/15 text-muted-foreground hover:text-foreground hover:bg-muted/30'
             }`}
           >
             {tab.label}
@@ -337,15 +561,15 @@ export const ProfilePage: React.FC = () => {
       </div>
 
       <form id="candidate-profile-form" onSubmit={handleSave} className="space-y-8">
-        {/* Section 01: Personal Credentials */}
+        {/* Section 01: Personal Credentials & Online Presence */}
         {(activeTab === 'all' || activeTab === 'personal') && (
           <div className="border border-black/10 dark:border-white/15 bg-card p-6 space-y-6">
             <div className="flex items-baseline justify-between pb-3 border-b border-black/10 dark:border-white/10">
               <div className="font-mono text-xs font-bold text-foreground uppercase tracking-wider">
-                01. PERSONAL CREDENTIALS
+                01. PERSONAL CREDENTIALS & LINKS
               </div>
               <span className="font-mono text-[10px] text-muted-foreground uppercase">
-                Identity Details
+                Identity & Online Profiles
               </span>
             </div>
 
@@ -385,21 +609,95 @@ export const ProfilePage: React.FC = () => {
                   id="profile-phone"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  placeholder="e.g. +91 98765 00000"
+                  placeholder="e.g. +91 98765 43210"
                   className="h-10 rounded-none border-black/15 dark:border-white/20 font-mono text-xs"
                 />
               </div>
             </div>
 
+            {/* Social & Portfolio Links */}
+            <div className="pt-2 border-t border-black/10 dark:border-white/10 space-y-3 font-mono">
+              <div className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                Online Profiles & Portfolio
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label htmlFor="profile-linkedin" className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-1">
+                      <LinkIcon className="w-3 h-3 text-[#0a66c2]" />
+                      <span>LinkedIn Profile</span>
+                    </label>
+                    {formData.linkedin_url && (
+                      <a href={formData.linkedin_url} target="_blank" rel="noreferrer" className="text-[9px] text-[#fe7141] hover:underline flex items-center gap-0.5">
+                        <span>Visit</span>
+                        <ExternalLink className="w-2.5 h-2.5" />
+                      </a>
+                    )}
+                  </div>
+                  <Input
+                    id="profile-linkedin"
+                    value={formData.linkedin_url || ''}
+                    onChange={(e) => setFormData({ ...formData, linkedin_url: e.target.value })}
+                    placeholder="https://linkedin.com/in/username"
+                    className="h-10 rounded-none border-black/15 dark:border-white/20 font-mono text-xs"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label htmlFor="profile-github" className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-1">
+                      <Code2 className="w-3 h-3" />
+                      <span>GitHub Profile</span>
+                    </label>
+                    {formData.github_url && (
+                      <a href={formData.github_url} target="_blank" rel="noreferrer" className="text-[9px] text-[#fe7141] hover:underline flex items-center gap-0.5">
+                        <span>Visit</span>
+                        <ExternalLink className="w-2.5 h-2.5" />
+                      </a>
+                    )}
+                  </div>
+                  <Input
+                    id="profile-github"
+                    value={formData.github_url || ''}
+                    onChange={(e) => setFormData({ ...formData, github_url: e.target.value })}
+                    placeholder="https://github.com/username"
+                    className="h-10 rounded-none border-black/15 dark:border-white/20 font-mono text-xs"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label htmlFor="profile-portfolio" className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-1">
+                      <Globe className="w-3 h-3" />
+                      <span>Portfolio / Website</span>
+                    </label>
+                    {formData.portfolio_url && (
+                      <a href={formData.portfolio_url} target="_blank" rel="noreferrer" className="text-[9px] text-[#fe7141] hover:underline flex items-center gap-0.5">
+                        <span>Visit</span>
+                        <ExternalLink className="w-2.5 h-2.5" />
+                      </a>
+                    )}
+                  </div>
+                  <Input
+                    id="profile-portfolio"
+                    value={formData.portfolio_url || ''}
+                    onChange={(e) => setFormData({ ...formData, portfolio_url: e.target.value })}
+                    placeholder="https://yourportfolio.dev"
+                    className="h-10 rounded-none border-black/15 dark:border-white/20 font-mono text-xs"
+                  />
+                </div>
+              </div>
+            </div>
+
             {activeTab === 'personal' && (
               <div className="flex items-center justify-between pt-4 border-t border-black/10 dark:border-white/10 font-mono text-xs">
-                <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                  STEP 1 OF 4
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold">
+                  STEP 1 OF 5
                 </span>
                 <div className="flex items-center gap-3">
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-vermilion hover:bg-vermilion-hover text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2"
+                    className="px-4 py-2 bg-[#fe7141] hover:bg-[#e05828] text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 cursor-pointer"
                   >
                     <Save className="w-3.5 h-3.5" />
                     <span>Save Personal Info</span>
@@ -407,7 +705,7 @@ export const ProfilePage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setActiveTab('academics')}
-                    className="px-4 py-2 border border-black dark:border-white hover:bg-muted/40 text-xs font-bold uppercase tracking-wider"
+                    className="px-4 py-2 border border-black dark:border-white hover:bg-muted/40 text-xs font-bold uppercase tracking-wider cursor-pointer"
                   >
                     Next: Academics →
                   </button>
@@ -425,7 +723,7 @@ export const ProfilePage: React.FC = () => {
                 02. COLLEGE & ACADEMIC DATA
               </div>
               <span className="font-mono text-[10px] text-muted-foreground uppercase">
-                Degree & Graduation Batch
+                Degree, Specialization & CGPA
               </span>
             </div>
 
@@ -438,7 +736,7 @@ export const ProfilePage: React.FC = () => {
                   id="profile-college"
                   value={formData.college}
                   onChange={(e) => setFormData({ ...formData, college: e.target.value })}
-                  placeholder="e.g. BITS Pilani / NIT / Anna University"
+                  placeholder="e.g. National Institute of Technology Karnataka"
                   className="h-10 rounded-none border-black/15 dark:border-white/20 font-mono text-xs"
                   required
                 />
@@ -446,13 +744,13 @@ export const ProfilePage: React.FC = () => {
 
               <div className="space-y-1.5">
                 <label htmlFor="profile-degree" className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                  Degree / Branch
+                  Degree & Specialization
                 </label>
                 <Input
                   id="profile-degree"
                   value={formData.degree}
                   onChange={(e) => setFormData({ ...formData, degree: e.target.value })}
-                  placeholder="Computer Science & Engineering"
+                  placeholder="e.g. B.Tech Computer Science & Engineering"
                   className="h-10 rounded-none border-black/15 dark:border-white/20 font-mono text-xs"
                   required
                 />
@@ -462,13 +760,19 @@ export const ProfilePage: React.FC = () => {
                 <label htmlFor="profile-education-level" className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
                   Education Level
                 </label>
-                <Input
+                <select
                   id="profile-education-level"
-                  value={formData.education_level}
+                  value={formData.education_level || 'Undergraduate (B.Tech / B.E.)'}
                   onChange={(e) => setFormData({ ...formData, education_level: e.target.value })}
-                  placeholder="Undergraduate (B.Tech / B.E.)"
-                  className="h-10 rounded-none border-black/15 dark:border-white/20 font-mono text-xs"
-                />
+                  className="w-full h-10 rounded-none border border-black/15 dark:border-white/20 bg-background px-3 py-2 text-xs font-mono text-foreground focus:outline-none"
+                >
+                  <option value="Undergraduate (B.Tech / B.E.)">Undergraduate (B.Tech / B.E.)</option>
+                  <option value="BCA / MCA">BCA / MCA</option>
+                  <option value="Postgraduate (M.Tech / M.Sc)">Postgraduate (M.Tech / M.Sc)</option>
+                  <option value="B.Sc / Computer Applications">B.Sc / Computer Applications</option>
+                  <option value="Diploma / Polytechnic">Diploma / Polytechnic</option>
+                  <option value="Other Degree">Other Degree</option>
+                </select>
               </div>
 
               <div className="space-y-1.5">
@@ -483,11 +787,30 @@ export const ProfilePage: React.FC = () => {
                   }
                   className="w-full h-10 rounded-none border border-black/15 dark:border-white/20 bg-background px-3 py-2 text-xs font-mono text-foreground focus:outline-none"
                 >
+                  <option value={2029}>2029 (1st year)</option>
+                  <option value={2028}>2028 (2nd year)</option>
                   <option value={2027}>2027 (Pre-final year)</option>
                   <option value={2026}>2026 (Final year batch)</option>
                   <option value={2025}>2025 (Fresher / Graduated)</option>
                   <option value={2024}>2024 (0-1 yrs experience)</option>
+                  <option value={2023}>2023 (1-2 yrs experience)</option>
+                  {![2029, 2028, 2027, 2026, 2025, 2024, 2023].includes(formData.graduation_year) && (
+                    <option value={formData.graduation_year}>{formData.graduation_year} (Custom Batch)</option>
+                  )}
                 </select>
+              </div>
+
+              <div className="space-y-1.5 sm:col-span-2">
+                <label htmlFor="profile-cgpa" className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                  CGPA / Percentage Score
+                </label>
+                <Input
+                  id="profile-cgpa"
+                  value={formData.cgpa || ''}
+                  onChange={(e) => setFormData({ ...formData, cgpa: e.target.value })}
+                  placeholder="e.g. 8.85 / 10 or 85%"
+                  className="h-10 rounded-none border-black/15 dark:border-white/20 font-mono text-xs"
+                />
               </div>
             </div>
 
@@ -496,14 +819,14 @@ export const ProfilePage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setActiveTab('personal')}
-                  className="px-4 py-2 border border-black/20 dark:border-white/20 hover:bg-muted/40 text-xs font-bold uppercase tracking-wider"
+                  className="px-4 py-2 border border-black/20 dark:border-white/20 hover:bg-muted/40 text-xs font-bold uppercase tracking-wider cursor-pointer"
                 >
                   ← Prev: Personal
                 </button>
                 <div className="flex items-center gap-3">
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-vermilion hover:bg-vermilion-hover text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2"
+                    className="px-4 py-2 bg-[#fe7141] hover:bg-[#e05828] text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 cursor-pointer"
                   >
                     <Save className="w-3.5 h-3.5" />
                     <span>Save Academics</span>
@@ -511,7 +834,7 @@ export const ProfilePage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setActiveTab('skills')}
-                    className="px-4 py-2 border border-black dark:border-white hover:bg-muted/40 text-xs font-bold uppercase tracking-wider"
+                    className="px-4 py-2 border border-black dark:border-white hover:bg-muted/40 text-xs font-bold uppercase tracking-wider cursor-pointer"
                   >
                     Next: Skills →
                   </button>
@@ -525,8 +848,11 @@ export const ProfilePage: React.FC = () => {
         {(activeTab === 'all' || activeTab === 'skills') && (
           <div className="border border-black/10 dark:border-white/15 bg-card p-6 space-y-6">
             <div className="flex items-baseline justify-between pb-3 border-b border-black/10 dark:border-white/10">
-              <div className="font-mono text-xs font-bold text-foreground uppercase tracking-wider">
-                03. TECHNICAL SKILLS MATRIX
+              <div className="font-mono text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
+                <span>03. TECHNICAL SKILLS MATRIX</span>
+                <span className="px-2 py-0.5 bg-[#fe7141]/10 text-[#fe7141] font-bold text-[10px]">
+                  {formData.skills?.length || 0} Skills
+                </span>
               </div>
               <div className="font-mono text-[10px] text-muted-foreground uppercase">
                 Weight: 40% of Match Score
@@ -534,47 +860,78 @@ export const ProfilePage: React.FC = () => {
             </div>
 
             <div className="space-y-4 font-mono">
-              <div className="flex flex-wrap gap-1.5 min-h-12 p-3 border border-black/10 dark:border-white/15 bg-muted/10">
-                {formData.skills.map((skill) => (
-                  <span
-                    key={skill}
-                    className="inline-flex items-center gap-1.5 px-2 py-1 border border-black/15 dark:border-white/20 bg-card text-foreground text-xs uppercase"
-                  >
-                    <span>{skill}</span>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveSkill(skill)}
-                      aria-label={`Remove skill ${skill}`}
-                      className="hover:text-vermilion p-0.5"
+              {/* Selected Skills Tags */}
+              <div className="flex flex-wrap gap-2 min-h-12 p-3.5 border border-black/10 dark:border-white/15 bg-muted/10">
+                {formData.skills && formData.skills.length > 0 ? (
+                  formData.skills.map((skill) => (
+                    <span
+                      key={skill}
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 border border-black/15 dark:border-white/20 bg-card text-foreground text-xs font-bold"
                     >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </span>
-                ))}
+                      <span>{skill}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveSkill(skill)}
+                        aria-label={`Remove skill ${skill}`}
+                        className="hover:text-red-500 p-0.5 cursor-pointer"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  ))
+                ) : (
+                  <div className="text-xs text-muted-foreground py-1 flex items-center gap-2">
+                    <AlertCircle className="w-3.5 h-3.5 text-[#fe7141]" />
+                    <span>No skills added yet. Type below or click the quick-add chips to start matching.</span>
+                  </div>
+                )}
               </div>
 
+              {/* Add Skill Input */}
               <div className="flex gap-2">
                 <Input
                   id="profile-new-skill"
                   value={newSkill}
                   onChange={(e) => setNewSkill(e.target.value)}
-                  placeholder="Type skill (React, Python, PostgreSQL, Docker) and press Enter..."
-                  className="h-10 rounded-none border-black/15 dark:border-white/20 font-mono text-xs uppercase placeholder:normal-case"
+                  placeholder="Type skill (e.g. React, Python, Docker, PostgreSQL) and press Enter..."
+                  className="h-10 rounded-none border-black/15 dark:border-white/20 font-mono text-xs"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       e.preventDefault()
-                      handleAddSkill(e)
+                      handleAddSkill()
                     }
                   }}
                 />
                 <button
                   type="button"
-                  onClick={handleAddSkill}
-                  className="px-4 py-2 border border-black dark:border-white text-xs font-mono font-bold uppercase tracking-wider hover:bg-muted/40 transition-colors shrink-0"
+                  onClick={() => handleAddSkill()}
+                  className="px-5 py-2 bg-foreground text-background font-bold uppercase tracking-wider text-xs flex items-center gap-1 shrink-0 hover:opacity-90 cursor-pointer"
                 >
-                  + Add Skill
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add Skill</span>
                 </button>
               </div>
+
+              {/* Quick-Add Popular Skills Row */}
+              {unusedPopularSkills.length > 0 && (
+                <div className="space-y-1.5 pt-1">
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                    Quick Add In-Demand Fresher Skills:
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {unusedPopularSkills.map((skill) => (
+                      <button
+                        key={skill}
+                        type="button"
+                        onClick={() => handleAddQuickSkill(skill)}
+                        className="px-2 py-1 border border-dashed border-black/20 dark:border-white/20 hover:border-[#fe7141] hover:text-[#fe7141] text-[11px] transition-colors cursor-pointer"
+                      >
+                        + {skill}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {activeTab === 'skills' && (
@@ -582,14 +939,14 @@ export const ProfilePage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setActiveTab('academics')}
-                  className="px-4 py-2 border border-black/20 dark:border-white/20 hover:bg-muted/40 text-xs font-bold uppercase tracking-wider"
+                  className="px-4 py-2 border border-black/20 dark:border-white/20 hover:bg-muted/40 text-xs font-bold uppercase tracking-wider cursor-pointer"
                 >
                   ← Prev: Academics
                 </button>
                 <div className="flex items-center gap-3">
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-vermilion hover:bg-vermilion-hover text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2"
+                    className="px-4 py-2 bg-[#fe7141] hover:bg-[#e05828] text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 cursor-pointer"
                   >
                     <Save className="w-3.5 h-3.5" />
                     <span>Save Skills</span>
@@ -597,7 +954,7 @@ export const ProfilePage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setActiveTab('preferences')}
-                    className="px-4 py-2 border border-black dark:border-white hover:bg-muted/40 text-xs font-bold uppercase tracking-wider"
+                    className="px-4 py-2 border border-black dark:border-white hover:bg-muted/40 text-xs font-bold uppercase tracking-wider cursor-pointer"
                   >
                     Next: Preferences →
                   </button>
@@ -615,14 +972,14 @@ export const ProfilePage: React.FC = () => {
                 04. LOCATION & WORK PREFERENCES
               </div>
               <span className="font-mono text-[10px] text-muted-foreground uppercase">
-                Geography & Commute
+                Geography & Commute Preferences
               </span>
             </div>
 
             {/* Work Mode */}
             <div className="space-y-2 font-mono">
               <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                Target Work Mode
+                Target Work Modes
               </label>
               <div className="flex flex-wrap gap-2">
                 {availableModes.map((mode) => {
@@ -632,7 +989,7 @@ export const ProfilePage: React.FC = () => {
                       key={mode}
                       type="button"
                       onClick={() => toggleWorkMode(mode)}
-                      className={`px-4 py-2 text-xs border uppercase tracking-wider transition-colors ${
+                      className={`px-4 py-2 text-xs border uppercase tracking-wider transition-colors cursor-pointer ${
                         isSelected
                           ? 'border-black dark:border-white bg-foreground text-background font-bold'
                           : 'border-black/15 dark:border-white/20 text-muted-foreground hover:bg-muted/40'
@@ -650,22 +1007,27 @@ export const ProfilePage: React.FC = () => {
               <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                 Target Metro Regions
               </label>
-              <div className="flex flex-wrap gap-1.5">
-                {formData.preferred_locations.map((loc) => (
-                  <span
-                    key={loc}
-                    className="inline-flex items-center gap-1.5 px-2 py-1 border border-black/15 dark:border-white/20 bg-card text-foreground text-xs uppercase"
-                  >
-                    <span>{loc}</span>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveLocation(loc)}
-                      className="hover:text-vermilion p-0.5"
+              <div className="flex flex-wrap gap-1.5 min-h-10 p-2.5 border border-black/10 dark:border-white/15 bg-muted/10">
+                {formData.preferred_locations.length > 0 ? (
+                  formData.preferred_locations.map((loc) => (
+                    <span
+                      key={loc}
+                      className="inline-flex items-center gap-1.5 px-2 py-1 border border-black/15 dark:border-white/20 bg-card text-foreground text-xs uppercase font-bold"
                     >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </span>
-                ))}
+                      <span>{loc}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveLocation(loc)}
+                        className="hover:text-red-500 p-0.5 cursor-pointer"
+                        aria-label={`Remove location ${loc}`}
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-xs text-muted-foreground py-0.5">No preferred regions selected.</span>
+                )}
               </div>
 
               <div className="flex gap-2 pt-1">
@@ -673,23 +1035,44 @@ export const ProfilePage: React.FC = () => {
                   id="profile-new-city"
                   value={newLocation}
                   onChange={(e) => setNewLocation(e.target.value)}
-                  placeholder="Add city (Bengaluru, Hyderabad, Pune, Remote)..."
-                  className="h-10 rounded-none border-black/15 dark:border-white/20 font-mono text-xs uppercase placeholder:normal-case"
+                  placeholder="Type city (e.g. Bengaluru, Hyderabad, Pune, Kochi, Remote)..."
+                  className="h-10 rounded-none border-black/15 dark:border-white/20 font-mono text-xs"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       e.preventDefault()
-                      handleAddLocation(e)
+                      handleAddLocation()
                     }
                   }}
                 />
                 <button
                   type="button"
-                  onClick={handleAddLocation}
-                  className="px-4 py-2 border border-black dark:border-white text-xs font-mono font-bold uppercase tracking-wider hover:bg-muted/40 transition-colors shrink-0"
+                  onClick={() => handleAddLocation()}
+                  className="px-4 py-2 border border-black dark:border-white text-xs font-mono font-bold uppercase tracking-wider hover:bg-muted/40 transition-colors shrink-0 cursor-pointer"
                 >
                   + Add City
                 </button>
               </div>
+
+              {/* Quick Add Tech Hubs */}
+              {unusedPopularLocations.length > 0 && (
+                <div className="space-y-1.5 pt-1">
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                    Quick Add Tech Hubs:
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {unusedPopularLocations.map((loc) => (
+                      <button
+                        key={loc}
+                        type="button"
+                        onClick={() => handleAddQuickLocation(loc)}
+                        className="px-2 py-1 border border-dashed border-black/20 dark:border-white/20 hover:border-[#fe7141] hover:text-[#fe7141] text-[11px] transition-colors cursor-pointer"
+                      >
+                        + {loc}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {activeTab === 'preferences' && (
@@ -697,14 +1080,14 @@ export const ProfilePage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setActiveTab('skills')}
-                  className="px-4 py-2 border border-black/20 dark:border-white/20 hover:bg-muted/40 text-xs font-bold uppercase tracking-wider"
+                  className="px-4 py-2 border border-black/20 dark:border-white/20 hover:bg-muted/40 text-xs font-bold uppercase tracking-wider cursor-pointer"
                 >
                   ← Prev: Skills
                 </button>
                 <div className="flex items-center gap-3">
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-vermilion hover:bg-vermilion-hover text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2"
+                    className="px-4 py-2 bg-[#fe7141] hover:bg-[#e05828] text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 cursor-pointer"
                   >
                     <Save className="w-3.5 h-3.5" />
                     <span>Save Preferences</span>
@@ -712,7 +1095,7 @@ export const ProfilePage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setActiveTab('projects')}
-                    className="px-4 py-2 border border-black dark:border-white hover:bg-muted/40 text-xs font-bold uppercase tracking-wider"
+                    className="px-4 py-2 border border-black dark:border-white hover:bg-muted/40 text-xs font-bold uppercase tracking-wider cursor-pointer"
                   >
                     Next: Projects & Exp →
                   </button>
@@ -734,27 +1117,103 @@ export const ProfilePage: React.FC = () => {
               </div>
             </div>
 
-            {/* Resume-extracted Projects */}
+            {/* Projects Header & Controls */}
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div className="font-mono text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
                   <FolderGit2 className="w-4 h-4 text-[#fe7141]" />
                   <span>Key Projects ({(formData.projects || []).length})</span>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setIsResumeUploadOpen(true)}
-                  className="font-mono text-[11px] text-[#fe7141] hover:underline font-bold uppercase cursor-pointer"
-                >
-                  + Extract From Resume
-                </button>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setIsAddingProject(!isAddingProject)}
+                    className="font-mono text-[11px] text-foreground hover:underline font-bold uppercase cursor-pointer"
+                  >
+                    {isAddingProject ? '✕ Cancel' : '+ Add Project Manually'}
+                  </button>
+                  <span className="text-muted-foreground">•</span>
+                  <button
+                    type="button"
+                    onClick={() => setIsResumeUploadOpen(true)}
+                    className="font-mono text-[11px] text-[#fe7141] hover:underline font-bold uppercase cursor-pointer"
+                  >
+                    + Extract From Resume
+                  </button>
+                </div>
               </div>
 
+              {/* Inline Add Project Form */}
+              {isAddingProject && (
+                <div className="p-4 border-2 border-dashed border-[#fe7141] bg-[#fe7141]/5 space-y-3 font-mono text-xs animate-in fade-in duration-200">
+                  <div className="font-bold text-[#fe7141] uppercase tracking-wider text-[11px]">
+                    Add Project Details
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-muted-foreground uppercase">Project Title</label>
+                      <Input
+                        value={newProjectTitle}
+                        onChange={(e) => setNewProjectTitle(e.target.value)}
+                        placeholder="e.g. Distributed Task Queue"
+                        className="h-9 rounded-none font-mono text-xs"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-muted-foreground uppercase">GitHub / Demo URL</label>
+                      <Input
+                        value={newProjectLink}
+                        onChange={(e) => setNewProjectLink(e.target.value)}
+                        placeholder="https://github.com/username/project"
+                        className="h-9 rounded-none font-mono text-xs"
+                      />
+                    </div>
+                    <div className="space-y-1 sm:col-span-2">
+                      <label className="text-[10px] font-bold text-muted-foreground uppercase">Technologies Used (comma separated)</label>
+                      <Input
+                        value={newProjectTech}
+                        onChange={(e) => setNewProjectTech(e.target.value)}
+                        placeholder="e.g. Go, Redis, Docker, PostgreSQL"
+                        className="h-9 rounded-none font-mono text-xs"
+                      />
+                    </div>
+                    <div className="space-y-1 sm:col-span-2">
+                      <label className="text-[10px] font-bold text-muted-foreground uppercase">Brief Description</label>
+                      <Input
+                        value={newProjectDesc}
+                        onChange={(e) => setNewProjectDesc(e.target.value)}
+                        placeholder="Engineered a high-throughput job dispatcher handling 5,000 tasks/min."
+                        className="h-9 rounded-none font-mono text-xs"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-2 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsAddingProject(false)}
+                      className="px-3 py-1.5 border border-black/20 dark:border-white/20 text-xs font-bold uppercase cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleSaveProject}
+                      disabled={!newProjectTitle.trim()}
+                      className="px-4 py-1.5 bg-[#fe7141] hover:bg-[#e05828] text-white text-xs font-bold uppercase cursor-pointer disabled:opacity-40"
+                    >
+                      Save Project
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Projects List */}
               {(!formData.projects || formData.projects.length === 0) ? (
                 <div className="p-6 border border-dashed border-black/15 dark:border-white/20 bg-muted/5 text-center font-mono text-xs text-muted-foreground space-y-2">
                   <p>No projects attached to your profile yet.</p>
                   <p className="text-[11px] font-sans">
-                    Upload your resume to automatically extract project titles, descriptions, and technology stacks that feed directly into job matching.
+                    Demonstrated projects directly increase match qualification scores. Add them manually above or import from your resume.
                   </p>
                 </div>
               ) : (
@@ -765,7 +1224,7 @@ export const ProfilePage: React.FC = () => {
                       className="border border-black/10 dark:border-white/15 p-4 space-y-2 bg-card relative font-mono text-xs"
                     >
                       <div className="flex items-start justify-between gap-2">
-                        <div className="font-bold text-foreground">{proj.title}</div>
+                        <div className="font-bold text-foreground">{proj.title || proj.name}</div>
                         <button
                           type="button"
                           onClick={() => {
@@ -798,14 +1257,14 @@ export const ProfilePage: React.FC = () => {
                         </div>
                       )}
 
-                      {proj.link && (
+                      {(proj.link || proj.url) && (
                         <a
-                          href={proj.link}
+                          href={proj.link || proj.url || '#'}
                           target="_blank"
                           rel="noreferrer"
                           className="pt-1 text-[11px] text-[#fe7141] hover:underline flex items-center gap-1"
                         >
-                          <span>{proj.link}</span>
+                          <span>{proj.link || proj.url}</span>
                           <ExternalLink className="w-3 h-3" />
                         </a>
                       )}
@@ -815,15 +1274,98 @@ export const ProfilePage: React.FC = () => {
               )}
             </div>
 
-            {/* Resume-extracted Internships */}
+            {/* Internships & Experience Section */}
             <div className="space-y-4 pt-4 border-t border-black/10 dark:border-white/10">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div className="font-mono text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
                   <Briefcase className="w-4 h-4 text-[#fe7141]" />
                   <span>Internships & Experience ({(formData.internships || []).length})</span>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => setIsAddingInternship(!isAddingInternship)}
+                  className="font-mono text-[11px] text-foreground hover:underline font-bold uppercase cursor-pointer"
+                >
+                  {isAddingInternship ? '✕ Cancel' : '+ Add Internship Manually'}
+                </button>
               </div>
 
+              {/* Inline Add Internship Form */}
+              {isAddingInternship && (
+                <div className="p-4 border-2 border-dashed border-[#fe7141] bg-[#fe7141]/5 space-y-3 font-mono text-xs animate-in fade-in duration-200">
+                  <div className="font-bold text-[#fe7141] uppercase tracking-wider text-[11px]">
+                    Add Internship Details
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-muted-foreground uppercase">Company Name</label>
+                      <Input
+                        value={newInternCompany}
+                        onChange={(e) => setNewInternCompany(e.target.value)}
+                        placeholder="e.g. Razorpay Software"
+                        className="h-9 rounded-none font-mono text-xs"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-muted-foreground uppercase">Role Title</label>
+                      <Input
+                        value={newInternRole}
+                        onChange={(e) => setNewInternRole(e.target.value)}
+                        placeholder="e.g. Software Engineering Intern"
+                        className="h-9 rounded-none font-mono text-xs"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-muted-foreground uppercase">Duration</label>
+                      <Input
+                        value={newInternDuration}
+                        onChange={(e) => setNewInternDuration(e.target.value)}
+                        placeholder="e.g. May 2025 – July 2025"
+                        className="h-9 rounded-none font-mono text-xs"
+                      />
+                    </div>
+                    <div className="space-y-1 sm:col-span-3">
+                      <label className="text-[10px] font-bold text-muted-foreground uppercase">Technologies / Skills Used (comma separated)</label>
+                      <Input
+                        value={newInternTech}
+                        onChange={(e) => setNewInternTech(e.target.value)}
+                        placeholder="e.g. Python, FastAPI, Docker, PostgreSQL"
+                        className="h-9 rounded-none font-mono text-xs"
+                      />
+                    </div>
+                    <div className="space-y-1 sm:col-span-3">
+                      <label className="text-[10px] font-bold text-muted-foreground uppercase">Description</label>
+                      <Input
+                        value={newInternDesc}
+                        onChange={(e) => setNewInternDesc(e.target.value)}
+                        placeholder="Built API webhooks and improved backend throughput."
+                        className="h-9 rounded-none font-mono text-xs"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-2 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsAddingInternship(false)}
+                      className="px-3 py-1.5 border border-black/20 dark:border-white/20 text-xs font-bold uppercase cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleSaveInternship}
+                      disabled={!newInternCompany.trim() || !newInternRole.trim()}
+                      className="px-4 py-1.5 bg-[#fe7141] hover:bg-[#e05828] text-white text-xs font-bold uppercase cursor-pointer disabled:opacity-40"
+                    >
+                      Save Internship
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Internships List */}
               {(!formData.internships || formData.internships.length === 0) ? (
                 <div className="p-6 border border-dashed border-black/15 dark:border-white/20 bg-muted/5 text-center font-mono text-xs text-muted-foreground space-y-2">
                   <p>No internships or work experience recorded.</p>
@@ -864,9 +1406,9 @@ export const ProfilePage: React.FC = () => {
                         </p>
                       )}
 
-                      {exp.skills_used && exp.skills_used.length > 0 && (
+                      {((exp.skills_used && exp.skills_used.length > 0) || (exp.technologies && exp.technologies.length > 0)) && (
                         <div className="flex flex-wrap gap-1 pt-1">
-                          {exp.skills_used.map((s, si) => (
+                          {(exp.skills_used || exp.technologies || []).map((s, si) => (
                             <span
                               key={si}
                               className="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold"
@@ -887,13 +1429,13 @@ export const ProfilePage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setActiveTab('preferences')}
-                  className="px-4 py-2 border border-black/20 dark:border-white/20 hover:bg-muted/40 text-xs font-bold uppercase tracking-wider"
+                  className="px-4 py-2 border border-black/20 dark:border-white/20 hover:bg-muted/40 text-xs font-bold uppercase tracking-wider cursor-pointer"
                 >
                   ← Prev: Preferences
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-vermilion hover:bg-vermilion-hover text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2"
+                  className="px-5 py-2 bg-[#fe7141] hover:bg-[#e05828] text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 cursor-pointer shadow-xs"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save Profile</span>
@@ -916,7 +1458,7 @@ export const ProfilePage: React.FC = () => {
 
           <button
             type="submit"
-            className="w-full sm:w-auto h-12 px-10 font-mono text-xs font-bold uppercase tracking-wider bg-vermilion hover:bg-vermilion-hover text-white transition-colors flex items-center justify-center gap-2 shadow-sm shrink-0"
+            className="w-full sm:w-auto h-12 px-10 font-mono text-xs font-bold uppercase tracking-wider bg-[#fe7141] hover:bg-[#e05828] text-white transition-colors flex items-center justify-center gap-2 shadow-sm shrink-0 cursor-pointer"
           >
             <Save className="w-4 h-4" />
             <span>{savedFeedback ? '✓ Profile Saved' : 'Save Profile'}</span>
@@ -928,15 +1470,15 @@ export const ProfilePage: React.FC = () => {
       <div className="sticky bottom-6 z-20 flex justify-end pointer-events-none">
         <div className="pointer-events-auto border border-black/20 dark:border-white/25 bg-background/95 backdrop-blur-md p-2 shadow-xl flex items-center gap-3 font-mono">
           <span className="text-[11px] text-muted-foreground uppercase hidden md:inline px-2 font-bold">
-            CANDIDATE SPECIFICATION
+            {completionStats.score}% MATCH READINESS
           </span>
           <button
             type="submit"
             form="candidate-profile-form"
-            className="px-6 py-2.5 bg-vermilion hover:bg-vermilion-hover text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-2 shadow-xs"
+            className="px-6 py-2.5 bg-[#fe7141] hover:bg-[#e05828] text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-2 shadow-xs cursor-pointer"
           >
             <Save className="w-3.5 h-3.5" />
-            <span>{savedFeedback ? '✓ Profile Saved' : 'Save Profile'}</span>
+            <span>{savedFeedback ? '✓ Saved' : 'Save Profile'}</span>
           </button>
         </div>
       </div>
@@ -962,5 +1504,3 @@ export const ProfilePage: React.FC = () => {
     </div>
   )
 }
-
-

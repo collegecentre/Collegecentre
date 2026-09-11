@@ -218,6 +218,7 @@ export function mergeResumeWithProfile(
     college,
     degree,
     graduation_year: gradYear,
+    cgpa: existing.cgpa || primaryEdu?.gpa_or_percentage || null,
     skills: mergedSkills,
     preferred_categories: mergedCategories.length > 0 ? mergedCategories : existing.preferred_categories,
     experience_level: extracted.career?.experience_level || existing.experience_level || 'Fresher',
