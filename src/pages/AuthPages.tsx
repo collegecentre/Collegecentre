@@ -90,11 +90,29 @@ export const AuthPages: React.FC<AuthPagesProps> = ({ initialMode = 'signup' }) 
           return
         }
 
-        // Fetch cloud profile
-        const cloudStudent = await db.fetchCloudStudentByEmail(cleanEmail)
+        const fallbackName =
+          authUser?.user_metadata?.full_name ||
+          authUser?.user_metadata?.name ||
+          (student.name && student.name !== 'Fresher Student' ? student.name : '') ||
+          cleanEmail.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+
+        // Fetch cloud profile defensively
+        let cloudStudent = null
+        try {
+          cloudStudent = await db.fetchCloudStudentByEmail(cleanEmail)
+        } catch {
+          // fallback to local profile if cloud fetch fails
+        }
+
         if (cloudStudent) {
-          updateStudent(cloudStudent, null)
-          showToast(`Welcome back, ${cloudStudent.name || 'Candidate'}!`, 'success')
+          updateStudent(
+            {
+              ...cloudStudent,
+              name: cloudStudent.name || fallbackName,
+            },
+            null
+          )
+          showToast(`Welcome back, ${cloudStudent.name || fallbackName || 'Candidate'}!`, 'success')
           if (!cloudStudent.college?.trim() || !cloudStudent.skills?.length) {
             showToast('Please complete your job profile to unlock matched openings.', 'info')
             setCurrentView('profile')
@@ -105,9 +123,9 @@ export const AuthPages: React.FC<AuthPagesProps> = ({ initialMode = 'signup' }) 
           updateStudent(
             {
               ...student,
-              id: authUser?.id || student.id,
+              id: authUser?.id || student.id || `cand_${Date.now()}`,
               email: cleanEmail,
-              name: authUser?.user_metadata?.full_name || student.name || 'Fresher Student',
+              name: fallbackName,
               phone: authUser?.user_metadata?.phone || student.phone || '',
             },
             null

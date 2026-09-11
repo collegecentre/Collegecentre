@@ -128,7 +128,7 @@ export const Navigation: React.FC<NavigationProps> = ({ onOpenDemo }) => {
           {/* Right Action Bar */}
           <div className="flex items-center gap-2">
             {/* Sign In / Profile Quick Link */}
-            {isAuthenticated && student.name ? (
+            {isAuthenticated ? (
               <div className="hidden sm:flex items-center gap-1.5">
                 <button
                   type="button"
@@ -137,7 +137,7 @@ export const Navigation: React.FC<NavigationProps> = ({ onOpenDemo }) => {
                   title="View and edit profile"
                 >
                   <User className="w-3 h-3" />
-                  <span>{student.name.split(' ')[0]}</span>
+                  <span>{(student.name?.trim() || student.email?.split('@')[0] || 'Profile').split(' ')[0]}</span>
                 </button>
                 <button
                   type="button"

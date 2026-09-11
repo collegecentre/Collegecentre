@@ -16,8 +16,14 @@ export const AuthProvider: React.FC<{
   children: React.ReactNode
   showToast: (msg: string, type?: 'success' | 'info' | 'warning') => void
 }> = ({ children, showToast }) => {
+  const isStudentLoggedIn = (s: StudentProfile | null | undefined): boolean => {
+    return Boolean(s && s.id && s.id !== 'guest_student' && s.email && s.email.trim())
+  }
+
   const [student, setStudent] = useState<StudentProfile>(() => db.getStudent())
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    return isStudentLoggedIn(db.getStudent())
+  })
 
   // Supabase Auth session synchronization across devices
   useEffect(() => {
@@ -28,35 +34,39 @@ export const AuthProvider: React.FC<{
         const cloud = email ? await db.fetchCloudStudentByEmail(email) : null
         if (cloud) {
           setStudent(cloud)
+          db.saveStudent(cloud)
         } else {
-          setStudent((prev) => ({
-            ...prev,
-            id: session.user.id,
-            email: session.user.email || prev.email,
-            name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || prev.name,
-            phone: session.user.user_metadata?.phone || prev.phone || '',
-          }))
+          setStudent((prev) => {
+            const next = {
+              ...prev,
+              id: session.user.id,
+              email: session.user.email || prev.email,
+              name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || prev.name || 'Student',
+              phone: session.user.user_metadata?.phone || prev.phone || '',
+            }
+            db.saveStudent(next)
+            return next
+          })
         }
-      } else {
-        setIsAuthenticated(false)
-        db.clearUserSession()
-        setStudent(INITIAL_STUDENT)
       }
     }
 
     supabase.auth.getSession().then(({ data }: { data: any }) => {
       if (data?.session) {
         hydrateUser(data.session)
-      } else {
-        // No active session: ensure clean unauthenticated guest state
-        setIsAuthenticated(false)
       }
-    })
+    }).catch(() => {})
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
-      hydrateUser(session)
+    } = supabase.auth.onAuthStateChange((event: any, session: any) => {
+      if (event === 'SIGNED_OUT') {
+        setIsAuthenticated(false)
+        db.clearUserSession()
+        setStudent(INITIAL_STUDENT)
+      } else if (session?.user) {
+        hydrateUser(session)
+      }
     })
 
     return () => subscription.unsubscribe()
@@ -66,6 +76,9 @@ export const AuthProvider: React.FC<{
     (updated: StudentProfile, customToast?: string | null) => {
       db.saveStudent(updated)
       setStudent(updated)
+      if (isStudentLoggedIn(updated)) {
+        setIsAuthenticated(true)
+      }
       if (customToast !== null) {
         showToast(customToast || 'Profile updated successfully! Criteria match recalculated.', 'success')
       }
