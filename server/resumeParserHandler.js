@@ -336,10 +336,18 @@ export async function handleParseResume(req, res) {
     return res.status(400).json({ error: 'No file data received. Please select a resume file to upload.' });
   }
 
-  // Clean base64 string
-  const base64Content = fileData.replace(/^data:[^;]+;base64,/, '').trim();
-  if (!base64Content) {
+  // Clean all whitespace, newlines, tabs, and data URI prefixes
+  const rawBase64 = fileData.replace(/^data:[^;]+;base64,/, '').replace(/\s+/g, '');
+  if (!rawBase64) {
     return res.status(400).json({ error: 'Uploaded resume document is empty.' });
+  }
+
+  // Ensure pure RFC 4648 standard base64 encoding without breaks or padding issues
+  let base64Content = rawBase64;
+  try {
+    base64Content = Buffer.from(rawBase64, 'base64').toString('base64');
+  } catch {
+    base64Content = rawBase64;
   }
 
   // 3. Validate File Size

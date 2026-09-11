@@ -76,8 +76,8 @@ export const ResumeUploadModal: React.FC<ResumeUploadModalProps> = ({
       const reader = new FileReader()
       reader.onload = () => {
         const result = reader.result as string
-        // Strip data:application/pdf;base64, prefix if present
-        const base64 = result.includes(",") ? result.split(",")[1] : result
+        // Strip data:application/pdf;base64, prefix and any whitespace/newlines
+        const base64 = (result.includes(",") ? result.split(",")[1] : result).replace(/\s+/g, "")
         resolve(base64)
       }
       reader.onerror = (err) => reject(err)
