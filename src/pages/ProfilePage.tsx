@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useApp } from '@/context/AppContext'
 import { StudentProfile, WorkMode } from '@/types'
 import { ResumeExtractedProfile, ProfileMergeSummary } from '@/types/resume'
@@ -89,53 +89,14 @@ export const ProfilePage: React.FC = () => {
 
   const availableModes: WorkMode[] = ['Remote', 'Hybrid', 'Onsite']
 
-  // Profile Completion Calculation
-  const completionStats = useMemo(() => {
-    let score = 0
-    const missing: string[] = []
+  // Minimum Requirements for Job Matching: Degree + at least 1 Technical Skill
+  const hasDegree = Boolean(formData.degree?.trim())
+  const hasSkills = Boolean(formData.skills && formData.skills.length > 0)
+  const isMinimumComplete = hasDegree && hasSkills
 
-    // 1. Personal (20%)
-    if (formData.name && formData.email && formData.phone) {
-      score += 20
-    } else {
-      missing.push('Full contact details')
-    }
-
-    // 2. Academics (25%)
-    if (formData.college?.trim() && formData.degree?.trim()) {
-      score += 25
-    } else {
-      missing.push('College & Degree')
-    }
-
-    // 3. Skills (25%)
-    if (formData.skills && formData.skills.length >= 3) {
-      score += 25
-    } else if (formData.skills && formData.skills.length > 0) {
-      score += 15
-      missing.push('Add at least 3 skills')
-    } else {
-      missing.push('Technical skills')
-    }
-
-    // 4. Links (15%)
-    if (formData.linkedin_url || formData.github_url || formData.portfolio_url) {
-      score += 15
-    } else {
-      missing.push('LinkedIn or GitHub URL')
-    }
-
-    // 5. Projects or Experience (15%)
-    const hasProjects = (formData.projects && formData.projects.length > 0)
-    const hasExp = (formData.internships && formData.internships.length > 0) || (formData.experience && formData.experience.length > 0)
-    if (hasProjects || hasExp) {
-      score += 15
-    } else {
-      missing.push('Key projects or internships')
-    }
-
-    return { score, missing }
-  }, [formData])
+  const [activeTab, setActiveTab] = useState<'essentials' | 'academics' | 'work' | 'links' | 'projects' | 'all'>(
+    isMinimumComplete ? 'all' : 'essentials'
+  )
 
   const handleAddSkill = (e?: React.FormEvent) => {
     if (e) e.preventDefault()
@@ -231,7 +192,6 @@ export const ProfilePage: React.FC = () => {
       projects: [...(formData.projects || []), newProj],
     })
 
-    // Reset Form
     setNewProjectTitle('')
     setNewProjectDesc('')
     setNewProjectTech('')
@@ -262,7 +222,6 @@ export const ProfilePage: React.FC = () => {
       internships: [...(formData.internships || []), newIntern],
     })
 
-    // Reset Form
     setNewInternCompany('')
     setNewInternRole('')
     setNewInternDuration('')
@@ -278,14 +237,6 @@ export const ProfilePage: React.FC = () => {
     setTimeout(() => setSavedFeedback(false), 5000)
   }
 
-  const isAcademicMissing = !formData.college?.trim() || !formData.degree?.trim()
-  const isSkillsMissing = !formData.skills || formData.skills.length === 0
-  const isProfileIncomplete = isAcademicMissing || isSkillsMissing
-
-  const [activeTab, setActiveTab] = useState<'all' | 'personal' | 'academics' | 'skills' | 'preferences' | 'projects'>(
-    isAcademicMissing ? 'academics' : 'all'
-  )
-
   const handleResumeExtracted = (extracted: ResumeExtractedProfile, rawFileName: string) => {
     setExtractedResume(extracted)
     setResumeFileName(rawFileName)
@@ -297,7 +248,7 @@ export const ProfilePage: React.FC = () => {
     updateStudent(merged)
     setFormData(merged)
     setIsResumeReviewOpen(false)
-    const summaryText = `✓ Resume merged! Added ${summary.skillsAdded} new skills, ${summary.projectsAdded} projects, and updated credentials.`
+    const summaryText = `✓ Resume merged! Added ${summary.skillsAdded} skills and updated credentials.`
     setResumeMergeToast(summaryText)
     setTimeout(() => setResumeMergeToast(null), 8000)
   }
@@ -305,12 +256,12 @@ export const ProfilePage: React.FC = () => {
   const totalProjectsAndExp = (formData.projects?.length || 0) + (formData.internships?.length || 0)
 
   const profileTabs = [
+    { id: 'essentials', label: '01. Core Essentials (Minimum)' },
+    { id: 'academics', label: '02. Academics (Optional)' },
+    { id: 'work', label: '03. Work & Location (Optional)' },
+    { id: 'links', label: '04. Online Profiles (Optional)' },
+    { id: 'projects', label: `05. Projects & Exp (${totalProjectsAndExp})` },
     { id: 'all', label: 'All Sections' },
-    { id: 'personal', label: '01. Personal & Links' },
-    { id: 'academics', label: '02. Academics' },
-    { id: 'skills', label: `03. Skills Matrix (${formData.skills?.length || 0})` },
-    { id: 'preferences', label: '04. Preferences' },
-    { id: 'projects', label: `05. Projects & Exp${totalProjectsAndExp > 0 ? ` (${totalProjectsAndExp})` : ''}` },
   ] as const
 
   const unusedPopularSkills = POPULAR_SKILLS.filter(
@@ -322,155 +273,101 @@ export const ProfilePage: React.FC = () => {
   ).slice(0, 6)
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 space-y-8 relative pb-28">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 md:py-10 space-y-6 relative pb-28">
       {/* Editorial Header */}
-      <div className="border-b border-black/10 dark:border-white/15 pb-6">
-        <div className="font-mono text-xs uppercase tracking-widest text-muted-foreground mb-2">
-          Candidate Profile • Match Parameters
+      <div className="border-b border-black/10 dark:border-white/15 pb-4">
+        <div className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground mb-1">
+          Candidate Profile • Freshers Placement Matching
         </div>
         <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-4">
-          <div className="space-y-1">
-            <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">
               Candidate Profile
             </h1>
-            <p className="text-xs sm:text-sm text-muted-foreground">
-              Direct criteria matching across graduation batch, degree discipline, and technical capabilities.
+            <p className="text-xs text-muted-foreground font-sans">
+              Minimum needed to match jobs: <strong>Degree</strong> and <strong>1+ Skill</strong>. All other fields are optional.
             </p>
           </div>
 
-          {/* Primary Top Save Button */}
           <button
             type="submit"
             form="candidate-profile-form"
-            className="px-6 py-3 bg-[#fe7141] hover:bg-[#e05828] text-white font-mono text-xs font-bold uppercase tracking-wider transition-colors shrink-0 flex items-center gap-2 shadow-xs cursor-pointer"
+            className="px-5 py-2.5 bg-[#fe7141] hover:bg-[#e05828] text-white font-mono text-xs font-bold uppercase tracking-wider transition-colors shrink-0 flex items-center gap-2 shadow-xs cursor-pointer"
           >
             <Save className="w-3.5 h-3.5" />
-            <span>{savedFeedback ? '✓ Profile Updated' : 'Save Profile'}</span>
+            <span>{savedFeedback ? '✓ Saved' : 'Save Profile'}</span>
           </button>
         </div>
       </div>
 
-      {/* Profile Health / Readiness Meter */}
-      <div className="border border-black/15 dark:border-white/20 bg-card p-5 font-mono text-xs space-y-3">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <span className="font-bold uppercase tracking-wider text-foreground">
-              Match Readiness Score
-            </span>
-            <span
-              className={`px-2 py-0.5 border text-[11px] font-bold uppercase ${
-                completionStats.score >= 85
-                  ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                  : completionStats.score >= 60
-                  ? 'border-amber-500/50 bg-amber-500/10 text-amber-600 dark:text-amber-400'
-                  : 'border-red-500/50 bg-red-500/10 text-red-600 dark:text-red-400'
-              }`}
-            >
-              {completionStats.score}% Complete
-            </span>
-          </div>
-
-          <div className="text-[11px] text-muted-foreground">
-            {completionStats.score >= 85 ? (
-              <span className="text-emerald-600 dark:text-emerald-400 font-bold">✓ Ready for 90%+ job match calculation</span>
-            ) : (
-              <span>Add: {completionStats.missing.slice(0, 2).join(', ')}</span>
-            )}
+      {/* Minimum Requirements Checklist Banner */}
+      <div className={`border p-4 font-mono text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+        isMinimumComplete
+          ? 'border-emerald-500/50 bg-emerald-500/5'
+          : 'border-[#fe7141]/40 bg-[#fe7141]/5'
+      }`}>
+        <div className="flex items-center gap-3">
+          <div className={`w-3 h-3 rounded-full shrink-0 ${isMinimumComplete ? 'bg-emerald-500' : 'bg-[#fe7141] animate-pulse'}`} />
+          <div>
+            <div className="font-bold uppercase tracking-wider text-foreground flex items-center gap-2">
+              <span>{isMinimumComplete ? '✓ Minimum Requirements Complete' : 'Minimum Needed to Calculate Match:'}</span>
+            </div>
+            <p className="text-[11px] text-muted-foreground font-sans">
+              {isMinimumComplete
+                ? 'Your degree and skills are actively calculating match scores across all 40+ fresher openings.'
+                : 'Enter your Degree / Branch and at least 1 Technical Skill to activate full matching.'}
+            </p>
           </div>
         </div>
 
-        {/* Progress Track */}
-        <div className="w-full bg-muted/40 h-2 overflow-hidden border border-black/10 dark:border-white/10">
-          <div
-            className={`h-full transition-all duration-500 ${
-              completionStats.score >= 85
-                ? 'bg-emerald-500'
-                : completionStats.score >= 60
-                ? 'bg-[#fe7141]'
-                : 'bg-amber-500'
+        <div className="flex items-center gap-2 text-[11px] shrink-0 font-bold">
+          <button
+            type="button"
+            onClick={() => setActiveTab('essentials')}
+            className={`px-2.5 py-1 border transition-colors cursor-pointer ${
+              hasDegree
+                ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                : 'border-[#fe7141] bg-card text-[#fe7141] hover:bg-[#fe7141]/10'
             }`}
-            style={{ width: `${Math.max(5, completionStats.score)}%` }}
-          />
+          >
+            {hasDegree ? '✓ 1. Degree Added' : '○ 1. Add Degree'}
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('essentials')}
+            className={`px-2.5 py-1 border transition-colors cursor-pointer ${
+              hasSkills
+                ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                : 'border-[#fe7141] bg-card text-[#fe7141] hover:bg-[#fe7141]/10'
+            }`}
+          >
+            {hasSkills ? `✓ 2. Skills (${formData.skills.length})` : '○ 2. Add Skill'}
+          </button>
         </div>
       </div>
 
-      {/* Step 2 Onboarding Arrangement Banner (Shown when profile is incomplete) */}
-      {isProfileIncomplete && (
-        <div className="border-2 border-[#fe7141] bg-[#fe7141]/10 p-5 font-mono text-xs text-foreground space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <div className="flex items-center gap-2 text-[#fe7141] font-bold uppercase tracking-wider text-sm">
-              <ShieldCheck className="w-4 h-4 shrink-0" />
-              <span>Step 2 of 2: Complete Your Job Profile</span>
-            </div>
-            <span className="text-[10px] uppercase font-bold text-muted-foreground px-2 py-0.5 border border-[#fe7141]/30 bg-card self-start sm:self-auto">
-              Required for Matching & ₹199 Pass
-            </span>
-          </div>
-
-          <p className="text-muted-foreground font-sans text-xs leading-relaxed">
-            Welcome{formData.name ? `, ${formData.name}` : ''}! Your account is active. Update your <strong>Institution & Degree</strong> (Section 02) and add your <strong>Technical Skills</strong> (Section 03) below so our engine can calculate your verified match score across 40+ curated fresher jobs.
-          </p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 font-mono text-[11px]">
-            <div className={`p-2.5 border flex items-center gap-2 ${formData.name && formData.email ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400' : 'border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400'}`}>
-              <span className="font-bold">{formData.name && formData.email ? '✓' : '○'}</span>
-              <span>1. Account Registered</span>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('academics')}
-              className={`p-2.5 border flex items-center justify-between cursor-pointer transition-colors text-left ${formData.college && formData.degree ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400' : 'border-[#fe7141] bg-card text-[#fe7141] font-bold hover:bg-[#fe7141]/15'}`}
-            >
-              <div className="flex items-center gap-1.5">
-                <span>{formData.college && formData.degree ? '✓' : '○'}</span>
-                <span>2. Academics</span>
-              </div>
-              {(!formData.college || !formData.degree) && <span className="text-[9px] uppercase underline">Update now →</span>}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('skills')}
-              className={`p-2.5 border flex items-center justify-between cursor-pointer transition-colors text-left ${formData.skills && formData.skills.length > 0 ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400' : 'border-[#fe7141] bg-card text-[#fe7141] font-bold hover:bg-[#fe7141]/15'}`}
-            >
-              <div className="flex items-center gap-1.5">
-                <span>{formData.skills && formData.skills.length > 0 ? '✓' : '○'}</span>
-                <span>3. Skills ({formData.skills ? formData.skills.length : 0})</span>
-              </div>
-              {(!formData.skills || formData.skills.length === 0) && <span className="text-[9px] uppercase underline">Add skills →</span>}
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* Success Notification Banner */}
       {savedFeedback && (
-        <div className="border border-emerald-500/50 bg-emerald-500/10 p-4 font-mono text-xs text-foreground flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="border border-emerald-500/50 bg-emerald-500/10 p-3.5 font-mono text-xs text-foreground flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-in fade-in slide-in-from-top-2 duration-200">
           <div className="flex items-center gap-2.5">
-            <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
-            <div>
-              <div className="font-bold uppercase text-emerald-700 dark:text-emerald-400">
-                Profile and match criteria updated successfully!
-              </div>
-              <div className="text-[11px] text-muted-foreground font-sans">
-                Real-time match scores recalculated across all curated openings.
-              </div>
-            </div>
+            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+            <span className="font-bold text-emerald-700 dark:text-emerald-400">
+              Profile updated! Match criteria recalibrated.
+            </span>
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <button
               type="button"
               onClick={() => setCurrentView('jobs')}
-              className="px-3 py-1.5 bg-black dark:bg-white text-white dark:text-black font-bold uppercase tracking-wider text-[11px] hover:opacity-90 transition-opacity flex items-center gap-1 cursor-pointer"
+              className="px-3 py-1 bg-black dark:bg-white text-white dark:text-black font-bold uppercase tracking-wider text-[11px] hover:opacity-90 flex items-center gap-1 cursor-pointer"
             >
               <span>View Jobs</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <ArrowRight className="w-3 h-3" />
             </button>
             <button
               type="button"
               onClick={() => setIsPaymentModalOpen(true)}
-              className="px-3 py-1.5 bg-[#fe7141] hover:bg-[#e05828] text-white font-bold uppercase tracking-wider text-[11px] transition-colors flex items-center gap-1 cursor-pointer"
+              className="px-3 py-1 bg-[#fe7141] hover:bg-[#e05828] text-white font-bold uppercase tracking-wider text-[11px] flex items-center gap-1 cursor-pointer"
             >
               <Zap className="w-3 h-3 fill-current" />
               <span>Unlock Pass</span>
@@ -479,71 +376,47 @@ export const ProfilePage: React.FC = () => {
         </div>
       )}
 
-      {/* Deterministic Resume Profile Builder Box */}
-      <div className="border-2 border-black/20 dark:border-white/20 bg-muted/15 p-5 sm:p-6 font-mono text-xs text-foreground space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-wider text-xs">
-            <ShieldCheck className="w-4 h-4 shrink-0" />
-            <span>Resume Profile Builder • Local Deterministic Parser (No AI)</span>
+      {/* Optional Resume Import Shortcut */}
+      <div className="border border-black/15 dark:border-white/20 bg-muted/10 p-4 font-mono text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="space-y-0.5">
+          <div className="flex items-center gap-1.5 font-bold uppercase tracking-wider text-foreground">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+            <span>Optional: Auto-fill from Resume</span>
           </div>
-          {formData.resume_file_name && (
-            <div className="flex items-center gap-1.5 text-[11px] text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-500/10 px-2.5 py-1 border border-emerald-500/30">
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>Parsed from: {formData.resume_file_name}</span>
-            </div>
-          )}
+          <p className="text-[11px] text-muted-foreground font-sans">
+            Upload your PDF/DOCX to extract skills, education, and projects with our free local parser. No AI is used.
+          </p>
         </div>
 
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
-          <div className="space-y-1.5 max-w-2xl">
-            <h2 className="text-lg sm:text-xl font-black tracking-tight text-foreground">
-              Build profile from resume
-            </h2>
-            <p className="text-muted-foreground font-sans text-xs leading-relaxed">
-              Your resume is processed automatically using local/deterministic parsing. No AI is used. Upload your PDF/DOCX resume to extract your skills, education, experience, and projects. You can review and edit before saving.
-            </p>
-            <div className="flex flex-wrap items-center gap-3 pt-1 text-[10px] text-muted-foreground">
-              <span>✓ 100% Free & Private</span>
-              <span>•</span>
-              <span>✓ Normalized tech stack</span>
-              <span>•</span>
-              <span>✓ Non-destructive merge</span>
-              <span>•</span>
-              <span>✓ Instant recalibration</span>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => setIsResumeUploadOpen(true)}
-            className="px-5 py-3 bg-[#fe7141] hover:bg-[#e05828] text-white font-mono text-xs font-bold uppercase tracking-wider transition-colors shrink-0 flex items-center justify-center gap-2 shadow-sm cursor-pointer"
-          >
-            <Upload className="w-4 h-4" />
-            <span>{formData.resume_file_name ? 'Re-import Resume' : 'Import Resume (PDF / DOCX)'}</span>
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={() => setIsResumeUploadOpen(true)}
+          className="px-4 py-2 border border-black/20 dark:border-white/20 hover:border-[#fe7141] bg-card text-foreground font-bold uppercase tracking-wider text-xs flex items-center gap-1.5 shrink-0 cursor-pointer"
+        >
+          <Upload className="w-3.5 h-3.5 text-[#fe7141]" />
+          <span>{formData.resume_file_name ? 'Re-import Resume' : 'Import Resume (PDF)'}</span>
+        </button>
       </div>
 
-      {/* Resume Merged Success Toast Banner */}
+      {/* Resume Merged Toast */}
       {resumeMergeToast && (
-        <div className="border border-emerald-500/50 bg-emerald-500/10 p-4 font-mono text-xs text-foreground flex items-center justify-between gap-3 animate-in fade-in slide-in-from-top-2 duration-200">
-          <div className="flex items-center gap-2.5">
-            <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
+        <div className="border border-emerald-500/50 bg-emerald-500/10 p-3 font-mono text-xs text-foreground flex items-center justify-between gap-3 animate-in fade-in duration-200">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
             <span className="font-bold text-emerald-700 dark:text-emerald-400">{resumeMergeToast}</span>
           </div>
           <button
             type="button"
             onClick={() => setResumeMergeToast(null)}
             className="p-1 hover:text-foreground text-muted-foreground cursor-pointer"
-            aria-label="Close"
           >
-            <X className="w-4 h-4" />
+            <X className="w-3.5 h-3.5" />
           </button>
         </div>
       )}
 
       {/* Section Filter Tabs */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-2 border-b border-black/10 dark:border-white/15 font-mono text-xs scrollbar-none">
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 border-b border-black/10 dark:border-white/15 font-mono text-xs scrollbar-none">
         {profileTabs.map((tab) => (
           <button
             key={tab.id}
@@ -560,23 +433,27 @@ export const ProfilePage: React.FC = () => {
         ))}
       </div>
 
-      <form id="candidate-profile-form" onSubmit={handleSave} className="space-y-8">
-        {/* Section 01: Personal Credentials & Online Presence */}
-        {(activeTab === 'all' || activeTab === 'personal') && (
-          <div className="border border-black/10 dark:border-white/15 bg-card p-6 space-y-6">
+      <form id="candidate-profile-form" onSubmit={handleSave} className="space-y-6">
+        {/* TAB 01: Core Essentials (Minimum Needed for Matching) */}
+        {(activeTab === 'essentials' || activeTab === 'all') && (
+          <div className="border-2 border-[#fe7141]/30 bg-card p-5 sm:p-6 space-y-6 font-mono text-xs">
             <div className="flex items-baseline justify-between pb-3 border-b border-black/10 dark:border-white/10">
-              <div className="font-mono text-xs font-bold text-foreground uppercase tracking-wider">
-                01. PERSONAL CREDENTIALS & LINKS
+              <div className="font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
+                <span>01. CORE ESSENTIALS</span>
+                <span className="px-1.5 py-0.5 bg-[#fe7141] text-white text-[9px] font-bold uppercase tracking-wider">
+                  MINIMUM REQUIRED TO MATCH
+                </span>
               </div>
-              <span className="font-mono text-[10px] text-muted-foreground uppercase">
-                Identity & Online Profiles
+              <span className="text-[10px] text-muted-foreground uppercase">
+                {isMinimumComplete ? '✓ Ready to Match' : 'Action Required'}
               </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 font-mono">
+            {/* Candidate Identity */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label htmlFor="profile-full-name" className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                  Full Name
+                <label htmlFor="profile-full-name" className="text-[10px] font-bold text-muted-foreground uppercase">
+                  Candidate Name <span className="text-[#fe7141]">*</span>
                 </label>
                 <Input
                   id="profile-full-name"
@@ -587,9 +464,10 @@ export const ProfilePage: React.FC = () => {
                   required
                 />
               </div>
+
               <div className="space-y-1.5">
-                <label htmlFor="profile-email" className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                  Email Address
+                <label htmlFor="profile-email" className="text-[10px] font-bold text-muted-foreground uppercase">
+                  Email Address <span className="text-[#fe7141]">*</span>
                 </label>
                 <Input
                   id="profile-email"
@@ -601,288 +479,65 @@ export const ProfilePage: React.FC = () => {
                   required
                 />
               </div>
-              <div className="space-y-1.5">
-                <label htmlFor="profile-phone" className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                  Mobile Number
-                </label>
-                <Input
-                  id="profile-phone"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  placeholder="e.g. +91 98765 43210"
-                  className="h-10 rounded-none border-black/15 dark:border-white/20 font-mono text-xs"
-                />
-              </div>
             </div>
 
-            {/* Social & Portfolio Links */}
-            <div className="pt-2 border-t border-black/10 dark:border-white/10 space-y-3 font-mono">
-              <div className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                Online Profiles & Portfolio
+            {/* Degree / Branch (Minimum Requirement 1) */}
+            <div className="space-y-1.5 pt-1">
+              <div className="flex items-center justify-between">
+                <label htmlFor="profile-degree" className="text-[10px] font-bold text-foreground uppercase flex items-center gap-1">
+                  <span>Degree & Discipline</span>
+                  <span className="text-[#fe7141]">*</span>
+                </label>
+                <span className="text-[10px] text-[#fe7141] font-bold">Matches Job Eligibility</span>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <label htmlFor="profile-linkedin" className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-1">
-                      <LinkIcon className="w-3 h-3 text-[#0a66c2]" />
-                      <span>LinkedIn Profile</span>
-                    </label>
-                    {formData.linkedin_url && (
-                      <a href={formData.linkedin_url} target="_blank" rel="noreferrer" className="text-[9px] text-[#fe7141] hover:underline flex items-center gap-0.5">
-                        <span>Visit</span>
-                        <ExternalLink className="w-2.5 h-2.5" />
-                      </a>
-                    )}
-                  </div>
-                  <Input
-                    id="profile-linkedin"
-                    value={formData.linkedin_url || ''}
-                    onChange={(e) => setFormData({ ...formData, linkedin_url: e.target.value })}
-                    placeholder="https://linkedin.com/in/username"
-                    className="h-10 rounded-none border-black/15 dark:border-white/20 font-mono text-xs"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <label htmlFor="profile-github" className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-1">
-                      <Code2 className="w-3 h-3" />
-                      <span>GitHub Profile</span>
-                    </label>
-                    {formData.github_url && (
-                      <a href={formData.github_url} target="_blank" rel="noreferrer" className="text-[9px] text-[#fe7141] hover:underline flex items-center gap-0.5">
-                        <span>Visit</span>
-                        <ExternalLink className="w-2.5 h-2.5" />
-                      </a>
-                    )}
-                  </div>
-                  <Input
-                    id="profile-github"
-                    value={formData.github_url || ''}
-                    onChange={(e) => setFormData({ ...formData, github_url: e.target.value })}
-                    placeholder="https://github.com/username"
-                    className="h-10 rounded-none border-black/15 dark:border-white/20 font-mono text-xs"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <label htmlFor="profile-portfolio" className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-1">
-                      <Globe className="w-3 h-3" />
-                      <span>Portfolio / Website</span>
-                    </label>
-                    {formData.portfolio_url && (
-                      <a href={formData.portfolio_url} target="_blank" rel="noreferrer" className="text-[9px] text-[#fe7141] hover:underline flex items-center gap-0.5">
-                        <span>Visit</span>
-                        <ExternalLink className="w-2.5 h-2.5" />
-                      </a>
-                    )}
-                  </div>
-                  <Input
-                    id="profile-portfolio"
-                    value={formData.portfolio_url || ''}
-                    onChange={(e) => setFormData({ ...formData, portfolio_url: e.target.value })}
-                    placeholder="https://yourportfolio.dev"
-                    className="h-10 rounded-none border-black/15 dark:border-white/20 font-mono text-xs"
-                  />
-                </div>
-              </div>
+              <Input
+                id="profile-degree"
+                value={formData.degree}
+                onChange={(e) => setFormData({ ...formData, degree: e.target.value })}
+                placeholder="e.g. B.Tech Computer Science / BCA / MCA / B.E. ECE"
+                className="h-10 rounded-none border-black/15 dark:border-white/20 font-mono text-xs font-bold"
+                required
+              />
+              <p className="text-[11px] text-muted-foreground font-sans">
+                Curated jobs match directly against your branch (e.g. Computer Science, IT, Electronics, MCA).
+              </p>
             </div>
 
-            {activeTab === 'personal' && (
-              <div className="flex items-center justify-between pt-4 border-t border-black/10 dark:border-white/10 font-mono text-xs">
-                <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold">
-                  STEP 1 OF 5
-                </span>
-                <div className="flex items-center gap-3">
-                  <button
-                    type="submit"
-                    className="px-4 py-2 bg-[#fe7141] hover:bg-[#e05828] text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 cursor-pointer"
-                  >
-                    <Save className="w-3.5 h-3.5" />
-                    <span>Save Personal Info</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab('academics')}
-                    className="px-4 py-2 border border-black dark:border-white hover:bg-muted/40 text-xs font-bold uppercase tracking-wider cursor-pointer"
-                  >
-                    Next: Academics →
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Section 02: College & Academics */}
-        {(activeTab === 'all' || activeTab === 'academics') && (
-          <div className="border border-black/10 dark:border-white/15 bg-card p-6 space-y-6">
-            <div className="flex items-baseline justify-between pb-3 border-b border-black/10 dark:border-white/10">
-              <div className="font-mono text-xs font-bold text-foreground uppercase tracking-wider">
-                02. COLLEGE & ACADEMIC DATA
-              </div>
-              <span className="font-mono text-[10px] text-muted-foreground uppercase">
-                Degree, Specialization & CGPA
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 font-mono">
-              <div className="space-y-1.5">
-                <label htmlFor="profile-college" className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                  Institution / University
+            {/* Technical Skills (Minimum Requirement 2) */}
+            <div className="space-y-3 pt-2 border-t border-black/10 dark:border-white/10">
+              <div className="flex items-baseline justify-between">
+                <label className="text-[10px] font-bold text-foreground uppercase flex items-center gap-1">
+                  <span>Technical Skills Matrix</span>
+                  <span className="text-[#fe7141]">* (at least 1 required)</span>
                 </label>
-                <Input
-                  id="profile-college"
-                  value={formData.college}
-                  onChange={(e) => setFormData({ ...formData, college: e.target.value })}
-                  placeholder="e.g. National Institute of Technology Karnataka"
-                  className="h-10 rounded-none border-black/15 dark:border-white/20 font-mono text-xs"
-                  required
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label htmlFor="profile-degree" className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                  Degree & Specialization
-                </label>
-                <Input
-                  id="profile-degree"
-                  value={formData.degree}
-                  onChange={(e) => setFormData({ ...formData, degree: e.target.value })}
-                  placeholder="e.g. B.Tech Computer Science & Engineering"
-                  className="h-10 rounded-none border-black/15 dark:border-white/20 font-mono text-xs"
-                  required
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label htmlFor="profile-education-level" className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                  Education Level
-                </label>
-                <select
-                  id="profile-education-level"
-                  value={formData.education_level || 'Undergraduate (B.Tech / B.E.)'}
-                  onChange={(e) => setFormData({ ...formData, education_level: e.target.value })}
-                  className="w-full h-10 rounded-none border border-black/15 dark:border-white/20 bg-background px-3 py-2 text-xs font-mono text-foreground focus:outline-none"
-                >
-                  <option value="Undergraduate (B.Tech / B.E.)">Undergraduate (B.Tech / B.E.)</option>
-                  <option value="BCA / MCA">BCA / MCA</option>
-                  <option value="Postgraduate (M.Tech / M.Sc)">Postgraduate (M.Tech / M.Sc)</option>
-                  <option value="B.Sc / Computer Applications">B.Sc / Computer Applications</option>
-                  <option value="Diploma / Polytechnic">Diploma / Polytechnic</option>
-                  <option value="Other Degree">Other Degree</option>
-                </select>
-              </div>
-
-              <div className="space-y-1.5">
-                <label htmlFor="profile-grad-year" className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                  Graduation Batch
-                </label>
-                <select
-                  id="profile-grad-year"
-                  value={formData.graduation_year}
-                  onChange={(e) =>
-                    setFormData({ ...formData, graduation_year: parseInt(e.target.value) })
-                  }
-                  className="w-full h-10 rounded-none border border-black/15 dark:border-white/20 bg-background px-3 py-2 text-xs font-mono text-foreground focus:outline-none"
-                >
-                  <option value={2029}>2029 (1st year)</option>
-                  <option value={2028}>2028 (2nd year)</option>
-                  <option value={2027}>2027 (Pre-final year)</option>
-                  <option value={2026}>2026 (Final year batch)</option>
-                  <option value={2025}>2025 (Fresher / Graduated)</option>
-                  <option value={2024}>2024 (0-1 yrs experience)</option>
-                  <option value={2023}>2023 (1-2 yrs experience)</option>
-                  {![2029, 2028, 2027, 2026, 2025, 2024, 2023].includes(formData.graduation_year) && (
-                    <option value={formData.graduation_year}>{formData.graduation_year} (Custom Batch)</option>
-                  )}
-                </select>
-              </div>
-
-              <div className="space-y-1.5 sm:col-span-2">
-                <label htmlFor="profile-cgpa" className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                  CGPA / Percentage Score
-                </label>
-                <Input
-                  id="profile-cgpa"
-                  value={formData.cgpa || ''}
-                  onChange={(e) => setFormData({ ...formData, cgpa: e.target.value })}
-                  placeholder="e.g. 8.85 / 10 or 85%"
-                  className="h-10 rounded-none border-black/15 dark:border-white/20 font-mono text-xs"
-                />
-              </div>
-            </div>
-
-            {activeTab === 'academics' && (
-              <div className="flex items-center justify-between pt-4 border-t border-black/10 dark:border-white/10 font-mono text-xs">
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('personal')}
-                  className="px-4 py-2 border border-black/20 dark:border-white/20 hover:bg-muted/40 text-xs font-bold uppercase tracking-wider cursor-pointer"
-                >
-                  ← Prev: Personal
-                </button>
-                <div className="flex items-center gap-3">
-                  <button
-                    type="submit"
-                    className="px-4 py-2 bg-[#fe7141] hover:bg-[#e05828] text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 cursor-pointer"
-                  >
-                    <Save className="w-3.5 h-3.5" />
-                    <span>Save Academics</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab('skills')}
-                    className="px-4 py-2 border border-black dark:border-white hover:bg-muted/40 text-xs font-bold uppercase tracking-wider cursor-pointer"
-                  >
-                    Next: Skills →
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Section 03: Technical Skills Matrix */}
-        {(activeTab === 'all' || activeTab === 'skills') && (
-          <div className="border border-black/10 dark:border-white/15 bg-card p-6 space-y-6">
-            <div className="flex items-baseline justify-between pb-3 border-b border-black/10 dark:border-white/10">
-              <div className="font-mono text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
-                <span>03. TECHNICAL SKILLS MATRIX</span>
-                <span className="px-2 py-0.5 bg-[#fe7141]/10 text-[#fe7141] font-bold text-[10px]">
-                  {formData.skills?.length || 0} Skills
+                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">
+                  {formData.skills?.length || 0} Skills Active
                 </span>
               </div>
-              <div className="font-mono text-[10px] text-muted-foreground uppercase">
-                Weight: 40% of Match Score
-              </div>
-            </div>
 
-            <div className="space-y-4 font-mono">
-              {/* Selected Skills Tags */}
-              <div className="flex flex-wrap gap-2 min-h-12 p-3.5 border border-black/10 dark:border-white/15 bg-muted/10">
+              {/* Skills Display */}
+              <div className="flex flex-wrap gap-1.5 min-h-12 p-3 border border-black/10 dark:border-white/15 bg-muted/10">
                 {formData.skills && formData.skills.length > 0 ? (
                   formData.skills.map((skill) => (
                     <span
                       key={skill}
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1 border border-black/15 dark:border-white/20 bg-card text-foreground text-xs font-bold"
+                      className="inline-flex items-center gap-1 px-2.5 py-1 border border-black/15 dark:border-white/20 bg-card text-foreground text-xs font-bold"
                     >
                       <span>{skill}</span>
                       <button
                         type="button"
                         onClick={() => handleRemoveSkill(skill)}
+                        className="hover:text-red-500 p-0.5 cursor-pointer ml-0.5"
                         aria-label={`Remove skill ${skill}`}
-                        className="hover:text-red-500 p-0.5 cursor-pointer"
                       >
                         <X className="w-3 h-3" />
                       </button>
                     </span>
                   ))
                 ) : (
-                  <div className="text-xs text-muted-foreground py-1 flex items-center gap-2">
-                    <AlertCircle className="w-3.5 h-3.5 text-[#fe7141]" />
-                    <span>No skills added yet. Type below or click the quick-add chips to start matching.</span>
+                  <div className="text-xs text-muted-foreground py-1 flex items-center gap-2 font-sans">
+                    <AlertCircle className="w-3.5 h-3.5 text-[#fe7141] shrink-0" />
+                    <span>No skills added yet. Type below or click the quick-add buttons.</span>
                   </div>
                 )}
               </div>
@@ -890,11 +545,10 @@ export const ProfilePage: React.FC = () => {
               {/* Add Skill Input */}
               <div className="flex gap-2">
                 <Input
-                  id="profile-new-skill"
                   value={newSkill}
                   onChange={(e) => setNewSkill(e.target.value)}
-                  placeholder="Type skill (e.g. React, Python, Docker, PostgreSQL) and press Enter..."
-                  className="h-10 rounded-none border-black/15 dark:border-white/20 font-mono text-xs"
+                  placeholder="Type skill (e.g. React, Python, PostgreSQL, Java) and press Enter..."
+                  className="h-9 rounded-none border-black/15 dark:border-white/20 font-mono text-xs"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       e.preventDefault()
@@ -905,18 +559,18 @@ export const ProfilePage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => handleAddSkill()}
-                  className="px-5 py-2 bg-foreground text-background font-bold uppercase tracking-wider text-xs flex items-center gap-1 shrink-0 hover:opacity-90 cursor-pointer"
+                  className="px-4 py-1.5 bg-foreground text-background font-bold uppercase tracking-wider text-xs flex items-center gap-1 shrink-0 hover:opacity-90 cursor-pointer"
                 >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Add Skill</span>
+                  <Plus className="w-3 h-3" />
+                  <span>Add</span>
                 </button>
               </div>
 
-              {/* Quick-Add Popular Skills Row */}
+              {/* Quick Add Chips */}
               {unusedPopularSkills.length > 0 && (
-                <div className="space-y-1.5 pt-1">
-                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                    Quick Add In-Demand Fresher Skills:
+                <div className="space-y-1 pt-1">
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase">
+                    1-Click Add Popular Fresher Skills:
                   </span>
                   <div className="flex flex-wrap gap-1.5">
                     {unusedPopularSkills.map((skill) => (
@@ -924,7 +578,7 @@ export const ProfilePage: React.FC = () => {
                         key={skill}
                         type="button"
                         onClick={() => handleAddQuickSkill(skill)}
-                        className="px-2 py-1 border border-dashed border-black/20 dark:border-white/20 hover:border-[#fe7141] hover:text-[#fe7141] text-[11px] transition-colors cursor-pointer"
+                        className="px-2 py-0.5 border border-dashed border-black/20 dark:border-white/20 hover:border-[#fe7141] hover:text-[#fe7141] text-[11px] transition-colors cursor-pointer"
                       >
                         + {skill}
                       </button>
@@ -934,50 +588,133 @@ export const ProfilePage: React.FC = () => {
               )}
             </div>
 
-            {activeTab === 'skills' && (
-              <div className="flex items-center justify-between pt-4 border-t border-black/10 dark:border-white/10 font-mono text-xs">
+            {activeTab === 'essentials' && (
+              <div className="flex items-center justify-between pt-3 border-t border-black/10 dark:border-white/10 font-mono text-xs">
+                <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">
+                  {isMinimumComplete ? '✓ Minimum Complete! Save to start matching.' : 'Fill Degree & 1 Skill to finish.'}
+                </span>
                 <button
-                  type="button"
-                  onClick={() => setActiveTab('academics')}
-                  className="px-4 py-2 border border-black/20 dark:border-white/20 hover:bg-muted/40 text-xs font-bold uppercase tracking-wider cursor-pointer"
+                  type="submit"
+                  className="px-5 py-2 bg-[#fe7141] hover:bg-[#e05828] text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 cursor-pointer shadow-xs"
                 >
-                  ← Prev: Academics
+                  <Save className="w-3.5 h-3.5" />
+                  <span>Save Minimum Profile</span>
                 </button>
-                <div className="flex items-center gap-3">
-                  <button
-                    type="submit"
-                    className="px-4 py-2 bg-[#fe7141] hover:bg-[#e05828] text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 cursor-pointer"
-                  >
-                    <Save className="w-3.5 h-3.5" />
-                    <span>Save Skills</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab('preferences')}
-                    className="px-4 py-2 border border-black dark:border-white hover:bg-muted/40 text-xs font-bold uppercase tracking-wider cursor-pointer"
-                  >
-                    Next: Preferences →
-                  </button>
-                </div>
               </div>
             )}
           </div>
         )}
 
-        {/* Section 04: Location & Work Mode Preferences */}
-        {(activeTab === 'all' || activeTab === 'preferences') && (
-          <div className="border border-black/10 dark:border-white/15 bg-card p-6 space-y-6">
-            <div className="flex items-baseline justify-between pb-3 border-b border-black/10 dark:border-white/10">
-              <div className="font-mono text-xs font-bold text-foreground uppercase tracking-wider">
-                04. LOCATION & WORK PREFERENCES
+        {/* TAB 02: Academics & Details (Optional) */}
+        {(activeTab === 'academics' || activeTab === 'all') && (
+          <div className="border border-black/10 dark:border-white/15 bg-card p-5 sm:p-6 space-y-4 font-mono text-xs">
+            <div className="flex items-baseline justify-between pb-2 border-b border-black/10 dark:border-white/10">
+              <div className="font-bold text-foreground uppercase tracking-wider">
+                02. ACADEMICS & COLLEGE (OPTIONAL)
               </div>
-              <span className="font-mono text-[10px] text-muted-foreground uppercase">
-                Geography & Commute Preferences
-              </span>
+              <span className="text-[10px] text-muted-foreground uppercase">Optional Details</span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label htmlFor="profile-college" className="text-[10px] font-bold text-muted-foreground uppercase">
+                  College / University Name (Optional)
+                </label>
+                <Input
+                  id="profile-college"
+                  value={formData.college || ''}
+                  onChange={(e) => setFormData({ ...formData, college: e.target.value })}
+                  placeholder="e.g. NIT Karnataka / Anna University"
+                  className="h-9 rounded-none border-black/15 dark:border-white/20 font-mono text-xs"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label htmlFor="profile-grad-year" className="text-[10px] font-bold text-muted-foreground uppercase">
+                  Graduation Batch Year (Optional)
+                </label>
+                <select
+                  id="profile-grad-year"
+                  value={formData.graduation_year}
+                  onChange={(e) =>
+                    setFormData({ ...formData, graduation_year: parseInt(e.target.value) })
+                  }
+                  className="w-full h-9 rounded-none border border-black/15 dark:border-white/20 bg-background px-3 py-1.5 text-xs font-mono text-foreground focus:outline-none"
+                >
+                  <option value={2029}>2029 (1st year)</option>
+                  <option value={2028}>2028 (2nd year)</option>
+                  <option value={2027}>2027 (Pre-final year)</option>
+                  <option value={2026}>2026 (Final year batch)</option>
+                  <option value={2025}>2025 (Fresher / Graduated)</option>
+                  <option value={2024}>2024 (0-1 yrs exp)</option>
+                  <option value={2023}>2023 (1-2 yrs exp)</option>
+                  {![2029, 2028, 2027, 2026, 2025, 2024, 2023].includes(formData.graduation_year) && (
+                    <option value={formData.graduation_year}>{formData.graduation_year} (Custom Batch)</option>
+                  )}
+                </select>
+              </div>
+
+              <div className="space-y-1.5">
+                <label htmlFor="profile-cgpa" className="text-[10px] font-bold text-muted-foreground uppercase">
+                  CGPA / Percentage (Optional)
+                </label>
+                <Input
+                  id="profile-cgpa"
+                  value={formData.cgpa || ''}
+                  onChange={(e) => setFormData({ ...formData, cgpa: e.target.value })}
+                  placeholder="e.g. 8.85 / 10 or 85%"
+                  className="h-9 rounded-none border-black/15 dark:border-white/20 font-mono text-xs"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label htmlFor="profile-education-level" className="text-[10px] font-bold text-muted-foreground uppercase">
+                  Degree Level (Optional)
+                </label>
+                <select
+                  id="profile-education-level"
+                  value={formData.education_level || 'Undergraduate (B.Tech / B.E.)'}
+                  onChange={(e) => setFormData({ ...formData, education_level: e.target.value })}
+                  className="w-full h-9 rounded-none border border-black/15 dark:border-white/20 bg-background px-3 py-1.5 text-xs font-mono text-foreground focus:outline-none"
+                >
+                  <option value="Undergraduate (B.Tech / B.E.)">Undergraduate (B.Tech / B.E.)</option>
+                  <option value="BCA / MCA">BCA / MCA</option>
+                  <option value="Postgraduate (M.Tech / M.Sc)">Postgraduate (M.Tech / M.Sc)</option>
+                  <option value="B.Sc / Computer Applications">B.Sc / Computer Applications</option>
+                  <option value="Diploma / Polytechnic">Diploma / Polytechnic</option>
+                  <option value="Other Degree">Other Degree</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 03: Work & Location Preferences (Optional) */}
+        {(activeTab === 'work' || activeTab === 'all') && (
+          <div className="border border-black/10 dark:border-white/15 bg-card p-5 sm:p-6 space-y-5 font-mono text-xs">
+            <div className="flex items-baseline justify-between pb-2 border-b border-black/10 dark:border-white/10">
+              <div className="font-bold text-foreground uppercase tracking-wider">
+                03. WORK & LOCATION (OPTIONAL)
+              </div>
+              <span className="text-[10px] text-muted-foreground uppercase">Preferences</span>
+            </div>
+
+            {/* Mobile Phone */}
+            <div className="space-y-1.5">
+              <label htmlFor="profile-phone" className="text-[10px] font-bold text-muted-foreground uppercase">
+                Contact Phone / WhatsApp (Optional)
+              </label>
+              <Input
+                id="profile-phone"
+                value={formData.phone || ''}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                placeholder="e.g. +91 98765 43210"
+                className="h-9 rounded-none border-black/15 dark:border-white/20 font-mono text-xs max-w-sm"
+              />
             </div>
 
             {/* Work Mode */}
-            <div className="space-y-2 font-mono">
+            <div className="space-y-2">
               <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                 Target Work Modes
               </label>
@@ -989,7 +726,7 @@ export const ProfilePage: React.FC = () => {
                       key={mode}
                       type="button"
                       onClick={() => toggleWorkMode(mode)}
-                      className={`px-4 py-2 text-xs border uppercase tracking-wider transition-colors cursor-pointer ${
+                      className={`px-3.5 py-1.5 text-xs border uppercase tracking-wider transition-colors cursor-pointer ${
                         isSelected
                           ? 'border-black dark:border-white bg-foreground text-background font-bold'
                           : 'border-black/15 dark:border-white/20 text-muted-foreground hover:bg-muted/40'
@@ -1003,16 +740,16 @@ export const ProfilePage: React.FC = () => {
             </div>
 
             {/* Preferred Locations */}
-            <div className="space-y-2 font-mono">
+            <div className="space-y-2">
               <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                Target Metro Regions
+                Preferred Cities
               </label>
-              <div className="flex flex-wrap gap-1.5 min-h-10 p-2.5 border border-black/10 dark:border-white/15 bg-muted/10">
+              <div className="flex flex-wrap gap-1.5 min-h-9 p-2 border border-black/10 dark:border-white/15 bg-muted/10">
                 {formData.preferred_locations.length > 0 ? (
                   formData.preferred_locations.map((loc) => (
                     <span
                       key={loc}
-                      className="inline-flex items-center gap-1.5 px-2 py-1 border border-black/15 dark:border-white/20 bg-card text-foreground text-xs uppercase font-bold"
+                      className="inline-flex items-center gap-1 px-2 py-0.5 border border-black/15 dark:border-white/20 bg-card text-foreground text-xs font-bold"
                     >
                       <span>{loc}</span>
                       <button
@@ -1026,17 +763,16 @@ export const ProfilePage: React.FC = () => {
                     </span>
                   ))
                 ) : (
-                  <span className="text-xs text-muted-foreground py-0.5">No preferred regions selected.</span>
+                  <span className="text-xs text-muted-foreground py-0.5">No city filter applied (all cities matched).</span>
                 )}
               </div>
 
-              <div className="flex gap-2 pt-1">
+              <div className="flex gap-2 pt-1 max-w-md">
                 <Input
-                  id="profile-new-city"
                   value={newLocation}
                   onChange={(e) => setNewLocation(e.target.value)}
-                  placeholder="Type city (e.g. Bengaluru, Hyderabad, Pune, Kochi, Remote)..."
-                  className="h-10 rounded-none border-black/15 dark:border-white/20 font-mono text-xs"
+                  placeholder="Add city (Bengaluru, Pune, Remote)..."
+                  className="h-8 rounded-none border-black/15 dark:border-white/20 font-mono text-xs"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       e.preventDefault()
@@ -1047,152 +783,171 @@ export const ProfilePage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => handleAddLocation()}
-                  className="px-4 py-2 border border-black dark:border-white text-xs font-mono font-bold uppercase tracking-wider hover:bg-muted/40 transition-colors shrink-0 cursor-pointer"
+                  className="px-3 py-1 border border-black dark:border-white text-xs font-bold uppercase hover:bg-muted/40 transition-colors shrink-0 cursor-pointer"
                 >
-                  + Add City
+                  + Add
                 </button>
               </div>
 
-              {/* Quick Add Tech Hubs */}
               {unusedPopularLocations.length > 0 && (
-                <div className="space-y-1.5 pt-1">
-                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                    Quick Add Tech Hubs:
-                  </span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {unusedPopularLocations.map((loc) => (
-                      <button
-                        key={loc}
-                        type="button"
-                        onClick={() => handleAddQuickLocation(loc)}
-                        className="px-2 py-1 border border-dashed border-black/20 dark:border-white/20 hover:border-[#fe7141] hover:text-[#fe7141] text-[11px] transition-colors cursor-pointer"
-                      >
-                        + {loc}
-                      </button>
-                    ))}
-                  </div>
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  {unusedPopularLocations.map((loc) => (
+                    <button
+                      key={loc}
+                      type="button"
+                      onClick={() => handleAddQuickLocation(loc)}
+                      className="px-2 py-0.5 border border-dashed border-black/20 dark:border-white/20 hover:border-[#fe7141] hover:text-[#fe7141] text-[10px] transition-colors cursor-pointer"
+                    >
+                      + {loc}
+                    </button>
+                  ))}
                 </div>
               )}
             </div>
-
-            {activeTab === 'preferences' && (
-              <div className="flex items-center justify-between pt-4 border-t border-black/10 dark:border-white/10 font-mono text-xs">
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('skills')}
-                  className="px-4 py-2 border border-black/20 dark:border-white/20 hover:bg-muted/40 text-xs font-bold uppercase tracking-wider cursor-pointer"
-                >
-                  ← Prev: Skills
-                </button>
-                <div className="flex items-center gap-3">
-                  <button
-                    type="submit"
-                    className="px-4 py-2 bg-[#fe7141] hover:bg-[#e05828] text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 cursor-pointer"
-                  >
-                    <Save className="w-3.5 h-3.5" />
-                    <span>Save Preferences</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab('projects')}
-                    className="px-4 py-2 border border-black dark:border-white hover:bg-muted/40 text-xs font-bold uppercase tracking-wider cursor-pointer"
-                  >
-                    Next: Projects & Exp →
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
         )}
 
-        {/* Section 05: Projects & Professional Experience */}
-        {(activeTab === 'all' || activeTab === 'projects') && (
-          <div className="border border-black/10 dark:border-white/15 bg-card p-6 space-y-6">
-            <div className="flex items-baseline justify-between pb-3 border-b border-black/10 dark:border-white/10">
-              <div className="font-mono text-xs font-bold text-foreground uppercase tracking-wider">
-                05. PROJECTS & PROFESSIONAL EXPERIENCE
+        {/* TAB 04: Online Profiles (Optional) */}
+        {(activeTab === 'links' || activeTab === 'all') && (
+          <div className="border border-black/10 dark:border-white/15 bg-card p-5 sm:p-6 space-y-4 font-mono text-xs">
+            <div className="flex items-baseline justify-between pb-2 border-b border-black/10 dark:border-white/10">
+              <div className="font-bold text-foreground uppercase tracking-wider">
+                04. ONLINE PROFILES & SOCIAL (OPTIONAL)
               </div>
-              <div className="font-mono text-[10px] text-muted-foreground uppercase">
-                Demonstrated Engineering Stack
-              </div>
+              <span className="text-[10px] text-muted-foreground uppercase">Optional Links</span>
             </div>
 
-            {/* Projects Header & Controls */}
-            <div className="space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <div className="font-mono text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
-                  <FolderGit2 className="w-4 h-4 text-[#fe7141]" />
-                  <span>Key Projects ({(formData.projects || []).length})</span>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label htmlFor="profile-linkedin" className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-1">
+                    <LinkIcon className="w-3 h-3 text-[#0a66c2]" />
+                    <span>LinkedIn</span>
+                  </label>
+                  {formData.linkedin_url && (
+                    <a href={formData.linkedin_url} target="_blank" rel="noreferrer" className="text-[9px] text-[#fe7141] hover:underline flex items-center gap-0.5">
+                      <span>Test</span>
+                      <ExternalLink className="w-2.5 h-2.5" />
+                    </a>
+                  )}
                 </div>
-                <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setIsAddingProject(!isAddingProject)}
-                    className="font-mono text-[11px] text-foreground hover:underline font-bold uppercase cursor-pointer"
-                  >
-                    {isAddingProject ? '✕ Cancel' : '+ Add Project Manually'}
-                  </button>
-                  <span className="text-muted-foreground">•</span>
-                  <button
-                    type="button"
-                    onClick={() => setIsResumeUploadOpen(true)}
-                    className="font-mono text-[11px] text-[#fe7141] hover:underline font-bold uppercase cursor-pointer"
-                  >
-                    + Extract From Resume
-                  </button>
-                </div>
+                <Input
+                  id="profile-linkedin"
+                  value={formData.linkedin_url || ''}
+                  onChange={(e) => setFormData({ ...formData, linkedin_url: e.target.value })}
+                  placeholder="https://linkedin.com/in/username"
+                  className="h-9 rounded-none border-black/15 dark:border-white/20 font-mono text-xs"
+                />
               </div>
 
-              {/* Inline Add Project Form */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label htmlFor="profile-github" className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-1">
+                    <Code2 className="w-3 h-3" />
+                    <span>GitHub</span>
+                  </label>
+                  {formData.github_url && (
+                    <a href={formData.github_url} target="_blank" rel="noreferrer" className="text-[9px] text-[#fe7141] hover:underline flex items-center gap-0.5">
+                      <span>Test</span>
+                      <ExternalLink className="w-2.5 h-2.5" />
+                    </a>
+                  )}
+                </div>
+                <Input
+                  id="profile-github"
+                  value={formData.github_url || ''}
+                  onChange={(e) => setFormData({ ...formData, github_url: e.target.value })}
+                  placeholder="https://github.com/username"
+                  className="h-9 rounded-none border-black/15 dark:border-white/20 font-mono text-xs"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label htmlFor="profile-portfolio" className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-1">
+                    <Globe className="w-3 h-3" />
+                    <span>Portfolio</span>
+                  </label>
+                  {formData.portfolio_url && (
+                    <a href={formData.portfolio_url} target="_blank" rel="noreferrer" className="text-[9px] text-[#fe7141] hover:underline flex items-center gap-0.5">
+                      <span>Test</span>
+                      <ExternalLink className="w-2.5 h-2.5" />
+                    </a>
+                  )}
+                </div>
+                <Input
+                  id="profile-portfolio"
+                  value={formData.portfolio_url || ''}
+                  onChange={(e) => setFormData({ ...formData, portfolio_url: e.target.value })}
+                  placeholder="https://mywebsite.dev"
+                  className="h-9 rounded-none border-black/15 dark:border-white/20 font-mono text-xs"
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 05: Projects & Experience (Optional) */}
+        {(activeTab === 'projects' || activeTab === 'all') && (
+          <div className="border border-black/10 dark:border-white/15 bg-card p-5 sm:p-6 space-y-6 font-mono text-xs">
+            <div className="flex items-baseline justify-between pb-2 border-b border-black/10 dark:border-white/10">
+              <div className="font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
+                <span>05. PROJECTS & INTERNSHIPS (OPTIONAL)</span>
+                <span className="text-[10px] text-muted-foreground">Boosts Score</span>
+              </div>
+              <span className="text-[10px] text-muted-foreground uppercase">Optional Portfolio</span>
+            </div>
+
+            {/* Projects */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="font-bold text-foreground uppercase flex items-center gap-1.5">
+                  <FolderGit2 className="w-3.5 h-3.5 text-[#fe7141]" />
+                  <span>Projects ({(formData.projects || []).length})</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsAddingProject(!isAddingProject)}
+                  className="text-[11px] text-[#fe7141] hover:underline font-bold uppercase cursor-pointer"
+                >
+                  {isAddingProject ? '✕ Cancel' : '+ Add Project'}
+                </button>
+              </div>
+
               {isAddingProject && (
-                <div className="p-4 border-2 border-dashed border-[#fe7141] bg-[#fe7141]/5 space-y-3 font-mono text-xs animate-in fade-in duration-200">
-                  <div className="font-bold text-[#fe7141] uppercase tracking-wider text-[11px]">
-                    Add Project Details
+                <div className="p-3.5 border-2 border-dashed border-[#fe7141] bg-[#fe7141]/5 space-y-3">
+                  <div className="font-bold text-[#fe7141] uppercase text-[10px]">Add Project</div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <Input
+                      value={newProjectTitle}
+                      onChange={(e) => setNewProjectTitle(e.target.value)}
+                      placeholder="Project Title (e.g. Distributed Task Queue)"
+                      className="h-8 rounded-none text-xs"
+                    />
+                    <Input
+                      value={newProjectLink}
+                      onChange={(e) => setNewProjectLink(e.target.value)}
+                      placeholder="Project URL (e.g. https://github.com/...)"
+                      className="h-8 rounded-none text-xs"
+                    />
+                    <Input
+                      value={newProjectTech}
+                      onChange={(e) => setNewProjectTech(e.target.value)}
+                      placeholder="Technologies (e.g. React, Node.js, Docker)"
+                      className="h-8 rounded-none text-xs sm:col-span-2"
+                    />
+                    <Input
+                      value={newProjectDesc}
+                      onChange={(e) => setNewProjectDesc(e.target.value)}
+                      placeholder="Brief description"
+                      className="h-8 rounded-none text-xs sm:col-span-2"
+                    />
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-bold text-muted-foreground uppercase">Project Title</label>
-                      <Input
-                        value={newProjectTitle}
-                        onChange={(e) => setNewProjectTitle(e.target.value)}
-                        placeholder="e.g. Distributed Task Queue"
-                        className="h-9 rounded-none font-mono text-xs"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-bold text-muted-foreground uppercase">GitHub / Demo URL</label>
-                      <Input
-                        value={newProjectLink}
-                        onChange={(e) => setNewProjectLink(e.target.value)}
-                        placeholder="https://github.com/username/project"
-                        className="h-9 rounded-none font-mono text-xs"
-                      />
-                    </div>
-                    <div className="space-y-1 sm:col-span-2">
-                      <label className="text-[10px] font-bold text-muted-foreground uppercase">Technologies Used (comma separated)</label>
-                      <Input
-                        value={newProjectTech}
-                        onChange={(e) => setNewProjectTech(e.target.value)}
-                        placeholder="e.g. Go, Redis, Docker, PostgreSQL"
-                        className="h-9 rounded-none font-mono text-xs"
-                      />
-                    </div>
-                    <div className="space-y-1 sm:col-span-2">
-                      <label className="text-[10px] font-bold text-muted-foreground uppercase">Brief Description</label>
-                      <Input
-                        value={newProjectDesc}
-                        onChange={(e) => setNewProjectDesc(e.target.value)}
-                        placeholder="Engineered a high-throughput job dispatcher handling 5,000 tasks/min."
-                        className="h-9 rounded-none font-mono text-xs"
-                      />
-                    </div>
-                  </div>
-                  <div className="flex justify-end gap-2 pt-2">
+                  <div className="flex justify-end gap-2">
                     <button
                       type="button"
                       onClick={() => setIsAddingProject(false)}
-                      className="px-3 py-1.5 border border-black/20 dark:border-white/20 text-xs font-bold uppercase cursor-pointer"
+                      className="px-3 py-1 border text-xs uppercase cursor-pointer"
                     >
                       Cancel
                     </button>
@@ -1200,7 +955,7 @@ export const ProfilePage: React.FC = () => {
                       type="button"
                       onClick={handleSaveProject}
                       disabled={!newProjectTitle.trim()}
-                      className="px-4 py-1.5 bg-[#fe7141] hover:bg-[#e05828] text-white text-xs font-bold uppercase cursor-pointer disabled:opacity-40"
+                      className="px-3 py-1 bg-[#fe7141] text-white text-xs font-bold uppercase cursor-pointer disabled:opacity-40"
                     >
                       Save Project
                     </button>
@@ -1208,22 +963,15 @@ export const ProfilePage: React.FC = () => {
                 </div>
               )}
 
-              {/* Projects List */}
               {(!formData.projects || formData.projects.length === 0) ? (
-                <div className="p-6 border border-dashed border-black/15 dark:border-white/20 bg-muted/5 text-center font-mono text-xs text-muted-foreground space-y-2">
-                  <p>No projects attached to your profile yet.</p>
-                  <p className="text-[11px] font-sans">
-                    Demonstrated projects directly increase match qualification scores. Add them manually above or import from your resume.
-                  </p>
+                <div className="p-4 border border-dashed border-black/15 dark:border-white/20 text-center text-muted-foreground text-xs">
+                  No projects attached. Projects are optional but increase match ranking.
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   {formData.projects.map((proj, i) => (
-                    <div
-                      key={i}
-                      className="border border-black/10 dark:border-white/15 p-4 space-y-2 bg-card relative font-mono text-xs"
-                    >
-                      <div className="flex items-start justify-between gap-2">
+                    <div key={i} className="border border-black/10 dark:border-white/15 p-3 space-y-1.5 bg-card">
+                      <div className="flex items-start justify-between gap-1">
                         <div className="font-bold text-foreground">{proj.title || proj.name}</div>
                         <button
                           type="button"
@@ -1232,41 +980,21 @@ export const ProfilePage: React.FC = () => {
                             setFormData({ ...formData, projects: updated })
                           }}
                           className="text-muted-foreground hover:text-red-500 p-0.5 cursor-pointer"
-                          aria-label="Remove project"
                         >
-                          <X className="w-3.5 h-3.5" />
+                          <X className="w-3 h-3" />
                         </button>
                       </div>
-
                       {proj.description && (
-                        <p className="font-sans text-xs text-muted-foreground line-clamp-2">
-                          {proj.description}
-                        </p>
+                        <p className="text-[11px] text-muted-foreground line-clamp-2">{proj.description}</p>
                       )}
-
                       {proj.technologies && proj.technologies.length > 0 && (
                         <div className="flex flex-wrap gap-1 pt-1">
                           {proj.technologies.map((t, ti) => (
-                            <span
-                              key={ti}
-                              className="px-1.5 py-0.5 bg-muted/40 border border-black/10 dark:border-white/10 text-[10px] font-bold"
-                            >
+                            <span key={ti} className="px-1.5 py-0.2 bg-muted/40 border border-black/10 text-[9px] font-bold">
                               {t}
                             </span>
                           ))}
                         </div>
-                      )}
-
-                      {(proj.link || proj.url) && (
-                        <a
-                          href={proj.link || proj.url || '#'}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="pt-1 text-[11px] text-[#fe7141] hover:underline flex items-center gap-1"
-                        >
-                          <span>{proj.link || proj.url}</span>
-                          <ExternalLink className="w-3 h-3" />
-                        </a>
                       )}
                     </div>
                   ))}
@@ -1274,82 +1002,56 @@ export const ProfilePage: React.FC = () => {
               )}
             </div>
 
-            {/* Internships & Experience Section */}
-            <div className="space-y-4 pt-4 border-t border-black/10 dark:border-white/10">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <div className="font-mono text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
-                  <Briefcase className="w-4 h-4 text-[#fe7141]" />
-                  <span>Internships & Experience ({(formData.internships || []).length})</span>
+            {/* Internships */}
+            <div className="space-y-3 pt-3 border-t border-black/10 dark:border-white/10">
+              <div className="flex items-center justify-between">
+                <div className="font-bold text-foreground uppercase flex items-center gap-1.5">
+                  <Briefcase className="w-3.5 h-3.5 text-[#fe7141]" />
+                  <span>Internships ({(formData.internships || []).length})</span>
                 </div>
                 <button
                   type="button"
                   onClick={() => setIsAddingInternship(!isAddingInternship)}
-                  className="font-mono text-[11px] text-foreground hover:underline font-bold uppercase cursor-pointer"
+                  className="text-[11px] text-[#fe7141] hover:underline font-bold uppercase cursor-pointer"
                 >
-                  {isAddingInternship ? '✕ Cancel' : '+ Add Internship Manually'}
+                  {isAddingInternship ? '✕ Cancel' : '+ Add Internship'}
                 </button>
               </div>
 
-              {/* Inline Add Internship Form */}
               {isAddingInternship && (
-                <div className="p-4 border-2 border-dashed border-[#fe7141] bg-[#fe7141]/5 space-y-3 font-mono text-xs animate-in fade-in duration-200">
-                  <div className="font-bold text-[#fe7141] uppercase tracking-wider text-[11px]">
-                    Add Internship Details
+                <div className="p-3.5 border-2 border-dashed border-[#fe7141] bg-[#fe7141]/5 space-y-3">
+                  <div className="font-bold text-[#fe7141] uppercase text-[10px]">Add Internship</div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                    <Input
+                      value={newInternCompany}
+                      onChange={(e) => setNewInternCompany(e.target.value)}
+                      placeholder="Company Name"
+                      className="h-8 rounded-none text-xs"
+                    />
+                    <Input
+                      value={newInternRole}
+                      onChange={(e) => setNewInternRole(e.target.value)}
+                      placeholder="Role (e.g. SDE Intern)"
+                      className="h-8 rounded-none text-xs"
+                    />
+                    <Input
+                      value={newInternDuration}
+                      onChange={(e) => setNewInternDuration(e.target.value)}
+                      placeholder="Duration (e.g. 3 months)"
+                      className="h-8 rounded-none text-xs"
+                    />
+                    <Input
+                      value={newInternTech}
+                      onChange={(e) => setNewInternTech(e.target.value)}
+                      placeholder="Technologies Used (e.g. Python, Docker)"
+                      className="h-8 rounded-none text-xs sm:col-span-3"
+                    />
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-bold text-muted-foreground uppercase">Company Name</label>
-                      <Input
-                        value={newInternCompany}
-                        onChange={(e) => setNewInternCompany(e.target.value)}
-                        placeholder="e.g. Razorpay Software"
-                        className="h-9 rounded-none font-mono text-xs"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-bold text-muted-foreground uppercase">Role Title</label>
-                      <Input
-                        value={newInternRole}
-                        onChange={(e) => setNewInternRole(e.target.value)}
-                        placeholder="e.g. Software Engineering Intern"
-                        className="h-9 rounded-none font-mono text-xs"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-bold text-muted-foreground uppercase">Duration</label>
-                      <Input
-                        value={newInternDuration}
-                        onChange={(e) => setNewInternDuration(e.target.value)}
-                        placeholder="e.g. May 2025 – July 2025"
-                        className="h-9 rounded-none font-mono text-xs"
-                      />
-                    </div>
-                    <div className="space-y-1 sm:col-span-3">
-                      <label className="text-[10px] font-bold text-muted-foreground uppercase">Technologies / Skills Used (comma separated)</label>
-                      <Input
-                        value={newInternTech}
-                        onChange={(e) => setNewInternTech(e.target.value)}
-                        placeholder="e.g. Python, FastAPI, Docker, PostgreSQL"
-                        className="h-9 rounded-none font-mono text-xs"
-                      />
-                    </div>
-                    <div className="space-y-1 sm:col-span-3">
-                      <label className="text-[10px] font-bold text-muted-foreground uppercase">Description</label>
-                      <Input
-                        value={newInternDesc}
-                        onChange={(e) => setNewInternDesc(e.target.value)}
-                        placeholder="Built API webhooks and improved backend throughput."
-                        className="h-9 rounded-none font-mono text-xs"
-                      />
-                    </div>
-                  </div>
-                  <div className="flex justify-end gap-2 pt-2">
+                  <div className="flex justify-end gap-2">
                     <button
                       type="button"
                       onClick={() => setIsAddingInternship(false)}
-                      className="px-3 py-1.5 border border-black/20 dark:border-white/20 text-xs font-bold uppercase cursor-pointer"
+                      className="px-3 py-1 border text-xs uppercase cursor-pointer"
                     >
                       Cancel
                     </button>
@@ -1357,7 +1059,7 @@ export const ProfilePage: React.FC = () => {
                       type="button"
                       onClick={handleSaveInternship}
                       disabled={!newInternCompany.trim() || !newInternRole.trim()}
-                      className="px-4 py-1.5 bg-[#fe7141] hover:bg-[#e05828] text-white text-xs font-bold uppercase cursor-pointer disabled:opacity-40"
+                      className="px-3 py-1 bg-[#fe7141] text-white text-xs font-bold uppercase cursor-pointer disabled:opacity-40"
                     >
                       Save Internship
                     </button>
@@ -1365,100 +1067,52 @@ export const ProfilePage: React.FC = () => {
                 </div>
               )}
 
-              {/* Internships List */}
               {(!formData.internships || formData.internships.length === 0) ? (
-                <div className="p-6 border border-dashed border-black/15 dark:border-white/20 bg-muted/5 text-center font-mono text-xs text-muted-foreground space-y-2">
-                  <p>No internships or work experience recorded.</p>
-                  <p className="text-[11px] font-sans">
-                    Demonstrated internships give your candidate profile an immediate score advantage on openings with 0-1 years requirements.
-                  </p>
+                <div className="p-4 border border-dashed border-black/15 dark:border-white/20 text-center text-muted-foreground text-xs">
+                  No internships recorded. Internships are optional for fresher matching.
                 </div>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {formData.internships.map((exp, i) => (
-                    <div
-                      key={i}
-                      className="border border-black/10 dark:border-white/15 p-4 space-y-2 bg-card relative font-mono text-xs"
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <div>
-                          <div className="font-bold text-foreground">{exp.role}</div>
-                          <div className="text-xs text-[#fe7141] font-bold">
-                            {exp.company} {exp.duration ? `• ${exp.duration}` : ''}
-                          </div>
+                    <div key={i} className="border border-black/10 dark:border-white/15 p-3 flex items-start justify-between gap-2 bg-card">
+                      <div>
+                        <div className="font-bold text-foreground">{exp.role}</div>
+                        <div className="text-xs text-[#fe7141] font-bold">
+                          {exp.company} {exp.duration ? `• ${exp.duration}` : ''}
                         </div>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const updated = (formData.internships || []).filter((_, idx) => idx !== i)
-                            setFormData({ ...formData, internships: updated })
-                          }}
-                          className="text-muted-foreground hover:text-red-500 p-0.5 cursor-pointer"
-                          aria-label="Remove internship"
-                        >
-                          <X className="w-3.5 h-3.5" />
-                        </button>
                       </div>
-
-                      {exp.description && (
-                        <p className="font-sans text-xs text-muted-foreground">
-                          {exp.description}
-                        </p>
-                      )}
-
-                      {((exp.skills_used && exp.skills_used.length > 0) || (exp.technologies && exp.technologies.length > 0)) && (
-                        <div className="flex flex-wrap gap-1 pt-1">
-                          {(exp.skills_used || exp.technologies || []).map((s, si) => (
-                            <span
-                              key={si}
-                              className="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold"
-                            >
-                              {s}
-                            </span>
-                          ))}
-                        </div>
-                      )}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = (formData.internships || []).filter((_, idx) => idx !== i)
+                          setFormData({ ...formData, internships: updated })
+                        }}
+                        className="text-muted-foreground hover:text-red-500 p-0.5 cursor-pointer"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
                     </div>
                   ))}
                 </div>
               )}
             </div>
-
-            {activeTab === 'projects' && (
-              <div className="flex items-center justify-between pt-4 border-t border-black/10 dark:border-white/10 font-mono text-xs">
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('preferences')}
-                  className="px-4 py-2 border border-black/20 dark:border-white/20 hover:bg-muted/40 text-xs font-bold uppercase tracking-wider cursor-pointer"
-                >
-                  ← Prev: Preferences
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 bg-[#fe7141] hover:bg-[#e05828] text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 cursor-pointer shadow-xs"
-                >
-                  <Save className="w-3.5 h-3.5" />
-                  <span>Save Profile</span>
-                </button>
-              </div>
-            )}
           </div>
         )}
 
         {/* Bottom Save & Update Bar */}
-        <div className="border border-black/10 dark:border-white/15 bg-card p-6 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono">
-          <div className="space-y-0.5 text-left w-full sm:w-auto">
+        <div className="border border-black/10 dark:border-white/15 bg-card p-5 flex flex-col sm:flex-row items-center justify-between gap-3 font-mono">
+          <div>
             <div className="text-xs font-bold text-foreground uppercase tracking-wider">
-              COMMIT CANDIDATE PROFILE CHANGES
+              {isMinimumComplete ? '✓ MINIMUM PROFILE READY' : 'COMPLETE MINIMUM FIELDS TO MATCH'}
             </div>
             <p className="text-[11px] text-muted-foreground">
-              Saving recalculates match scores across all active curated fresher openings immediately.
+              {isMinimumComplete ? 'Degree & Skills are set. Match percentages recalculate in real-time.' : 'Please add Degree and 1 Skill to activate matching.'}
             </p>
           </div>
 
           <button
             type="submit"
-            className="w-full sm:w-auto h-12 px-10 font-mono text-xs font-bold uppercase tracking-wider bg-[#fe7141] hover:bg-[#e05828] text-white transition-colors flex items-center justify-center gap-2 shadow-sm shrink-0 cursor-pointer"
+            className="w-full sm:w-auto h-11 px-8 font-mono text-xs font-bold uppercase tracking-wider bg-[#fe7141] hover:bg-[#e05828] text-white transition-colors flex items-center justify-center gap-2 shadow-sm shrink-0 cursor-pointer"
           >
             <Save className="w-4 h-4" />
             <span>{savedFeedback ? '✓ Profile Saved' : 'Save Profile'}</span>
@@ -1466,18 +1120,18 @@ export const ProfilePage: React.FC = () => {
         </div>
       </form>
 
-      {/* Sticky Floating Save Trigger (Always visible while editing any option) */}
-      <div className="sticky bottom-6 z-20 flex justify-end pointer-events-none">
-        <div className="pointer-events-auto border border-black/20 dark:border-white/25 bg-background/95 backdrop-blur-md p-2 shadow-xl flex items-center gap-3 font-mono">
-          <span className="text-[11px] text-muted-foreground uppercase hidden md:inline px-2 font-bold">
-            {completionStats.score}% MATCH READINESS
+      {/* Floating Save Trigger */}
+      <div className="sticky bottom-4 z-20 flex justify-end pointer-events-none">
+        <div className="pointer-events-auto border border-black/20 dark:border-white/25 bg-background/95 backdrop-blur-md p-1.5 shadow-xl flex items-center gap-2 font-mono">
+          <span className="text-[10px] text-muted-foreground uppercase px-2 font-bold hidden sm:inline">
+            {isMinimumComplete ? '✓ MINIMUM COMPLETE' : 'MINIMUM NEEDED'}
           </span>
           <button
             type="submit"
             form="candidate-profile-form"
-            className="px-6 py-2.5 bg-[#fe7141] hover:bg-[#e05828] text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-2 shadow-xs cursor-pointer"
+            className="px-5 py-2 bg-[#fe7141] hover:bg-[#e05828] text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer"
           >
-            <Save className="w-3.5 h-3.5" />
+            <Save className="w-3 h-3" />
             <span>{savedFeedback ? '✓ Saved' : 'Save Profile'}</span>
           </button>
         </div>

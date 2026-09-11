@@ -37,17 +37,13 @@ export const isCandidateProfileComplete = (s?: StudentProfile | null): boolean =
   if (!s) return false
   const name = (s.name || '').trim().toLowerCase()
   const email = (s.email || '').trim().toLowerCase()
-  const cleanPhone = (s.phone || '').replace(/\D/g, '')
-  const college = (s.college || '').trim()
   const degree = (s.degree || '').trim()
 
   const hasValidName = name.length >= 2 && name !== 'student candidate' && name !== 'fresher student'
   const hasValidEmail = email.includes('@') && email.includes('.') && email !== 'student@collegecentre.in'
-  const hasValidPhone = cleanPhone.length >= 10
-  const hasValidCollege = college.length >= 2
   const hasValidDegree = degree.length >= 2
 
-  return Boolean(hasValidName && hasValidEmail && hasValidPhone && hasValidCollege && hasValidDegree)
+  return Boolean(hasValidName && hasValidEmail && hasValidDegree)
 }
 
 export const PaymentModal: React.FC = () => {
@@ -158,12 +154,8 @@ export const PaymentModal: React.FC = () => {
       setFormError('Please enter a valid email address.')
       return
     }
-    if (cleanPhone.length < 10) {
-      setFormError('Please enter a valid 10-digit mobile / WhatsApp number.')
-      return
-    }
-    if (!college || college.length < 2) {
-      setFormError('Please enter your college / university name.')
+    if (cleanPhone.length > 0 && cleanPhone.length < 10) {
+      setFormError('Please enter a valid 10-digit mobile number if provided.')
       return
     }
     if (!degree || degree.length < 2) {
