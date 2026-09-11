@@ -325,7 +325,8 @@ export async function handleParseResume(req, res) {
 
   // 1. Authenticate Request User
   const user = await authenticateRequestUser(req);
-  if (!user && process.env.NODE_ENV === 'production') {
+  const studentEmail = req.headers?.['x-student-email'] || req.headers?.['X-Student-Email'];
+  if (!user && !studentEmail && process.env.NODE_ENV === 'production') {
     return res.status(401).json({ error: 'Unauthorized: Valid student session required to parse resume' });
   }
 

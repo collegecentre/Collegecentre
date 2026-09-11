@@ -59,6 +59,9 @@ export const AuthPages: React.FC<AuthPagesProps> = ({ initialMode = 'signup' }) 
           }
 
           authUser = data?.user
+          if (data?.session?.access_token) {
+            localStorage.setItem('collegecentre_auth_token', data.session.access_token)
+          }
         } catch (directErr: any) {
           // 2. Same-Origin Fallback (/api/login)
           // Bypasses browser ad-blockers, third-party cookie restrictions, and CORS
@@ -76,10 +79,17 @@ export const AuthPages: React.FC<AuthPagesProps> = ({ initialMode = 'signup' }) 
           }
 
           if (proxyData.session) {
-            await supabase.auth.setSession({
-              access_token: proxyData.session.access_token,
-              refresh_token: proxyData.session.refresh_token,
-            })
+            if (proxyData.session.access_token) {
+              localStorage.setItem('collegecentre_auth_token', proxyData.session.access_token)
+            }
+            try {
+              await supabase.auth.setSession({
+                access_token: proxyData.session.access_token,
+                refresh_token: proxyData.session.refresh_token,
+              })
+            } catch {
+              // ignore
+            }
             authUser = proxyData.user
           }
         }

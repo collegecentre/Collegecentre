@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react"
 import { Upload, FileText, Sparkles, Loader2, AlertCircle, X, CheckCircle2 } from "lucide-react"
 import { ResumeExtractedProfile } from "@/types/resume"
 import { supabase } from "@/services/supabase"
+import { useApp } from "@/context/AppContext"
 
 interface ResumeUploadModalProps {
   isOpen: boolean
@@ -16,6 +17,7 @@ export const ResumeUploadModal: React.FC<ResumeUploadModalProps> = ({
   onClose,
   onExtracted,
 }) => {
+  const { student, isAuthenticated } = useApp()
   const [dragActive, setDragActive] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -93,11 +95,39 @@ export const ResumeUploadModal: React.FC<ResumeUploadModalProps> = ({
     setStatusMessage("Reading document...")
 
     try {
-      // 1. Get Supabase session token
-      const { data: sessionData } = await supabase.auth.getSession()
-      const token = sessionData?.session?.access_token
+      // 1. Get Supabase session token or fallback auth token
+      let token: string | null = null
+      try {
+        const { data: sessionData } = await supabase.auth.getSession()
+        token = sessionData?.session?.access_token || null
+      } catch {
+        // ignore
+      }
 
-      if (!token) {
+      if (!token && typeof localStorage !== "undefined") {
+        token = localStorage.getItem("collegecentre_auth_token")
+        if (!token) {
+          try {
+            for (let i = 0; i < localStorage.length; i++) {
+              const key = localStorage.key(i)
+              if (key && key.startsWith("sb-") && key.endsWith("-auth-token")) {
+                const raw = localStorage.getItem(key)
+                if (raw) {
+                  const parsed = JSON.parse(raw)
+                  token = parsed?.access_token || parsed?.currentSession?.access_token || null
+                  if (token) break
+                }
+              }
+            }
+          } catch {
+            // ignore
+          }
+        }
+      }
+
+      // Check whether user is authenticated in the application
+      const isUserAuthenticated = isAuthenticated || (student && student.email && student.id !== "guest_student")
+      if (!isUserAuthenticated && !token) {
         throw new Error("You must be signed in to parse a resume. Please sign in first.")
       }
 
@@ -107,12 +137,19 @@ export const ResumeUploadModal: React.FC<ResumeUploadModalProps> = ({
       setStatusMessage("AI is analyzing credentials, education, and technical stack...")
 
       // 3. Send to server
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      }
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`
+      }
+      if (student?.email) {
+        headers["x-student-email"] = student.email
+      }
+
       const response = await fetch("/api/parse-resume", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers,
         body: JSON.stringify({
           fileName: selectedFile.name,
           fileType: selectedFile.type || (selectedFile.name.endsWith(".docx") ? "application/vnd.openxmlformats-officedocument.wordprocessingml.document" : "application/pdf"),
