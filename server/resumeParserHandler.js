@@ -412,18 +412,18 @@ export async function handleParseResume(req, res) {
 
     for (const modelName of candidateModels) {
       const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
-      const res = await fetch(endpoint, {
+      const apiRes = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
 
-      if (res.ok) {
-        response = res;
+      if (apiRes.ok) {
+        response = apiRes;
         break;
       }
 
-      const errText = await res.text();
+      const errText = await apiRes.text();
       let parsedErr = '';
       try {
         const errJson = JSON.parse(errText);
@@ -434,18 +434,16 @@ export async function handleParseResume(req, res) {
       lastErr = parsedErr || errText;
 
       // If it's a 404 (e.g. older gemini-2.5-flash retired by Google for new users), try next candidate model
-      if (res.status === 404) {
+      if (apiRes.status === 404) {
         console.warn(`Gemini model ${modelName} returned 404, falling back to next model...`);
         continue;
       }
 
-      if (res.status === 429) {
+      if (apiRes.status === 429) {
         return res.status(429).json({ error: 'AI parsing rate limit reached. Please wait a moment and try again.' });
       }
 
-      return res.status(502).json({
-        error: `AI parsing service error: ${lastErr || 'Unable to analyze document.'}`,
-      });
+      console.warn(`Gemini model ${modelName} error (${apiRes.status}): ${lastErr}`);
     }
 
     if (!response) {
