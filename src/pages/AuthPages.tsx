@@ -14,6 +14,7 @@ export const AuthPages: React.FC<AuthPagesProps> = ({ initialMode = 'signup' }) 
 
   const [name, setName] = useState<string>(student.name)
   const [email, setEmail] = useState<string>(student.email)
+  const [phone, setPhone] = useState<string>(student.phone || '')
   const [college, setCollege] = useState<string>(student.college)
   const [degree, setDegree] = useState<string>(student.degree)
   const [gradYear, setGradYear] = useState<number>(student.graduation_year)
@@ -44,6 +45,7 @@ export const AuthPages: React.FC<AuthPagesProps> = ({ initialMode = 'signup' }) 
       ...student,
       name: name.trim() || student.name || 'Fresher Student',
       email: email.trim() || student.email,
+      phone: phone.trim() || student.phone,
       college: college.trim() || student.college,
       degree: degree.trim() || student.degree,
       graduation_year: gradYear,
@@ -173,6 +175,21 @@ export const AuthPages: React.FC<AuthPagesProps> = ({ initialMode = 'signup' }) 
 
             {!isLogin && (
               <>
+                <div className="space-y-1">
+                  <label htmlFor="auth-phone" className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                    Mobile / WhatsApp Number
+                  </label>
+                  <Input
+                    id="auth-phone"
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="e.g. 9876543210"
+                    className="h-10 rounded-none border-black/15 dark:border-white/20 font-mono text-xs"
+                    required
+                  />
+                </div>
+
                 <div className="space-y-1">
                   <label htmlFor="auth-college" className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
                     College / University
