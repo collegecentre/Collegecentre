@@ -91,6 +91,8 @@ export interface ResumeExtractedProfile {
   achievements: ResumeAchievement[];
   languages: ResumeLanguage[];
   career: ResumeCareer;
+  confidence?: "high" | "medium" | "low";
+  extracted_fields_count?: number;
 }
 
 export interface ProfileMergeSummary {

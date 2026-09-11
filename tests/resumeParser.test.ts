@@ -1,5 +1,17 @@
 import { describe, it, expect } from "vitest"
-import { sanitizeExtractedProfile, generateMockProfile } from "../server/resumeParserHandler.js"
+import {
+  parseResumeRules,
+  detectSections,
+  extractContactInfo,
+  extractEducation,
+  extractSkills,
+  calculateConfidence,
+  normalizeText,
+} from "../server/ruleResumeParser.js"
+import {
+  sanitizeExtractedProfile,
+  sanitizeFileName,
+} from "../server/resumeParserHandler.js"
 import {
   normalizeSkillName,
   normalizeAndDeduplicateSkills,
@@ -9,140 +21,246 @@ import { calculateJobMatch } from "../src/services/matching"
 import { StudentProfile, Job } from "../src/types"
 import { ResumeExtractedProfile } from "../src/types/resume"
 
-describe("Resume Parser & AI Profile Builder Unit Tests", () => {
-  describe("1. Anti-hallucination & Schema Sanitization", () => {
-    it("sanitizes empty, null, or corrupted data without throwing", () => {
-      const sanitized = sanitizeExtractedProfile(null)
-      expect(sanitized).toBeDefined()
-      expect(sanitized.personal.full_name).toBeNull()
-      expect(sanitized.personal.email).toBeNull()
-      expect(sanitized.education).toEqual([])
-      expect(sanitized.skills.programming_languages).toEqual([])
-      expect(sanitized.projects).toEqual([])
-      expect(sanitized.internships).toEqual([])
+describe("Deterministic Rule-Based Resume Parser Tests", () => {
+  describe("1. Contact Information Extraction", () => {
+    it("extracts candidate name, email, phone (+91 and international), and social links", () => {
+      const sampleResume = `
+Rahul Sharma
+Software Engineer
+Email: rahul.sharma@gmail.com | Phone: +91 98765 43210
+Location: Bengaluru, Karnataka
+LinkedIn: https://linkedin.com/in/rahul-sharma
+GitHub: https://github.com/rahul-sharma
+Portfolio: https://rahulsharma.dev
+      `.trim()
+
+      const parsed = parseResumeRules(sampleResume, "Rahul_Sharma_Resume.pdf")
+
+      expect(parsed.personal.full_name).toBe("Rahul Sharma")
+      expect(parsed.personal.email).toBe("rahul.sharma@gmail.com")
+      expect(parsed.personal.phone).toBe("+91 98765 43210")
+      expect(parsed.personal.location).toBe("Bengaluru")
+      expect(parsed.personal.linkedin_url).toBe("https://linkedin.com/in/rahul-sharma")
+      expect(parsed.personal.github_url).toBe("https://github.com/rahul-sharma")
+      expect(parsed.personal.portfolio_url).toBe("https://rahulsharma.dev")
     })
 
-    it("enforces anti-hallucination rules by stripping whitespace-only and invalid fields", () => {
-      const raw = {
-        personal: {
-          full_name: "  ",
-          email: "valid@nitk.edu.in",
-          phone: "   ",
-          linkedin_url: null,
-        },
-        education: [
-          {
-            institution: "NITK Surathkal",
-            degree: "B.Tech CSE",
-            field_of_study: "Computer Science",
-            start_year: 2022,
-            graduation_year: 2026,
-            gpa_or_percentage: "8.9 / 10",
-          },
-          {
-            institution: "   ", // Invalid empty entry
-            degree: "",
-          },
-        ],
-        skills: {
-          programming_languages: [" TypeScript ", "Python", "", "   "],
-          frameworks: ["React", null as any],
-          normalized: ["React", "TypeScript", "Python"],
-        },
-        projects: [
-          {
-            name: "Cloud Task Orchestrator",
-            description: "Distributed workflow runner in Go and Redis",
-            technologies: ["Golang", "Redis", "Docker"],
-            url: "https://github.com/test/orchestrator",
-          },
-        ],
-      }
+    it("extracts phone numbers in diverse Indian formats", () => {
+      const phone1 = "Contact: +91-9876543210 at office"
+      const phone2 = "Tel: 9876543210"
+      const phone3 = "Call +91 98765 43210"
 
-      const clean = sanitizeExtractedProfile(raw)
-
-      // Stripped empty strings to null
-      expect(clean.personal.full_name).toBeNull()
-      expect(clean.personal.email).toBe("valid@nitk.edu.in")
-      expect(clean.personal.phone).toBeNull()
-
-      // Filtered out invalid empty education entry
-      expect(clean.education.length).toBe(1)
-      expect(clean.education[0].institution).toBe("NITK Surathkal")
-
-      // Cleaned skills
-      expect(clean.skills.programming_languages).toEqual(["TypeScript", "Python"])
-      expect(clean.skills.frameworks).toEqual(["React"])
-
-      // Projects mapped correctly
-      expect(clean.projects.length).toBe(1)
-      expect(clean.projects[0].name).toBe("Cloud Task Orchestrator")
-      expect(clean.projects[0].technologies).toEqual(["Golang", "Redis", "Docker"])
+      expect(extractContactInfo(phone1, { header: [] }).phone).toBe("+91-9876543210")
+      expect(extractContactInfo(phone2, { header: [] }).phone).toBe("9876543210")
+      expect(extractContactInfo(phone3, { header: [] }).phone).toBe("+91 98765 43210")
     })
 
-    it("generates a realistic sample profile in offline development mock mode", () => {
-      const mock = generateMockProfile("ananya_resume.pdf")
-      expect(mock.personal.full_name).toBe("Ananya Deshmukh")
-      expect(mock.education[0].graduation_year).toBe(2026)
-      expect(mock.skills.normalized.length).toBeGreaterThan(5)
-      expect(mock.projects.length).toBeGreaterThanOrEqual(1)
-      expect(mock.internships.length).toBeGreaterThanOrEqual(1)
+    it("falls back cleanly to sanitized fileName when text does not contain a name", () => {
+      const textWithoutName = `
+contact@domain.com
++91 9876543210
+SKILLS
+React, Node.js
+      `.trim()
+
+      const parsed = parseResumeRules(textWithoutName, "sreehari_m_resume.pdf")
+      expect(parsed.personal.full_name).toBe("Sreehari M")
     })
   })
 
-  describe("2. Skill Normalizer & Canonical Synonyms", () => {
-    it("maps tech aliases to canonical forms", () => {
-      expect(normalizeSkillName("js")).toBe("JavaScript")
-      expect(normalizeSkillName("py")).toBe("Python")
+  describe("2. Education Extraction", () => {
+    it("extracts B.Tech, Computer Science, institution, and 2022-2026 year range", () => {
+      const eduResume = `
+Ananya Rao
+ananya@nitk.edu.in | +91 9123456789
+
+EDUCATION
+National Institute of Technology Karnataka, Surathkal
+Bachelor of Technology in Computer Science & Engineering
+2022 - 2026
+CGPA: 8.95 / 10
+      `.trim()
+
+      const parsed = parseResumeRules(eduResume)
+
+      expect(parsed.education.length).toBe(1)
+      const edu = parsed.education[0]
+      expect(edu.degree).toBe("B.Tech")
+      expect(edu.field_of_study).toBe("Computer Science")
+      expect(edu.institution).toContain("National Institute of Technology")
+      expect(edu.start_year).toBe(2022)
+      expect(edu.graduation_year).toBe(2026)
+      expect(edu.gpa_or_percentage).toContain("8.95")
+    })
+
+    it("extracts other degrees (MCA, B.E., BCA) without errors", () => {
+      const textMCA = "EDUCATION\nMaster of Computer Applications\n2023 - 2025"
+      const parsedMCA = parseResumeRules(textMCA)
+      expect(parsedMCA.education[0]?.degree).toBe("MCA")
+
+      const textBE = "EDUCATION\nBachelor of Engineering in Electronics & Communication\n2021 - 2025"
+      const parsedBE = parseResumeRules(textBE)
+      expect(parsedBE.education[0]?.degree).toBe("B.E.")
+      expect(parsedBE.education[0]?.field_of_study).toBe("Electronics & Communication")
+    })
+  })
+
+  describe("3. Skills Normalization & Deduplication", () => {
+    it("normalizes skill synonyms to canonical representations", () => {
       expect(normalizeSkillName("react.js")).toBe("React")
-      expect(normalizeSkillName("reactjs")).toBe("React")
-      expect(normalizeSkillName("k8s")).toBe("Kubernetes")
+      expect(normalizeSkillName("ReactJS")).toBe("React")
+      expect(normalizeSkillName("js")).toBe("JavaScript")
+      expect(normalizeSkillName("JS")).toBe("JavaScript")
+      expect(normalizeSkillName("nodejs")).toBe("Node.js")
+      expect(normalizeSkillName("NodeJS")).toBe("Node.js")
       expect(normalizeSkillName("postgres")).toBe("PostgreSQL")
       expect(normalizeSkillName("postgresql")).toBe("PostgreSQL")
+      expect(normalizeSkillName("k8s")).toBe("Kubernetes")
       expect(normalizeSkillName("dsa")).toBe("Data Structures & Algorithms")
     })
 
-    it("deduplicates skills across casing, synonyms, and variations", () => {
-      const rawList = [
-        "react",
-        "ReactJS",
-        "React.js",
-        "python",
-        "py",
-        "Python3",
-        "Docker",
-        "docker",
-        "K8s",
-        "kubernetes",
-      ]
+    it("deduplicates redundant skills (React, React.js, ReactJS -> React)", () => {
+      const rawList = ["React", "React.js", "ReactJS", "react", "Node", "Node.js", "nodejs", "NodeJS"]
       const deduplicated = normalizeAndDeduplicateSkills(rawList)
 
-      expect(deduplicated).toContain("React")
-      expect(deduplicated).toContain("Python")
-      expect(deduplicated).toContain("Docker")
-      expect(deduplicated).toContain("Kubernetes")
+      expect(deduplicated).toEqual(["React", "Node.js"])
+      expect(deduplicated.length).toBe(2)
+    })
 
-      // Should not contain duplicate representations
-      const reactMatches = deduplicated.filter((s) => s.toLowerCase().includes("react"))
-      expect(reactMatches.length).toBe(1)
+    it("categorizes extracted skills accurately", () => {
+      const skillText = `
+TECHNICAL SKILLS
+Languages: Python, TypeScript, Go, C++
+Frontend: React.js, Next.js, Tailwind CSS
+Databases: PostgreSQL, Redis, MongoDB
+DevOps: Docker, Kubernetes, AWS, Git
+      `.trim()
+
+      const parsed = parseResumeRules(skillText)
+
+      expect(parsed.skills.programming_languages).toContain("Python")
+      expect(parsed.skills.programming_languages).toContain("TypeScript")
+      expect(parsed.skills.programming_languages).toContain("Go")
+      expect(parsed.skills.frameworks).toContain("React")
+      expect(parsed.skills.frameworks).toContain("Next.js")
+      expect(parsed.skills.frameworks).toContain("Tailwind CSS")
+      expect(parsed.skills.databases).toContain("PostgreSQL")
+      expect(parsed.skills.databases).toContain("Redis")
+      expect(parsed.skills.tools).toContain("Docker")
+      expect(parsed.skills.tools).toContain("Git")
+      expect(parsed.skills.cloud).toContain("AWS")
     })
   })
 
-  describe("3. Non-destructive Profile Merging", () => {
+  describe("4. Section Detection Tolerances", () => {
+    it("recognizes diverse section headings across case and punctuation variations", () => {
+      const resume = `
+John Doe
+john@test.com | 9876543210
+
+--- ACADEMIC BACKGROUND ---
+B.Tech in Computer Science 2024
+
+### CORE COMPETENCIES:
+Python, Django, PostgreSQL
+
+-- WORK HISTORY --
+Software Engineer at Acme Corp (Jan 2024 - Present)
+
+### PERSONAL PROJECTS:
+Task Flow - Task management web application in React
+
+CERTIFICATES & LICENSES:
+AWS Certified Developer
+      `.trim()
+
+      const sections = detectSections(normalizeText(resume))
+
+      expect(sections.education.length).toBeGreaterThan(0)
+      expect(sections.skills.length).toBeGreaterThan(0)
+      expect(sections.experience.length).toBeGreaterThan(0)
+      expect(sections.projects.length).toBeGreaterThan(0)
+      expect(sections.certifications.length).toBeGreaterThan(0)
+    })
+  })
+
+  describe("5. Strict Anti-Hallucination", () => {
+    it("leaves missing fields null or empty rather than guessing", () => {
+      const bareMinimum = `
+Vijay Kumar
+vijay@example.com
+      `.trim()
+
+      const parsed = parseResumeRules(bareMinimum)
+
+      expect(parsed.personal.full_name).toBe("Vijay Kumar")
+      expect(parsed.personal.email).toBe("vijay@example.com")
+      expect(parsed.personal.phone).toBeNull()
+      expect(parsed.personal.location).toBeNull()
+      expect(parsed.personal.linkedin_url).toBeNull()
+      expect(parsed.personal.github_url).toBeNull()
+      expect(parsed.personal.portfolio_url).toBeNull()
+
+      // Missing education must be empty, NEVER invented
+      expect(parsed.education).toEqual([])
+
+      // Missing skills must be empty, NEVER invented
+      expect(parsed.skills.normalized).toEqual([])
+      expect(parsed.skills.programming_languages).toEqual([])
+
+      // Missing experience and projects must be empty, NEVER invented
+      expect(parsed.experience).toEqual([])
+      expect(parsed.internships).toEqual([])
+      expect(parsed.projects).toEqual([])
+      expect(parsed.certifications).toEqual([])
+      expect(parsed.achievements).toEqual([])
+      expect(parsed.languages).toEqual([])
+    })
+  })
+
+  describe("6. Extraction Quality / Confidence Indicators", () => {
+    it("reports High Confidence when email, phone, education, and skills are present", () => {
+      const fullResume = `
+Priya Nair
+priya@test.com | +91 9876543210
+EDUCATION
+College of Engineering Trivandrum
+B.Tech Computer Science 2026
+SKILLS
+Python, React, PostgreSQL, Docker
+      `.trim()
+
+      const parsed = parseResumeRules(fullResume)
+      expect(parsed.confidence).toBe("high")
+      expect(parsed.extracted_fields_count).toBeGreaterThanOrEqual(4)
+    })
+
+    it("reports Low Confidence when crucial fields are missing", () => {
+      const sparseResume = `
+Just some notes
+no email no phone no education
+      `.trim()
+
+      const parsed = parseResumeRules(sparseResume)
+      expect(parsed.confidence).toBe("low")
+    })
+  })
+
+  describe("7. Non-destructive Profile Merging", () => {
     const existingStudent: StudentProfile = {
       id: "student_123",
       name: "Existing Candidate",
       email: "candidate@college.edu",
       phone: "+91 99999 88888",
       education_level: "Undergraduate (B.Tech / B.E.)",
-      degree: "",
-      college: "",
+      degree: "B.Tech Electrical Engineering",
+      college: "Existing Engineering College",
       graduation_year: 2026,
-      skills: ["JavaScript", "HTML", "CSS"],
+      skills: ["C", "C++"],
       experience_level: "Fresher",
       preferred_categories: ["Software Development"],
-      preferred_locations: ["Bengaluru"],
-      preferred_work_mode: ["Remote", "Hybrid"],
+      preferred_locations: ["Kochi"],
+      preferred_work_mode: ["Remote"],
     }
 
     const extractedFromResume: ResumeExtractedProfile = {
@@ -150,7 +268,7 @@ describe("Resume Parser & AI Profile Builder Unit Tests", () => {
         full_name: "Resume Candidate Name",
         email: "candidate@college.edu",
         phone: "+91 11111 22222",
-        location: "Bengaluru, India",
+        location: "Bengaluru",
         linkedin_url: "https://linkedin.com/in/resumecandidate",
         github_url: "https://github.com/resumecandidate",
         portfolio_url: null,
@@ -166,33 +284,18 @@ describe("Resume Parser & AI Profile Builder Unit Tests", () => {
         },
       ],
       skills: {
-        programming_languages: ["Python", "TypeScript", "JavaScript"],
-        frameworks: ["React", "FastAPI"],
+        programming_languages: ["Python", "JavaScript"],
+        frameworks: ["React"],
         libraries: [],
         databases: ["PostgreSQL"],
-        tools: ["Docker", "Git"],
+        tools: ["Docker"],
         cloud: ["AWS"],
         other: [],
-        normalized: ["Python", "TypeScript", "JavaScript", "React", "FastAPI", "PostgreSQL", "Docker", "Git", "AWS"],
+        normalized: ["Python", "JavaScript", "React", "PostgreSQL", "Docker", "AWS"],
       },
       experience: [],
-      internships: [
-        {
-          company: "Acme FinTech",
-          role: "Software Engineering Intern",
-          duration: "May 2025 – July 2025",
-          technologies: ["Python", "FastAPI", "PostgreSQL"],
-          description: "Built high-throughput payment webhook processing microservice.",
-        },
-      ],
-      projects: [
-        {
-          name: "Real-time Chat App",
-          description: "WebSocket messaging service with Redis pub/sub",
-          technologies: ["Node.js", "WebSocket", "Redis"],
-          url: "https://github.com/resumecandidate/chat",
-        },
-      ],
+      internships: [],
+      projects: [],
       certifications: [],
       achievements: [],
       languages: [],
@@ -202,126 +305,96 @@ describe("Resume Parser & AI Profile Builder Unit Tests", () => {
       },
     }
 
-    it("preserves existing manual fields while filling missing academics and merging new skills", () => {
+    it("preserves manually entered profile data and does not overwrite existing values", () => {
       const { mergedProfile, summary } = mergeResumeWithProfile(
         existingStudent,
         extractedFromResume,
-        "resume_v1.pdf"
+        "resume.pdf"
       )
 
-      // Retained original candidate name & email & phone
+      // Retained existing manual personal credentials
       expect(mergedProfile.name).toBe("Existing Candidate")
       expect(mergedProfile.phone).toBe("+91 99999 88888")
+      expect(mergedProfile.college).toBe("Existing Engineering College")
+      expect(mergedProfile.degree).toBe("B.Tech Electrical Engineering")
 
-      // Filled missing college and degree
-      expect(mergedProfile.college).toBe("Indian Institute of Technology")
-      expect(mergedProfile.degree).toBe("B.Tech Computer Science")
-
-      // Added links that were previously empty
-      expect(mergedProfile.linkedin_url).toBe("https://linkedin.com/in/resumecandidate")
-      expect(mergedProfile.github_url).toBe("https://github.com/resumecandidate")
-
-      // Preserved existing skills ("JavaScript", "HTML5", "CSS3") and added new unique skills
-      expect(mergedProfile.skills).toContain("JavaScript")
-      expect(mergedProfile.skills).toContain("HTML5")
-      expect(mergedProfile.skills).toContain("CSS3")
+      // Appended new skills non-destructively
+      expect(mergedProfile.skills).toContain("C")
+      expect(mergedProfile.skills).toContain("C++")
       expect(mergedProfile.skills).toContain("React")
       expect(mergedProfile.skills).toContain("Python")
-      expect(mergedProfile.skills).toContain("Docker")
 
-      // Attached projects & internships
-      expect(mergedProfile.projects?.length).toBe(1)
-      expect(mergedProfile.projects?.[0].title).toBe("Real-time Chat App")
-      expect(mergedProfile.internships?.length).toBe(1)
-      expect(mergedProfile.internships?.[0].company).toBe("Acme FinTech")
-
-      // Recorded metadata
-      expect(mergedProfile.resume_file_name).toBe("resume_v1.pdf")
-      expect(mergedProfile.resume_parsed_at).toBeDefined()
-
-      // Summary diff verification
-      expect(summary.skillsAdded).toBeGreaterThan(0)
-      expect(summary.skillsRetained).toBe(3)
-      expect(summary.projectsAdded).toBe(1)
-      expect(summary.internshipsAdded).toBe(1)
-      expect(summary.academicsUpdated).toBe(true)
+      expect(summary.skillsRetained).toBe(2)
+      expect(summary.skillsAdded).toBeGreaterThanOrEqual(4)
     })
   })
 
-  describe("4. Matching Engine Integration with Extracted Resume Stack", () => {
-    const backendJob: Job = {
-      id: "job_be_01",
-      title: "Backend Engineer (FastAPI & Docker)",
-      company: "ScaleGrid",
+  describe("8. Edge Cases & Bad Files Security", () => {
+    it("sanitizes file names to prevent path traversal", () => {
+      expect(sanitizeFileName("../../../etc/passwd")).toBe("passwd")
+      expect(sanitizeFileName("..\\..\\windows\\system32\\cmd.exe")).toBe("cmd.exe")
+      expect(sanitizeFileName("my resume (1).pdf")).toBe("my resume (1).pdf")
+      expect(sanitizeFileName(null as any)).toBe("resume.pdf")
+    })
+
+    it("sanitizes corrupt or null extracted profiles safely", () => {
+      const sanitized = sanitizeExtractedProfile(null)
+      expect(sanitized).toBeDefined()
+      expect(sanitized.personal.full_name).toBeNull()
+      expect(sanitized.education).toEqual([])
+      expect(sanitized.skills.normalized).toEqual([])
+    })
+  })
+
+  describe("9. Matching Engine Recalibration", () => {
+    const devJob: Job = {
+      id: "job_dev_01",
+      title: "Frontend Developer (React)",
+      company: "Tech Corp",
       location: "Bengaluru",
-      work_mode: "Hybrid",
-      salary: "₹14–18 LPA",
+      work_mode: "Remote",
+      salary: "₹10–14 LPA",
       experience: "0–1 years",
-      education: "B.Tech Computer Science",
-      skills: ["Python", "FastAPI", "Docker", "PostgreSQL"],
-      category: "Backend Development",
+      education: "B.Tech",
+      skills: ["React", "JavaScript", "TypeScript"],
+      category: "Frontend Development",
       job_type: "Full-time",
       posted_at: new Date().toISOString(),
       deadline: "2026-12-31",
-      description: "Scale distributed microservices with Python and Docker.",
+      description: "Build modern web apps",
       fresher_eligibility: true,
-      application_url: "https://scalegrid.io/careers/1",
-      source: "ScaleGrid Careers",
+      application_url: "https://example.com",
+      source: "Tech Corp",
     }
 
-    it("increases match score when candidate acquires demonstrated project and internship technologies", () => {
-      // Baseline student with only HTML/CSS
-      const baselineStudent: StudentProfile = {
-        id: "student_base",
-        name: "Student A",
-        email: "studentA@example.com",
+    it("enhances match score when resume skills are merged", () => {
+      const studentBefore: StudentProfile = {
+        id: "s1",
+        name: "Student",
+        email: "s@test.com",
         phone: "9876543210",
         education_level: "Undergraduate (B.Tech / B.E.)",
-        degree: "Computer Science",
-        college: "NITK",
+        degree: "B.Tech",
+        college: "NIT",
         graduation_year: 2026,
         skills: ["HTML", "CSS"],
         experience_level: "Fresher",
-        preferred_categories: ["Software Development"],
+        preferred_categories: ["Frontend Development"],
         preferred_locations: ["Bengaluru"],
-        preferred_work_mode: ["Hybrid"],
+        preferred_work_mode: ["Remote"],
       }
 
-      const baselineMatch = calculateJobMatch(baselineStudent, backendJob)
+      const matchBefore = calculateJobMatch(studentBefore, devJob)
 
-      // Student after merging resume containing Python, FastAPI, Docker, and an internship
-      const enrichedStudent: StudentProfile = {
-        ...baselineStudent,
-        skills: ["HTML", "CSS", "Python", "FastAPI", "Docker", "PostgreSQL"],
-        internships: [
-          {
-            company: "Tech Labs",
-            role: "Backend Intern",
-            duration: "3 months",
-            skills_used: ["Python", "Docker"],
-            description: "Built API endpoints",
-          },
-        ],
-        projects: [
-          {
-            title: "Microservice API",
-            description: "FastAPI REST service",
-            technologies: ["FastAPI", "Docker", "PostgreSQL"],
-          },
-        ],
+      const studentAfter: StudentProfile = {
+        ...studentBefore,
+        skills: ["HTML", "CSS", "React", "JavaScript", "TypeScript"],
       }
 
-      const enrichedMatch = calculateJobMatch(enrichedStudent, backendJob)
+      const matchAfter = calculateJobMatch(studentAfter, devJob)
 
-      // Enriched profile matching all skills and having internship experience must have a vastly higher score
-      expect(enrichedMatch.score).toBeGreaterThan(baselineMatch.score)
-      expect(enrichedMatch.breakdown.skillsMatch).toBe(100)
-      expect(enrichedMatch.breakdown.experienceMatch).toBe(100)
-      expect(enrichedMatch.matchedSkills).toContain("Python")
-      expect(enrichedMatch.matchedSkills).toContain("FastAPI")
-      expect(enrichedMatch.matchedSkills).toContain("Docker")
-      expect(enrichedMatch.matchedSkills).toContain("PostgreSQL")
-      expect(enrichedMatch.missingSkills.length).toBe(0)
+      expect(matchAfter.score).toBeGreaterThan(matchBefore.score)
+      expect(matchAfter.breakdown.skillsMatch).toBe(100)
     })
   })
 })

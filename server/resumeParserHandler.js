@@ -1,105 +1,18 @@
 import { authenticateRequestUser } from './supabaseAdmin.js';
-import { parseResumeWithScript } from './scriptResumeParser.js';
+import { parseResumeRules } from './ruleResumeParser.js';
 
-const MAX_FILE_BYTES = 8 * 1024 * 1024; // 8 MB
-
-const GEMINI_SYSTEM_PROMPT = `You are a resume information extraction system. Extract only information explicitly present in the resume. Never invent information. If information is missing, return null or an empty array.
-
-Return a strictly formatted JSON object matching this exact schema:
-{
-  "personal": {
-    "full_name": string | null,
-    "email": string | null,
-    "phone": string | null,
-    "location": string | null,
-    "linkedin_url": string | null,
-    "github_url": string | null,
-    "portfolio_url": string | null
-  },
-  "education": [
-    {
-      "institution": string,
-      "degree": string,
-      "field_of_study": string,
-      "start_year": number | null,
-      "graduation_year": number | null,
-      "gpa_or_percentage": string | null
-    }
-  ],
-  "skills": {
-    "programming_languages": string[],
-    "frameworks": string[],
-    "libraries": string[],
-    "databases": string[],
-    "tools": string[],
-    "cloud": string[],
-    "other": string[],
-    "normalized": string[]
-  },
-  "experience": [
-    {
-      "company": string,
-      "role": string,
-      "location": string | null,
-      "employment_type": string | null,
-      "start_date": string | null,
-      "end_date": string | null,
-      "current": boolean,
-      "description": string | null,
-      "technologies": string[]
-    }
-  ],
-  "internships": [
-    {
-      "company": string,
-      "role": string,
-      "duration": string | null,
-      "technologies": string[],
-      "description": string | null
-    }
-  ],
-  "projects": [
-    {
-      "name": string,
-      "description": string | null,
-      "technologies": string[],
-      "url": string | null
-    }
-  ],
-  "certifications": [
-    {
-      "name": string,
-      "issuer": string | null,
-      "date": string | null
-    }
-  ],
-  "achievements": [
-    {
-      "achievement": string,
-      "organization": string | null,
-      "date": string | null
-    }
-  ],
-  "languages": [
-    {
-      "language": string,
-      "proficiency": string | null
-    }
-  ],
-  "career": {
-    "experience_level": "Fresher" | "0-1 years" | "1-2 years" | null,
-    "job_categories": string[]
-  }
-}
-
-Rules:
-1. Do not infer skills that are not explicitly stated.
-2. If GPA or percentage is not explicitly in the text, return null.
-3. If an internship is explicitly labeled as an internship, put it in "internships", otherwise put general employment in "experience".
-4. "normalized" skills should be canonical technology names (e.g. "React", "Python", "Node.js", "PostgreSQL", "Docker").`;
+const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10 MB limit as specified
 
 /**
- * Validates and sanitizes raw JSON from Gemini into a reliable ResumeExtractedProfile structure.
+ * Sanitizes input file names to prevent directory traversal and illegal characters.
+ */
+export function sanitizeFileName(name) {
+  if (!name || typeof name !== 'string') return 'resume.pdf';
+  return name.replace(/^.*[\\\/]/, '').replace(/[^a-zA-Z0-9._\s()\-]/g, '_').trim();
+}
+
+/**
+ * Validates and sanitizes extracted profile structures into guaranteed safe schema.
  */
 export function sanitizeExtractedProfile(raw) {
   const safe = (raw && typeof raw === 'object') ? raw : {};
@@ -230,65 +143,82 @@ export function sanitizeExtractedProfile(raw) {
     achievements,
     languages,
     career,
+    confidence: safe.confidence || 'medium',
+    extracted_fields_count: safe.extracted_fields_count || 0,
   };
 }
 
 /**
- * Isolated development mock extraction for offline testing.
+ * Offline sample profile generator for testing.
  */
-export function generateMockProfile(fileName = 'sample_resume.pdf') {
-  return sanitizeExtractedProfile({
+export function generateMockProfile(fileName) {
+  const nameFromFilename = fileName
+    ? fileName.replace(/\.[^/.]+$/, '').replace(/[_-]/g, ' ').replace(/resume/gi, '').trim()
+    : 'Candidate';
+
+  return {
     personal: {
-      full_name: 'Ananya Deshmukh',
-      email: 'ananya.deshmukh@nitk.edu.in',
-      phone: '+91 98451 22334',
-      location: 'Bengaluru, India',
+      full_name: nameFromFilename ? (nameFromFilename.includes(' ') ? nameFromFilename : `${nameFromFilename} Candidate`) : 'Ananya Deshmukh',
+      email: 'ananya.deshmukh@college.edu',
+      phone: '+91 98765 43210',
+      location: 'Bengaluru, Karnataka',
       linkedin_url: 'https://linkedin.com/in/ananya-deshmukh',
-      github_url: 'https://github.com/ananya-codes',
-      portfolio_url: null,
+      github_url: 'https://github.com/ananya-deshmukh',
+      portfolio_url: 'https://ananya.dev',
     },
     education: [
       {
         institution: 'National Institute of Technology Karnataka (NITK), Surathkal',
-        degree: 'Bachelor of Technology',
-        field_of_study: 'Computer Science and Engineering',
+        degree: 'B.Tech Computer Science & Engineering',
+        field_of_study: 'Computer Science',
         start_year: 2022,
         graduation_year: 2026,
         gpa_or_percentage: '8.85 / 10 CGPA',
       },
     ],
     skills: {
-      programming_languages: ['Python', 'JavaScript', 'TypeScript', 'Java', 'C++'],
-      frameworks: ['React', 'Next.js', 'Express.js', 'FastAPI'],
-      libraries: ['Redux Toolkit', 'Tailwind CSS', 'Pandas'],
-      databases: ['PostgreSQL', 'MongoDB', 'Redis'],
-      tools: ['Git', 'Docker', 'Postman'],
-      cloud: ['AWS (S3, Lambda)'],
-      other: ['RESTful APIs', 'Data Structures & Algorithms', 'System Design'],
-      normalized: ['Python', 'JavaScript', 'TypeScript', 'React', 'Node.js', 'PostgreSQL', 'Docker', 'AWS', 'MongoDB', 'Git'],
+      programming_languages: ['TypeScript', 'JavaScript', 'Python', 'Go'],
+      frameworks: ['React', 'Next.js', 'Tailwind CSS', 'FastAPI'],
+      libraries: ['Redux', 'Zod'],
+      databases: ['PostgreSQL', 'Redis'],
+      tools: ['Git', 'Docker', 'Kubernetes'],
+      cloud: ['AWS'],
+      other: ['REST APIs', 'Data Structures & Algorithms'],
+      normalized: [
+        'TypeScript',
+        'JavaScript',
+        'Python',
+        'Go',
+        'React',
+        'Next.js',
+        'Tailwind CSS',
+        'FastAPI',
+        'PostgreSQL',
+        'Redis',
+        'Git',
+        'Docker',
+        'Kubernetes',
+        'AWS',
+        'REST APIs',
+        'Data Structures & Algorithms',
+      ],
     },
     experience: [],
     internships: [
       {
-        company: 'Zepto Labs',
-        role: 'Software Development Intern (Backend)',
-        duration: 'May 2025 - July 2025 (3 mos)',
-        technologies: ['Node.js', 'Express.js', 'PostgreSQL', 'Redis'],
-        description: 'Optimized delivery order dispatch queue microservices, reducing dispatch latency by 24%. Built REST endpoints with automated unit test suites.',
+        company: 'Razorpay Software',
+        role: 'Software Engineering Intern',
+        duration: 'May 2025 – July 2025',
+        technologies: ['TypeScript', 'React', 'FastAPI', 'PostgreSQL'],
+        description: 'Engineered high-concurrency payment webhook processing service handling 2,000+ RPS.',
       },
     ],
     projects: [
       {
-        name: 'Campus Job Sprint Matching Engine',
-        description: 'Full-stack platform matching college graduates to verified entry-level software engineer roles with deterministic criteria matching.',
-        technologies: ['React', 'TypeScript', 'PostgreSQL', 'Tailwind CSS'],
-        url: 'https://github.com/ananya-codes/job-match',
-      },
-      {
-        name: 'Algorithmic Visualizer',
-        description: 'Interactive visualization tool for pathfinding and tree traversal algorithms.',
-        technologies: ['JavaScript', 'Canvas API', 'React'],
-        url: null,
+        name: 'Distributed Job Match Engine',
+        description: 'Built a sub-millisecond candidate qualification scoring engine with inverted index matching in Go.',
+        technologies: ['Go', 'Redis', 'Docker'],
+        url: 'https://github.com/ananya-deshmukh/job-match-engine',
       },
     ],
     certifications: [
@@ -300,66 +230,210 @@ export function generateMockProfile(fileName = 'sample_resume.pdf') {
     ],
     achievements: [
       {
-        achievement: 'Finalist at Smart India Hackathon (SIH)',
-        organization: 'Ministry of Education',
+        achievement: 'Finalist at Smart India Hackathon (SIH 2024)',
+        organization: 'Ministry of Education, Govt of India',
         date: '2024',
       },
     ],
     languages: [
       { language: 'English', proficiency: 'Professional' },
-      { language: 'Hindi', proficiency: 'Native' },
+      { language: 'Hindi', proficiency: 'Fluent' },
     ],
     career: {
       experience_level: 'Fresher',
-      job_categories: ['Software Development', 'Frontend Development', 'Full Stack', 'Backend Development'],
+      job_categories: ['Software Development', 'Frontend Development', 'Backend Development'],
     },
-  });
+    confidence: 'high',
+    extracted_fields_count: 8,
+  };
 }
 
 /**
- * Main HTTP handler for POST /api/parse-resume
+ * Extracts raw PostScript text literals from uncompressed PDF streams.
+ */
+function extractTextFromPs(str, chunks) {
+  if (!str) return;
+  const parenRegex = /\(((?:[^()\\]|\\.)*)\)/g;
+  let pMatch;
+  while ((pMatch = parenRegex.exec(str)) !== null) {
+    const val = pMatch[1]
+      .replace(/\\([()\\])/g, '$1')
+      .replace(/\\r/g, '\n')
+      .replace(/\\n/g, '\n')
+      .trim();
+    if (val && val.length >= 2 && !/^[\x00-\x1F\x7F-\x9F]+$/.test(val)) {
+      chunks.push(val);
+    }
+  }
+}
+
+/**
+ * Multi-layer PDF text extractor with OCR fallback.
+ */
+export async function extractPdfText(pdfBuffer) {
+  let extractedText = '';
+
+  // Layer 1: unpdf
+  try {
+    const { extractText } = await import('unpdf');
+    const parsed = await extractText(new Uint8Array(pdfBuffer));
+    if (parsed?.text) {
+      const t = Array.isArray(parsed.text) ? parsed.text.join('\n\n') : String(parsed.text);
+      if (t.trim().length >= 40) {
+        extractedText = t.trim();
+      }
+    }
+  } catch (e) {
+    console.warn('[ResumeParser] Layer 1 (unpdf) notice:', e?.message);
+  }
+
+  // Layer 2: pdf-parse
+  if (!extractedText) {
+    try {
+      const { PDFParse } = await import('pdf-parse');
+      const parser = new PDFParse({ data: pdfBuffer, verbosity: 0 });
+      await parser.load();
+      const res = await parser.getText();
+      const t = res?.text || '';
+      if (t.trim().length >= 40) {
+        extractedText = t.trim();
+      }
+    } catch (e) {
+      console.warn('[ResumeParser] Layer 2 (pdf-parse) notice:', e?.message);
+    }
+  }
+
+  // Layer 3: FlateDecode PostScript stream decompression
+  if (!extractedText) {
+    try {
+      const zlib = await import('zlib');
+      const str = pdfBuffer.toString('binary');
+      const chunks = [];
+
+      const streamRegex = /stream\r?\n([\s\S]*?)\r?\nendstream/g;
+      let sMatch;
+      while ((sMatch = streamRegex.exec(str)) !== null) {
+        try {
+          const decompressed = zlib.inflateSync(Buffer.from(sMatch[1], 'binary')).toString('binary');
+          extractTextFromPs(decompressed, chunks);
+        } catch {
+          extractTextFromPs(sMatch[1], chunks);
+        }
+      }
+      extractTextFromPs(str, chunks);
+
+      const joined = chunks.join(' ').replace(/\\([()\\])/g, '$1').replace(/\s+/g, ' ').trim();
+      if (joined.length >= 40) {
+        extractedText = joined;
+      }
+    } catch (e) {
+      console.warn('[ResumeParser] Layer 3 (stream) notice:', e?.message);
+    }
+  }
+
+  // Layer 4: Raw words extraction
+  if (!extractedText) {
+    try {
+      const str = pdfBuffer.toString('binary');
+      const words = str.match(/[A-Za-z0-9+@._#\-\/]{3,}/g) || [];
+      const filtered = words.filter(
+        (w) =>
+          !['obj', 'endobj', 'stream', 'endstream', 'xref', 'trailer', 'startxref', 'filter', 'flatedecode', 'length'].includes(
+            w.toLowerCase()
+          )
+      );
+      if (filtered.length >= 25) {
+        extractedText = filtered.join(' ');
+      }
+    } catch (e) {
+      console.warn('[ResumeParser] Layer 4 (raw words) notice:', e?.message);
+    }
+  }
+
+  // Layer 5: OCR Fallback for scanned / image-only PDFs
+  if (!extractedText || extractedText.trim().length < 40) {
+    console.log('[ResumeParser] Insufficient text extracted (<40 chars). Attempting OCR fallback...');
+    try {
+      const { createWorker } = await import('tesseract.js');
+      
+      // Look for embedded JPEG images in PDF stream (/Filter /DCTDecode)
+      const binaryStr = pdfBuffer.toString('binary');
+      const dctRegex = /\/Filter\s*(?:\[\s*)?\/DCTDecode[\s\S]*?stream\r?\n([\s\S]*?)\r?\nendstream/gi;
+      let dctMatch;
+      const imageBuffers = [];
+
+      while ((dctMatch = dctRegex.exec(binaryStr)) !== null) {
+        imageBuffers.push(Buffer.from(dctMatch[1], 'binary'));
+        if (imageBuffers.length >= 3) break; // Limit to first 3 pages/images
+      }
+
+      if (imageBuffers.length > 0) {
+        const worker = await createWorker('eng');
+        const ocrResults = [];
+
+        for (const imgBuf of imageBuffers) {
+          const ret = await worker.recognize(imgBuf);
+          if (ret?.data?.text) {
+            ocrResults.push(ret.data.text);
+          }
+        }
+        await worker.terminate();
+
+        const combinedOcr = ocrResults.join('\n\n').trim();
+        if (combinedOcr.length >= 40) {
+          console.log('[ResumeParser] OCR successfully extracted text from scanned pages.');
+          extractedText = combinedOcr;
+        }
+      }
+    } catch (ocrErr) {
+      console.warn('[ResumeParser] OCR processing failed or unavailable:', ocrErr?.message);
+    }
+  }
+
+  return extractedText ? extractedText.trim() : '';
+}
+
+/**
+ * Express / Vite HTTP Request Handler for /api/parse-resume
+ * 100% Deterministic rule-based resume parsing without AI.
  */
 export async function handleParseResume(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+  // 1. Authenticate Request
+  const authUser = await authenticateRequestUser(req);
+  if (!authUser) {
+    return res.status(401).json({
+      error: 'You must be signed in to parse a resume. Please sign in first.',
+    });
   }
 
-  // 1. Authenticate Request User
-  const user = await authenticateRequestUser(req);
-  const studentEmail = req.headers?.['x-student-email'] || req.headers?.['X-Student-Email'];
-  if (!user && !studentEmail && process.env.NODE_ENV === 'production') {
-    return res.status(401).json({ error: 'Unauthorized: Valid student session required to parse resume' });
+  // 2. Validate Payload
+  const { fileName, fileType, fileData } = req.body || {};
+  if (!fileData) {
+    return res.status(400).json({ error: 'Missing resume file data in request payload.' });
   }
 
-  const { fileData, fileName, fileType, parserMode } = req.body || {};
-
-  // 2. Validate File Presence
-  if (!fileData || typeof fileData !== 'string') {
-    return res.status(400).json({ error: 'No file data received. Please select a resume file to upload.' });
+  const rawBase64 = String(fileData).replace(/^data:[^;]+;base64,/, '');
+  if (!rawBase64 || rawBase64.trim().length === 0) {
+    return res.status(400).json({ error: 'Uploaded file is empty. Please select a valid document.' });
   }
 
-  // Clean all whitespace, newlines, tabs, and data URI prefixes
-  const rawBase64 = fileData.replace(/^data:[^;]+;base64,/, '').replace(/\s+/g, '');
-  if (!rawBase64) {
-    return res.status(400).json({ error: 'Uploaded resume document is empty.' });
-  }
-
-  // Ensure pure RFC 4648 standard base64 encoding without breaks or padding issues
-  let base64Content = rawBase64;
+  let fileBuffer;
   try {
-    base64Content = Buffer.from(rawBase64, 'base64').toString('base64');
+    fileBuffer = Buffer.from(rawBase64, 'base64');
   } catch {
-    base64Content = rawBase64;
+    return res.status(400).json({ error: 'Invalid base64 payload. Could not decode file content.' });
   }
 
-  // 3. Validate File Size
-  const approximateBytes = Math.ceil((base64Content.length * 3) / 4);
-  if (approximateBytes > MAX_FILE_BYTES) {
-    return res.status(400).json({ error: 'File exceeds maximum 8 MB size limit. Please upload a smaller document.' });
+  // 3. Validate File Size (10 MB max)
+  if (fileBuffer.length > MAX_FILE_BYTES) {
+    return res.status(400).json({
+      error: 'File exceeds maximum 10 MB size limit. Please upload a smaller document.',
+    });
   }
 
-  // 4. Validate File Type
-  const lowerName = String(fileName || '').toLowerCase();
+  // 4. Validate File Type & Sanitize File Name
+  const safeFileName = sanitizeFileName(fileName);
+  const lowerName = safeFileName.toLowerCase();
   const lowerType = String(fileType || '').toLowerCase();
   const isPdf = lowerName.endsWith('.pdf') || lowerType.includes('pdf');
   const isDocx = lowerName.endsWith('.docx') || lowerType.includes('wordprocessingml') || lowerType.includes('document');
@@ -370,284 +444,48 @@ export async function handleParseResume(req, res) {
     });
   }
 
-  const mimeType = isPdf ? 'application/pdf' : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-
-  // 5. Development Mock Fallback Check
-  const isMockMode = process.env.GEMINI_MOCK === 'true' || !process.env.GEMINI_API_KEY;
-  if (isMockMode) {
-    if (process.env.NODE_ENV === 'production') {
-      return res.status(500).json({ error: 'AI resume parsing configuration error: GEMINI_API_KEY is not configured.' });
-    }
-    const mockData = generateMockProfile(fileName);
-    return res.status(200).json({
-      success: true,
-      profile: mockData,
-      extracted: mockData,
-      isMock: true,
-    });
-  }
-
-  // 6. Invoke Google Gemini API with fallback resilience across available models
-  const apiKey = process.env.GEMINI_API_KEY;
-  const preferredModel = process.env.GEMINI_MODEL || 'gemini-3.7-flash';
-  const candidateModels = Array.from(
-    new Set([
-      preferredModel,
-      'gemini-3.7-flash',
-      'gemini-3.8-flash',
-      'gemini-3.5-flash',
-      'gemini-3.1-flash-lite',
-      'gemini-3.6-flash',
-    ])
-  );
-
-  // Extract text from PDF buffer with multi-layer fallback resilience
-  let extractedPdfText = '';
+  // 5. Extract Text using Local Extractors
+  let extractedText = '';
   if (isPdf) {
-    const pdfBuffer = Buffer.from(base64Content, 'base64');
-    
-    // Layer 1: unpdf
+    extractedText = await extractPdfText(fileBuffer);
+  } else {
+    // For DOCX documents, extract readable strings from document xml stream
     try {
-      const { extractText } = await import('unpdf');
-      const parsed = await extractText(new Uint8Array(pdfBuffer));
-      if (parsed?.text) {
-        const t = Array.isArray(parsed.text) ? parsed.text.join('\n\n') : String(parsed.text);
-        if (t.trim().length > 30) extractedPdfText = t.trim();
+      const zlib = await import('zlib');
+      const docStr = fileBuffer.toString('binary');
+      const xmlMatch = docStr.match(/<w:t[^>]*>([^<]+)<\/w:t>/g);
+      if (xmlMatch) {
+        extractedText = xmlMatch.map((m) => m.replace(/<[^>]+>/g, '')).join(' ');
       }
-    } catch (e) {
-      console.warn('[ResumeParser] unpdf notice:', e?.message);
-    }
-
-    // Layer 2: pdf-parse (PDFParse)
-    if (!extractedPdfText) {
-      try {
-        const { PDFParse } = await import('pdf-parse');
-        const parser = new PDFParse({ data: pdfBuffer, verbosity: 0 });
-        await parser.load();
-        const res = await parser.getText();
-        const t = res?.text || '';
-        if (t.trim().length > 30) extractedPdfText = t.trim();
-      } catch (e) {
-        console.warn('[ResumeParser] pdf-parse notice:', e?.message);
-      }
-    }
-
-    // Layer 3: Direct Stream & FlateDecode decompression (immune to unterminated string errors)
-    if (!extractedPdfText) {
-      try {
-        const zlib = await import('zlib');
-        const str = pdfBuffer.toString('binary');
-        const chunks = [];
-
-        const streamRegex = /stream\r?\n([\s\S]*?)\r?\nendstream/g;
-        let sMatch;
-        while ((sMatch = streamRegex.exec(str)) !== null) {
-          try {
-            const decompressed = zlib.inflateSync(Buffer.from(sMatch[1], 'binary')).toString('binary');
-            extractTextFromPs(decompressed, chunks);
-          } catch {
-            extractTextFromPs(sMatch[1], chunks);
-          }
-        }
-        extractTextFromPs(str, chunks);
-
-        const joined = chunks.join(' ').replace(/\\([()\\])/g, '$1').replace(/\s+/g, ' ').trim();
-        if (joined.length > 30) {
-          extractedPdfText = joined;
-        } else {
-          // Layer 4: Raw words extraction
-          const words = str.match(/[A-Za-z0-9+@._#\-\/]{3,}/g) || [];
-          const filtered = words.filter(w => !['obj', 'endobj', 'stream', 'endstream', 'xref', 'trailer', 'startxref', 'filter', 'flatedecode', 'length'].includes(w.toLowerCase()));
-          if (filtered.length > 20) {
-            extractedPdfText = filtered.join(' ');
-          }
-        }
-      } catch (e) {
-        console.warn('[ResumeParser] stream extraction notice:', e?.message);
-      }
-    }
-  }
-
-  // If explicit Script mode requested, bypass AI and execute deterministic parser directly
-  if (parserMode === 'script') {
-    console.log('[ResumeParser] Running deterministic Script Parser mode on demand');
-    const textToParse = extractedPdfText || fileName;
-    const scriptProfile = parseResumeWithScript(textToParse, fileName);
-    return res.status(200).json({
-      success: true,
-      profile: scriptProfile,
-      extracted: scriptProfile,
-      parser: 'script',
-      note: 'Parsed instantly using deterministic rule engine.',
-    });
-  }
-
-  const hasText = Boolean(extractedPdfText && extractedPdfText.trim().length > 30);
-
-  const payload = hasText
-    ? {
-        contents: [
-          {
-            parts: [
-              {
-                text: `Candidate Resume Content:\n"""\n${extractedPdfText.trim()}\n"""\n\n${GEMINI_SYSTEM_PROMPT}`,
-              },
-            ],
-          },
-        ],
-        generationConfig: {
-          responseMimeType: 'application/json',
-          temperature: 0.1,
-        },
-      }
-    : {
-        contents: [
-          {
-            parts: [
-              {
-                inlineData: {
-                  mimeType,
-                  data: base64Content,
-                },
-              },
-              {
-                text: GEMINI_SYSTEM_PROMPT,
-              },
-            ],
-          },
-        ],
-        generationConfig: {
-          responseMimeType: 'application/json',
-          temperature: 0.1,
-        },
-      };
-
-  console.log(
-    `[ResumeParser] Processing document: fileName="${fileName}", fileType="${fileType}", mimeType="${mimeType}", base64Length=${base64Content.length}, hasExtractedText=${hasText}`
-  );
-
-  try {
-    let response = null;
-    let lastErr = '';
-
-    for (const modelName of candidateModels) {
-      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
-      const apiRes = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      if (apiRes.ok) {
-        response = apiRes;
-        break;
-      }
-
-      const errText = await apiRes.text();
-      let parsedErr = '';
-      try {
-        const errJson = JSON.parse(errText);
-        parsedErr = errJson?.error?.message || '';
-        console.error(`[ResumeParser] Gemini API (${modelName}) returned ${apiRes.status}:`, JSON.stringify(errJson));
-      } catch {
-        parsedErr = errText;
-        console.error(`[ResumeParser] Gemini API (${modelName}) returned ${apiRes.status}: ${errText}`);
-      }
-      lastErr = parsedErr || errText;
-
-      // If a model is deprecated (404), temporarily high demand (503), or rate limited (429), try next model in pool
-      console.warn(`[ResumeParser] Model ${modelName} returned status ${apiRes.status}. Trying next candidate model...`);
-    }
-
-    if (!response) {
-      console.warn(`[ResumeParser] AI parsing unavailable (${lastErr}), automatically falling back to Script Parser`);
-      const fallbackProfile = parseResumeWithScript(extractedPdfText || fileName, fileName);
-      return res.status(200).json({
-        success: true,
-        profile: fallbackProfile,
-        extracted: fallbackProfile,
-        parser: 'script-fallback',
-        note: 'Parsed via deterministic resume script engine.',
-      });
-    }
-
-    const geminiData = await response.json();
-    const candidateText = geminiData?.candidates?.[0]?.content?.parts?.[0]?.text;
-
-    if (!candidateText) {
-      console.warn('[ResumeParser] Empty candidate text from AI, falling back to Script Parser');
-      const fallbackProfile = parseResumeWithScript(extractedPdfText || fileName, fileName);
-      return res.status(200).json({
-        success: true,
-        profile: fallbackProfile,
-        extracted: fallbackProfile,
-        parser: 'script-fallback',
-        note: 'Parsed via deterministic resume script engine.',
-      });
-    }
-
-    // Clean potential markdown wrapping
-    const cleanJson = candidateText.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
-    let parsedProfile;
-    try {
-      parsedProfile = JSON.parse(cleanJson);
     } catch {
-      console.warn('[ResumeParser] JSON parse error from AI response, falling back to Script Parser');
-      const fallbackProfile = parseResumeWithScript(extractedPdfText || fileName, fileName);
-      return res.status(200).json({
-        success: true,
-        profile: fallbackProfile,
-        extracted: fallbackProfile,
-        parser: 'script-fallback',
-        note: 'Parsed via deterministic resume script engine.',
-      });
+      // fallback
     }
+  }
 
-    // 7. Sanitize and Validate Structured Output
-    const sanitized = sanitizeExtractedProfile(parsedProfile);
+  // 6. Handle Scanned / Unreadable Documents
+  if (!extractedText || extractedText.trim().length < 40) {
+    return res.status(422).json({
+      error: 'The uploaded PDF appears to be a scanned image or unreadable document. OCR could not extract sufficient text. Please upload a standard text-based PDF resume.',
+    });
+  }
+
+  // 7. Deterministic Rule-Based Resume Parsing
+  try {
+    const parsedProfile = parseResumeRules(extractedText, safeFileName);
+    const sanitizedProfile = sanitizeExtractedProfile(parsedProfile);
 
     return res.status(200).json({
       success: true,
-      profile: sanitized,
-      extracted: sanitized,
-      parser: 'gemini',
+      profile: sanitizedProfile,
+      extracted: sanitizedProfile,
+      parser: 'rule-based',
+      confidence: sanitizedProfile.confidence,
+      note: 'Your resume was parsed instantly and locally using deterministic rule matching. No AI was used.',
     });
-  } catch (err) {
-    console.error('Resume parsing execution error, falling back to Script Parser:', err.message);
-    const fallbackProfile = parseResumeWithScript(extractedPdfText || fileName, fileName);
-    return res.status(200).json({
-      success: true,
-      profile: fallbackProfile,
-      extracted: fallbackProfile,
-      parser: 'script-fallback',
-      note: 'Parsed via deterministic resume script engine.',
+  } catch (parseError) {
+    console.error('[ResumeParser] Rule parsing error:', parseError);
+    return res.status(500).json({
+      error: 'An error occurred while analyzing the resume text. Please verify the document format.',
     });
   }
 }
-
-function extractTextFromPs(ps, out) {
-  if (!ps || typeof ps !== 'string') return;
-  const strRegex = /\(([\s\S]*?)\)\s*(?:Tj|'|"|TJ)/g;
-  let m;
-  while ((m = strRegex.exec(ps)) !== null) {
-    const clean = m[1].replace(/\\([()\\])/g, '$1').trim();
-    if (clean.length > 1 && !/^[^\x20-\x7E]+$/.test(clean)) {
-      out.push(clean);
-    }
-  }
-
-  const hexRegex = /<([0-9a-fA-F]{4,})>\s*(?:Tj|TJ)/g;
-  let hm;
-  while ((hm = hexRegex.exec(ps)) !== null) {
-    const hex = hm[1];
-    let decoded = '';
-    for (let i = 0; i < hex.length; i += 2) {
-      const code = parseInt(hex.substr(i, 2), 16);
-      if (code >= 32 && code <= 126) decoded += String.fromCharCode(code);
-    }
-    if (decoded.trim().length > 1) {
-      out.push(decoded.trim());
-    }
-  }
-}
-

@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react"
-import { Upload, FileText, Sparkles, Loader2, AlertCircle, X, CheckCircle2, Zap } from "lucide-react"
+import { Upload, FileText, Loader2, AlertCircle, X, CheckCircle2, ShieldCheck } from "lucide-react"
 import { ResumeExtractedProfile } from "@/types/resume"
 import { supabase } from "@/services/supabase"
 import { useApp } from "@/context/AppContext"
@@ -10,7 +10,7 @@ interface ResumeUploadModalProps {
   onExtracted: (profile: ResumeExtractedProfile, rawFileName: string) => void
 }
 
-const MAX_FILE_SIZE_BYTES = 8 * 1024 * 1024 // 8 MB
+const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024 // 10 MB
 
 export const ResumeUploadModal: React.FC<ResumeUploadModalProps> = ({
   isOpen,
@@ -50,7 +50,12 @@ export const ResumeUploadModal: React.FC<ResumeUploadModalProps> = ({
     }
 
     if (file.size > MAX_FILE_SIZE_BYTES) {
-      setErrorMessage("File exceeds the 8 MB maximum size limit. Please upload a smaller resume.")
+      setErrorMessage("File exceeds the 10 MB maximum size limit. Please upload a smaller resume.")
+      return false
+    }
+
+    if (file.size === 0) {
+      setErrorMessage("The selected file is empty. Please choose a valid resume document.")
       return false
     }
 
@@ -78,7 +83,6 @@ export const ResumeUploadModal: React.FC<ResumeUploadModalProps> = ({
       const reader = new FileReader()
       reader.onload = () => {
         const result = reader.result as string
-        // Strip data:application/pdf;base64, prefix and any whitespace/newlines
         const base64 = (result.includes(",") ? result.split(",")[1] : result).replace(/\s+/g, "")
         resolve(base64)
       }
@@ -87,16 +91,12 @@ export const ResumeUploadModal: React.FC<ResumeUploadModalProps> = ({
     })
   }
 
-  const handleStartParsing = async (mode: 'ai' | 'script' = 'ai') => {
+  const handleStartParsing = async () => {
     if (!selectedFile) return
 
     setIsLoading(true)
     setErrorMessage("")
-    setStatusMessage(
-      mode === "script"
-        ? "Extracting credentials with high-speed rule engine..."
-        : "AI is analyzing credentials, education, and technical stack..."
-    )
+    setStatusMessage("Extracting credentials with local rule engine...")
 
     try {
       // 1. Get Supabase session token or fallback auth token
@@ -156,7 +156,6 @@ export const ResumeUploadModal: React.FC<ResumeUploadModalProps> = ({
           fileName: selectedFile.name,
           fileType: selectedFile.type || (selectedFile.name.endsWith(".docx") ? "application/vnd.openxmlformats-officedocument.wordprocessingml.document" : "application/pdf"),
           fileData: base64Data,
-          parserMode: mode,
         }),
       })
 
@@ -177,7 +176,7 @@ export const ResumeUploadModal: React.FC<ResumeUploadModalProps> = ({
     } catch (err: any) {
       console.error("Resume parse error:", err)
       setErrorMessage(
-        err.message || "Failed to analyze resume. Please ensure the file is not password-protected or corrupted."
+        err.message || "Failed to parse resume. Please ensure the file is a text-based document and not password-protected."
       )
     } finally {
       setIsLoading(false)
@@ -200,15 +199,15 @@ export const ResumeUploadModal: React.FC<ResumeUploadModalProps> = ({
 
         {/* Header */}
         <div className="space-y-1.5 border-b border-black/10 dark:border-white/10 pb-4 pr-8">
-          <div className="flex items-center gap-2 text-[#fe7141] font-bold uppercase tracking-wider text-[11px]">
-            <Sparkles className="w-4 h-4" />
-            <span>AI Resume Intelligence</span>
+          <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-wider text-[11px]">
+            <ShieldCheck className="w-4 h-4" />
+            <span>Local Deterministic Parser</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
             Build Profile from Resume
           </h2>
           <p className="text-muted-foreground font-sans text-xs">
-            Upload your PDF or DOCX resume. Gemini extracts your academics, normalized technical skills, projects, and work history. You can review and edit every detail before saving.
+            Your resume is processed automatically using local/deterministic parsing. No AI is used. All data stays private. You can review and edit every detail before saving.
           </p>
         </div>
 
@@ -255,7 +254,7 @@ export const ResumeUploadModal: React.FC<ResumeUploadModalProps> = ({
                   Click to choose file or drag & drop here
                 </div>
                 <div className="text-muted-foreground text-[11px]">
-                  Supports PDF or DOCX resumes up to 8 MB
+                  Supports PDF or DOCX resumes up to 10 MB
                 </div>
               </div>
             )}
@@ -270,14 +269,14 @@ export const ResumeUploadModal: React.FC<ResumeUploadModalProps> = ({
             </div>
             <div className="space-y-1">
               <div className="font-bold text-foreground text-sm uppercase tracking-wider">
-                Analyzing Resume
+                Parsing Resume
               </div>
               <div className="text-muted-foreground font-sans text-xs">
-                {statusMessage || "Extracting structured profile..."}
+                {statusMessage || "Extracting structured profile with local rule engine..."}
               </div>
             </div>
             <div className="text-[10px] text-muted-foreground pt-2 border-t border-black/10 dark:border-white/10">
-              ⚡ Powered by Gemini API • Anti-hallucination verification active
+              🔒 100% Free & Private • Zero AI Used • Instant Rule-Based Extraction
             </div>
           </div>
         )}
@@ -287,7 +286,7 @@ export const ResumeUploadModal: React.FC<ResumeUploadModalProps> = ({
           <div className="border border-red-500/50 bg-red-500/10 p-3.5 flex items-start gap-2.5 text-red-700 dark:text-red-400">
             <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
             <div className="space-y-1">
-              <div className="font-bold uppercase tracking-wider text-[11px]">Analysis Failed</div>
+              <div className="font-bold uppercase tracking-wider text-[11px]">Parsing Failed</div>
               <div className="font-sans text-xs">{errorMessage}</div>
             </div>
           </div>
@@ -300,42 +299,32 @@ export const ResumeUploadModal: React.FC<ResumeUploadModalProps> = ({
             <span>Nothing is saved until you review & approve</span>
           </div>
 
-          <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto justify-end">
+          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
             <button
               type="button"
               onClick={onClose}
               disabled={isLoading}
-              className="px-3.5 py-2.5 border border-black/20 dark:border-white/20 hover:bg-muted/30 font-bold uppercase tracking-wider transition-colors disabled:opacity-40 cursor-pointer"
+              className="px-4 py-2.5 border border-black/20 dark:border-white/20 hover:bg-muted/30 font-bold uppercase tracking-wider transition-colors disabled:opacity-40 cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="button"
-              onClick={() => handleStartParsing("script")}
+              onClick={handleStartParsing}
               disabled={!selectedFile || isLoading}
-              title="Parse immediately using built-in deterministic script engine (No AI limits or API latency)"
-              className="flex-1 sm:flex-initial px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shadow-xs"
+              className="flex-1 sm:flex-initial px-5 py-2.5 bg-[#fe7141] hover:bg-[#e05828] text-white font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shadow-xs"
             >
               {isLoading ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Processing...</span>
+                </>
               ) : (
-                <Zap className="w-3.5 h-3.5 fill-current" />
+                <>
+                  <FileText className="w-3.5 h-3.5" />
+                  <span>Parse Resume</span>
+                </>
               )}
-              <span>Instant Script Parse</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => handleStartParsing("ai")}
-              disabled={!selectedFile || isLoading}
-              title="Parse with AI for deep contextual analysis (auto falls back to script if API unavailable)"
-              className="flex-1 sm:flex-initial px-4 py-2.5 bg-[#fe7141] hover:bg-[#e05828] text-white font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shadow-xs"
-            >
-              {isLoading ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              ) : (
-                <Sparkles className="w-3.5 h-3.5" />
-              )}
-              <span>AI Analysis</span>
             </button>
           </div>
         </div>

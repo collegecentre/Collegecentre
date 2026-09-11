@@ -14,7 +14,6 @@ import {
   ArrowRight,
   Zap,
   Upload,
-  FileText,
   Briefcase,
   FolderGit2,
   ExternalLink,
@@ -31,7 +30,7 @@ export const ProfilePage: React.FC = () => {
   const [newLocation, setNewLocation] = useState<string>('')
   const [savedFeedback, setSavedFeedback] = useState<boolean>(false)
 
-  // AI Resume Builder States
+  // Resume Builder States
   const [isResumeUploadOpen, setIsResumeUploadOpen] = useState<boolean>(false)
   const [isResumeReviewOpen, setIsResumeReviewOpen] = useState<boolean>(false)
   const [extractedResume, setExtractedResume] = useState<ResumeExtractedProfile | null>(null)
@@ -243,12 +242,12 @@ export const ProfilePage: React.FC = () => {
         </div>
       )}
 
-      {/* AI-Powered "Build Profile from Resume" Section */}
-      <div className="border-2 border-[#fe7141]/50 bg-gradient-to-r from-[#fe7141]/10 via-[#fe7141]/5 to-transparent p-5 sm:p-6 font-mono text-xs text-foreground space-y-4">
+      {/* Deterministic "Build Profile from Resume" Section */}
+      <div className="border-2 border-black/20 dark:border-white/20 bg-muted/20 p-5 sm:p-6 font-mono text-xs text-foreground space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-2 text-[#fe7141] font-bold uppercase tracking-wider text-xs">
-            <Sparkles className="w-4 h-4 shrink-0" />
-            <span>AI Profile Builder • Gemini 2.5 Flash</span>
+          <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-wider text-xs">
+            <ShieldCheck className="w-4 h-4 shrink-0" />
+            <span>Resume Profile Builder • Local Deterministic Parser (No AI)</span>
           </div>
           {formData.resume_file_name && (
             <div className="flex items-center gap-1.5 text-[11px] text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-500/10 px-2.5 py-1 border border-emerald-500/30">
@@ -261,17 +260,19 @@ export const ProfilePage: React.FC = () => {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
           <div className="space-y-1.5 max-w-2xl">
             <h2 className="text-lg sm:text-xl font-black tracking-tight text-foreground">
-              Build my profile from resume
+              Build profile from resume
             </h2>
             <p className="text-muted-foreground font-sans text-xs leading-relaxed">
-              Upload your PDF/DOCX resume and let CollegeCentre extract your skills, education, experience, and projects. You can review and edit before saving.
+              Your resume is processed automatically using local/deterministic parsing. No AI is used. Upload your PDF/DOCX resume to extract your skills, education, experience, and projects. You can review and edit before saving.
             </p>
             <div className="flex flex-wrap items-center gap-3 pt-1 text-[10px] text-muted-foreground">
+              <span>✓ 100% Free & Private</span>
+              <span>•</span>
               <span>✓ Normalized tech stack</span>
               <span>•</span>
               <span>✓ Non-destructive merge</span>
               <span>•</span>
-              <span>✓ Real-time match recalibration</span>
+              <span>✓ Instant recalibration</span>
             </div>
           </div>
 
@@ -281,7 +282,7 @@ export const ProfilePage: React.FC = () => {
             className="px-5 py-3 bg-[#fe7141] hover:bg-[#e05828] text-white font-mono text-xs font-bold uppercase tracking-wider transition-colors shrink-0 flex items-center justify-center gap-2 shadow-sm cursor-pointer"
           >
             <Upload className="w-4 h-4" />
-            <span>{formData.resume_file_name ? 'Re-upload Resume' : 'Upload Resume (PDF / DOCX)'}</span>
+            <span>{formData.resume_file_name ? 'Re-import Resume' : 'Import Resume (PDF / DOCX)'}</span>
           </button>
         </div>
       </div>

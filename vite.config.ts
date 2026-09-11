@@ -33,12 +33,6 @@ function razorpayDevApiPlugin(env: Record<string, string>) {
             env.SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || env.VITE_SUPABASE_ANON_KEY
           process.env.SUPABASE_SERVICE_ROLE_KEY =
             env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY
-          process.env.GEMINI_API_KEY =
-            env.GEMINI_API_KEY || process.env.GEMINI_API_KEY
-          process.env.GEMINI_MODEL =
-            env.GEMINI_MODEL || process.env.GEMINI_MODEL
-          process.env.GEMINI_MOCK =
-            env.GEMINI_MOCK || process.env.GEMINI_MOCK
 
           let body = ''
           req.on('data', (chunk: any) => {

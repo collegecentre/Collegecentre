@@ -1,20 +1,18 @@
-﻿import React, { useState } from "react"
+import React, { useState } from "react"
 import {
   X,
   CheckCircle2,
-  Sparkles,
   Plus,
   Trash2,
   Briefcase,
   GraduationCap,
   Code2,
   FolderGit2,
-  Award,
   Link as LinkIcon,
   ShieldCheck,
 } from "lucide-react"
 import { ResumeExtractedProfile, ProfileMergeSummary } from "@/types/resume"
-import { StudentProfile, WorkMode } from "@/types"
+import { StudentProfile } from "@/types"
 import { mergeResumeWithProfile } from "@/services/skillNormalizer"
 import { Input } from "@/components/ui/input"
 
@@ -101,9 +99,24 @@ export const ResumeReviewModal: React.FC<ResumeReviewModalProps> = ({
         {/* Header */}
         <div className="p-5 sm:p-6 border-b border-black/10 dark:border-white/10 flex items-start justify-between gap-4 bg-muted/20 shrink-0">
           <div className="space-y-1">
-            <div className="flex items-center gap-2 text-[#fe7141] font-bold uppercase tracking-wider text-[11px]">
-              <Sparkles className="w-4 h-4 shrink-0" />
-              <span>Extracted from: {fileName}</span>
+            <div className="flex items-center gap-2 flex-wrap text-[11px]">
+              <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-wider">
+                <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
+                <span>Parsed from: {fileName}</span>
+              </div>
+              {extractedProfile.confidence && (
+                <span
+                  className={`px-2 py-0.5 border text-[10px] font-bold uppercase tracking-wider ${
+                    extractedProfile.confidence === "high"
+                      ? "text-emerald-600 dark:text-emerald-400 border-emerald-500/30 bg-emerald-500/10"
+                      : extractedProfile.confidence === "medium"
+                      ? "text-amber-600 dark:text-amber-400 border-amber-500/30 bg-amber-500/10"
+                      : "text-muted-foreground border-black/20 bg-muted/20"
+                  }`}
+                >
+                  {extractedProfile.confidence} Confidence
+                </span>
+              )}
             </div>
             <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
               Review & Edit Extracted Profile
