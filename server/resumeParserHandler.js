@@ -393,35 +393,71 @@ export async function handleParseResume(req, res) {
     new Set([
       preferredModel,
       'gemini-3.7-flash',
+      'gemini-3.8-flash',
       'gemini-3.5-flash',
+      'gemini-3.1-flash-lite',
       'gemini-3.6-flash',
-      'gemini-flash-latest',
     ])
   );
 
-  const payload = {
-    contents: [
-      {
-        parts: [
+  // Extract text from PDF buffer if available (bypasses native PDF engine parsing 400s)
+  let extractedPdfText = '';
+  if (isPdf) {
+    try {
+      const { extractText } = await import('unpdf');
+      const pdfBuffer = Buffer.from(base64Content, 'base64');
+      const parsed = await extractText(new Uint8Array(pdfBuffer));
+      if (parsed?.text) {
+        extractedPdfText = Array.isArray(parsed.text) ? parsed.text.join('\n\n') : String(parsed.text);
+      }
+    } catch (e) {
+      console.warn('[ResumeParser] PDF text extraction note:', e?.message);
+    }
+  }
+
+  const hasText = extractedPdfText && extractedPdfText.trim().length > 30;
+
+  const payload = hasText
+    ? {
+        contents: [
           {
-            inlineData: {
-              mimeType,
-              data: base64Content,
-            },
-          },
-          {
-            text: GEMINI_SYSTEM_PROMPT,
+            parts: [
+              {
+                text: `Candidate Resume Content:\n"""\n${extractedPdfText.trim()}\n"""\n\n${GEMINI_SYSTEM_PROMPT}`,
+              },
+            ],
           },
         ],
-      },
-    ],
-    generationConfig: {
-      responseMimeType: 'application/json',
-      temperature: 0.1,
-    },
-  };
+        generationConfig: {
+          responseMimeType: 'application/json',
+          temperature: 0.1,
+        },
+      }
+    : {
+        contents: [
+          {
+            parts: [
+              {
+                inlineData: {
+                  mimeType,
+                  data: base64Content,
+                },
+              },
+              {
+                text: GEMINI_SYSTEM_PROMPT,
+              },
+            ],
+          },
+        ],
+        generationConfig: {
+          responseMimeType: 'application/json',
+          temperature: 0.1,
+        },
+      };
 
-  console.log(`[ResumeParser] Processing document: fileName="${fileName}", fileType="${fileType}", mimeType="${mimeType}", base64Length=${base64Content.length}`);
+  console.log(
+    `[ResumeParser] Processing document: fileName="${fileName}", fileType="${fileType}", mimeType="${mimeType}", base64Length=${base64Content.length}, hasExtractedText=${hasText}`
+  );
 
   try {
     let response = null;
