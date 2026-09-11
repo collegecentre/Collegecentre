@@ -21,7 +21,7 @@ import {
   Copy,
 } from 'lucide-react'
 
-import { loadRazorpayScript } from '@/services/razorpay'
+import { openRazorpayCheckout } from '@/services/razorpay'
 
 export const PaymentModal: React.FC = () => {
   const { student, isPaymentModalOpen, setIsPaymentModalOpen, activatePass, showToast } = useApp()
@@ -62,41 +62,44 @@ export const PaymentModal: React.FC = () => {
     setIsProcessing(true)
     const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY_ID
 
-    // If real Razorpay key is provided
+    // If real Razorpay key is configured
     if (razorpayKey && razorpayKey.startsWith('rzp_') && razorpayKey !== 'rzp_test_placeholder') {
-      const isLoaded = await loadRazorpayScript()
-      if (isLoaded && (window as any).Razorpay) {
-        const options = {
-          key: razorpayKey,
-          amount: 19900, // ₹199 in paise
-          currency: 'INR',
-          name: 'CollegeCentre',
-          description: '₹199 / 24-Hour Job Hunt Pass',
+      try {
+        await openRazorpayCheckout({
+          amountInPaise: 19900, // ₹199
           prefill: {
             name: student?.name || 'Student Candidate',
             email: student?.email || 'student@collegecentre.in',
             contact: student?.phone || '',
           },
-          theme: {
-            color: '#fe7141',
+          notes: {
+            student_id: student?.id || 'guest_student',
+            purpose: '24-Hour Job Hunt Pass',
+            method: selectedMethod,
           },
-          handler: function () {
+          onSuccess: ({ paymentId, orderId }) => {
             setIsProcessing(false)
-            activatePass(selectedMethod)
+            activatePass(selectedMethod, paymentId, orderId)
           },
-          modal: {
-            ondismiss: function () {
-              setIsProcessing(false)
-            },
+          onError: (errorMessage) => {
+            setIsProcessing(false)
+            showToast?.(`Payment failed: ${errorMessage}`, 'warning')
           },
-        }
-        const rzp = new (window as any).Razorpay(options)
-        rzp.open()
+          onDismiss: () => {
+            setIsProcessing(false)
+            showToast?.('Payment checkout was cancelled', 'info')
+          },
+        })
+        return
+      } catch (err: any) {
+        console.error('Razorpay Checkout Init Error:', err)
+        setIsProcessing(false)
+        showToast?.(err?.message || 'Failed to initialize payment checkout', 'warning')
         return
       }
     }
 
-    // Fast activation with simulated authorization
+    // Fast activation with simulated authorization (fallback when test placeholder is active)
     setTimeout(() => {
       setIsProcessing(false)
       activatePass(selectedMethod)

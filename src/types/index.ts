@@ -65,6 +65,7 @@ export interface Payment {
   status: 'Success' | 'Failed' | 'Pending'
   payment_method: 'UPI' | 'Card' | 'NetBanking'
   transaction_id: string
+  order_id?: string
   created_at: string
 }
 

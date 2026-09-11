@@ -51,7 +51,11 @@ interface AppContextType {
   createOrUpdateApp: (jobId: string, status: ApplicationStatus, notes?: string) => void
   changeAppStatus: (appId: string, status: ApplicationStatus, notes?: string) => void
   deleteApp: (appId: string) => void
-  activatePass: (method?: 'UPI' | 'Card' | 'NetBanking') => void
+  activatePass: (
+    method?: 'UPI' | 'Card' | 'NetBanking',
+    transactionId?: string,
+    orderId?: string
+  ) => void
   simulatePassExpiry: () => void
   simulateRemainingTime: (minutes: number) => void
   resetData: () => void
@@ -355,8 +359,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, [showToast])
 
   const activatePass = useCallback(
-    (method: 'UPI' | 'Card' | 'NetBanking' = 'UPI') => {
-      const result = db.activatePass(student.id, method)
+    (
+      method: 'UPI' | 'Card' | 'NetBanking' = 'UPI',
+      transactionId?: string,
+      orderId?: string
+    ) => {
+      const result = db.activatePass(student.id, method, student.email, transactionId, orderId)
       setAccessPeriod(result.accessPeriod)
       setPayments(db.getPayments())
       setIsPaymentModalOpen(false)
@@ -373,7 +381,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       // Switch view to dashboard or job search
       setCurrentView('dashboard')
     },
-    [student.id, showToast, setCurrentView]
+    [student.id, student.email, showToast, setCurrentView]
   )
 
   const simulatePassExpiry = useCallback(() => {

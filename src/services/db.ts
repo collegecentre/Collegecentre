@@ -402,7 +402,9 @@ export const db = {
   activatePass(
     studentId: string = 'guest_student',
     paymentMethod: 'UPI' | 'Card' | 'NetBanking' = 'UPI',
-    studentEmail?: string
+    studentEmail?: string,
+    transactionId?: string,
+    orderId?: string
   ): { payment: Payment; accessPeriod: AccessPeriod } {
     const now = new Date()
     const expiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000) // Exactly +24 hours
@@ -413,7 +415,8 @@ export const db = {
       amount: 199,
       status: 'Success',
       payment_method: paymentMethod,
-      transaction_id: `TXN_CC_${Math.floor(100000000 + Math.random() * 900000000)}`,
+      transaction_id: transactionId || `TXN_CC_${Math.floor(100000000 + Math.random() * 900000000)}`,
+      order_id: orderId,
       created_at: now.toISOString(),
     }
 
