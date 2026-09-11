@@ -25,6 +25,9 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onSelectJob }) => 
     student,
     jobs,
     isPassActive,
+    isPassScheduled,
+    scheduledStartTime,
+    startSprintNow,
     remainingTime,
     savedJobs,
     applications,
@@ -83,6 +86,8 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onSelectJob }) => 
                 className={`font-bold px-1.5 py-0.2 rounded-xs ${
                   isPassActive
                     ? 'bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-300'
+                    : isPassScheduled
+                    ? 'bg-blue-100 text-blue-900 dark:bg-blue-950 dark:text-blue-300'
                     : remainingTime.isInactive
                     ? 'bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-slate-200'
                     : 'bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300'
@@ -90,6 +95,8 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onSelectJob }) => 
               >
                 {isPassActive
                   ? '24-HOUR PASS ACTIVE'
+                  : isPassScheduled
+                  ? 'SPRINT SCHEDULED'
                   : remainingTime.isInactive
                   ? 'PASS INACTIVE / SPRINT READY'
                   : 'PASS EXPIRED / SEARCH LOCKED'}
@@ -97,10 +104,27 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onSelectJob }) => 
             </div>
 
             <div className="flex items-baseline gap-2.5 mt-2">
-              <Clock className={`w-4 h-4 shrink-0 ${isPassActive ? 'text-emerald-600' : 'text-muted-foreground'}`} />
+              <Clock
+                className={`w-4 h-4 shrink-0 ${
+                  isPassActive
+                    ? 'text-emerald-600'
+                    : isPassScheduled
+                    ? 'text-blue-500'
+                    : 'text-muted-foreground'
+                }`}
+              />
               <div className="text-xl sm:text-2xl font-mono font-bold tracking-tight tabular-nums text-foreground">
                 {isPassActive
                   ? `${remainingTime.hours}h ${remainingTime.minutes}m ${remainingTime.seconds}s remaining`
+                  : isPassScheduled
+                  ? `Starts at ${
+                      scheduledStartTime
+                        ? new Date(scheduledStartTime).toLocaleString([], {
+                            dateStyle: 'short',
+                            timeStyle: 'short',
+                          })
+                        : 'Scheduled Time'
+                    }`
                   : remainingTime.isInactive
                   ? 'Sprint Pass Not Activated'
                   : 'Sprint Window Closed (Preserved Forever)'}
@@ -113,16 +137,34 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onSelectJob }) => 
               <button
                 type="button"
                 onClick={() => setCurrentView('jobs')}
-                className="font-mono text-xs font-bold px-4 py-2.5 rounded-sm bg-black dark:bg-white text-white dark:text-black hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors flex items-center gap-2"
+                className="font-mono text-xs font-bold px-4 py-2.5 rounded-sm bg-black dark:bg-white text-white dark:text-black hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors flex items-center gap-2 cursor-pointer"
               >
                 <span>Browse All Jobs</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
+            ) : isPassScheduled ? (
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => startSprintNow()}
+                  className="font-mono text-xs font-bold px-4 py-2.5 rounded-sm bg-blue-600 hover:bg-blue-700 text-white transition-colors flex items-center gap-2 shadow-sm cursor-pointer"
+                >
+                  <Zap className="w-4 h-4 fill-current" />
+                  <span>Start Sprint Early Now</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCurrentView('jobs')}
+                  className="font-mono text-xs px-3 py-2.5 rounded-sm border border-black/15 dark:border-white/20 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                >
+                  Preview Jobs
+                </button>
+              </div>
             ) : (
               <button
                 type="button"
                 onClick={() => setIsPaymentModalOpen(true)}
-                className="font-mono text-xs font-bold px-4 py-2.5 rounded-sm bg-[#fe7141] hover:bg-[#e05828] text-white transition-colors flex items-center gap-2 shadow-2xs"
+                className="font-mono text-xs font-bold px-4 py-2.5 rounded-sm bg-[#fe7141] hover:bg-[#e05828] text-white transition-colors flex items-center gap-2 shadow-2xs cursor-pointer"
               >
                 <Zap className="w-4 h-4 fill-current" />
                 <span>Unlock 24 Hours — ₹199</span>
@@ -239,29 +281,35 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onSelectJob }) => 
           </button>
         </div>
 
-        {/* Lock warning if expired */}
+        {/* Teaser status notice if not active */}
         {!isPassActive && (
-          <div className="p-4 rounded-lg border border-amber-300 dark:border-amber-800 bg-amber-50/60 dark:bg-amber-950/30 text-xs font-mono flex flex-col sm:flex-row items-center justify-between gap-3 text-amber-900 dark:text-amber-200">
+          <div className="p-4 rounded-lg border border-vermilion/30 bg-vermilion/5 text-xs font-mono flex flex-col sm:flex-row items-center justify-between gap-3 text-foreground">
             <div className="flex items-center gap-2">
-              <Lock className="w-4 h-4 text-amber-700 dark:text-amber-400 shrink-0" />
+              <Sparkles className="w-4 h-4 text-vermilion shrink-0" />
               <span>
-                Your 24-hour pass has expired. Discovery is locked, but your saved jobs & tracker stay permanent.
+                Free Preview: Top 3 fresher roles unlocked. Activate your 24h sprint (₹199) to unlock all 40+ curated openings & direct apply links.
               </span>
             </div>
             <button
               type="button"
               onClick={() => setIsPaymentModalOpen(true)}
-              className="px-3 py-1.5 rounded-sm bg-[#fe7141] hover:bg-[#e05828] text-white font-bold shrink-0 shadow-2xs"
+              className="px-3 py-1.5 rounded-sm bg-vermilion hover:bg-vermilion-hover text-white font-bold shrink-0 shadow-xs flex items-center gap-1.5 cursor-pointer"
             >
-              Unlock 24H — ₹199
+              <Zap className="w-3.5 h-3.5 fill-current" />
+              <span>Start 24H Sprint (₹199)</span>
             </button>
           </div>
         )}
 
         {/* Job Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {recommendedJobs.map((job) => (
-            <JobCard key={job.id} job={job} onSelect={onSelectJob} />
+          {recommendedJobs.map((job, index) => (
+            <JobCard
+              key={job.id}
+              job={job}
+              onSelect={onSelectJob}
+              isLocked={!isPassActive && index >= 3}
+            />
           ))}
         </div>
       </div>

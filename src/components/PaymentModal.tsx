@@ -21,6 +21,63 @@ import { openRazorpayCheckout } from '@/services/razorpay'
 export const PaymentModal: React.FC = () => {
   const { student, isPaymentModalOpen, setIsPaymentModalOpen, activatePass, showToast } = useApp()
   const [isProcessing, setIsProcessing] = useState<boolean>(false)
+  const [timingMode, setTimingMode] = useState<'now' | 'scheduled'>('now')
+  const [selectedSchedule, setSelectedSchedule] = useState<string>('')
+
+  // Compute convenient scheduling presets
+  const presets = React.useMemo(() => {
+    const now = new Date()
+    const options: { label: string; sublabel: string; value: string }[] = []
+
+    const today7pm = new Date()
+    today7pm.setHours(19, 0, 0, 0)
+    if (today7pm.getTime() > now.getTime() + 20 * 60 * 1000) {
+      options.push({
+        label: 'Tonight @ 7:00 PM',
+        sublabel: 'After college hours',
+        value: today7pm.toISOString(),
+      })
+    }
+
+    const today9pm = new Date()
+    today9pm.setHours(21, 0, 0, 0)
+    if (today9pm.getTime() > now.getTime() + 20 * 60 * 1000) {
+      options.push({
+        label: 'Tonight @ 9:00 PM',
+        sublabel: 'Late night focus sprint',
+        value: today9pm.toISOString(),
+      })
+    }
+
+    const tomorrow9am = new Date()
+    tomorrow9am.setDate(tomorrow9am.getDate() + 1)
+    tomorrow9am.setHours(9, 0, 0, 0)
+    options.push({
+      label: 'Tomorrow @ 9:00 AM',
+      sublabel: 'Fresh morning sprint',
+      value: tomorrow9am.toISOString(),
+    })
+
+    const tomorrow2pm = new Date()
+    tomorrow2pm.setDate(tomorrow2pm.getDate() + 1)
+    tomorrow2pm.setHours(14, 0, 0, 0)
+    options.push({
+      label: 'Tomorrow @ 2:00 PM',
+      sublabel: 'Afternoon dedicated batch',
+      value: tomorrow2pm.toISOString(),
+    })
+
+    return options
+  }, [])
+
+  // Default selected schedule to first preset if scheduled mode is selected
+  React.useEffect(() => {
+    if (timingMode === 'scheduled' && !selectedSchedule && presets.length > 0) {
+      setSelectedSchedule(presets[0].value)
+    }
+  }, [timingMode, selectedSchedule, presets])
+
+  const effectiveScheduledFor = timingMode === 'scheduled' ? selectedSchedule : undefined
 
   const handlePay = async () => {
     setIsProcessing(true)
@@ -39,10 +96,11 @@ export const PaymentModal: React.FC = () => {
           notes: {
             student_id: student?.id || 'guest_student',
             purpose: '24-Hour Job Hunt Pass',
+            scheduled_for: effectiveScheduledFor || 'immediate',
           },
           onSuccess: ({ paymentId, orderId }) => {
             setIsProcessing(false)
-            activatePass('UPI', paymentId, orderId)
+            activatePass('UPI', paymentId, orderId, effectiveScheduledFor)
           },
           onError: (errorMessage) => {
             setIsProcessing(false)
@@ -65,7 +123,7 @@ export const PaymentModal: React.FC = () => {
     // Fast activation with simulated authorization (fallback when test placeholder is active)
     setTimeout(() => {
       setIsProcessing(false)
-      activatePass('UPI')
+      activatePass('UPI', undefined, undefined, effectiveScheduledFor)
     }, 850)
   }
 
@@ -134,6 +192,90 @@ export const PaymentModal: React.FC = () => {
                 <span>Permanent Desk Archive</span>
               </div>
             </div>
+          </div>
+
+          {/* Sprint Timing Selector */}
+          <div className="border border-black/15 dark:border-white/20 p-4 bg-muted/20 font-mono space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-foreground flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5 text-vermilion" /> Sprint Timing:
+              </span>
+              <span className="text-[10px] text-muted-foreground uppercase">
+                {timingMode === 'now' ? 'Starts Upon Payment' : 'Starts At Scheduled Time'}
+              </span>
+            </div>
+
+            {/* Toggle options */}
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setTimingMode('now')}
+                className={`px-3 py-2.5 text-left border transition-all ${
+                  timingMode === 'now'
+                    ? 'border-vermilion bg-vermilion/10 text-foreground font-bold shadow-sm'
+                    : 'border-black/10 dark:border-white/15 bg-background text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs flex items-center gap-1.5 font-bold">
+                    <Zap className="w-3.5 h-3.5 text-vermilion" /> Start Now
+                  </span>
+                  {timingMode === 'now' && <Check className="w-3.5 h-3.5 text-vermilion" />}
+                </div>
+                <div className="text-[10px] text-muted-foreground mt-0.5">
+                  Launch 24h clock immediately
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setTimingMode('scheduled')}
+                className={`px-3 py-2.5 text-left border transition-all ${
+                  timingMode === 'scheduled'
+                    ? 'border-vermilion bg-vermilion/10 text-foreground font-bold shadow-sm'
+                    : 'border-black/10 dark:border-white/15 bg-background text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs flex items-center gap-1.5 font-bold">
+                    <Clock className="w-3.5 h-3.5 text-blue-500" /> Schedule Start
+                  </span>
+                  {timingMode === 'scheduled' && <Check className="w-3.5 h-3.5 text-vermilion" />}
+                </div>
+                <div className="text-[10px] text-muted-foreground mt-0.5">
+                  Don't waste time while sleeping
+                </div>
+              </button>
+            </div>
+
+            {/* Preset Selection if Scheduled */}
+            {timingMode === 'scheduled' && (
+              <div className="pt-2 space-y-2 border-t border-black/10 dark:border-white/15">
+                <div className="text-[10px] uppercase font-bold text-foreground tracking-wider">
+                  Select your application sprint start time:
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {presets.map((preset) => (
+                    <button
+                      key={preset.value}
+                      type="button"
+                      onClick={() => setSelectedSchedule(preset.value)}
+                      className={`p-2 text-left border transition-all ${
+                        selectedSchedule === preset.value
+                          ? 'border-vermilion bg-vermilion/10 text-foreground font-bold'
+                          : 'border-black/10 dark:border-white/10 bg-background text-muted-foreground hover:text-foreground hover:border-black/25'
+                      }`}
+                    >
+                      <div className="text-xs font-bold text-foreground">{preset.label}</div>
+                      <div className="text-[10px] text-muted-foreground">{preset.sublabel}</div>
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-emerald-600 dark:text-emerald-400 italic">
+                  ✓ Your 24-hour countdown will stay paused until the selected time. You can also start early from your dashboard.
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Razorpay Gateway Information Card */}

@@ -75,7 +75,8 @@ export interface AccessPeriod {
   payment_id: string
   started_at: string
   expires_at: string
-  status: 'active' | 'expired'
+  scheduled_for?: string
+  status: 'active' | 'scheduled' | 'expired'
 }
 
 export interface MatchResult {

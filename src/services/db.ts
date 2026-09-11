@@ -395,8 +395,47 @@ export const db = {
     const period = this.getAccessPeriod(studentId)
     if (!period) return false
     const now = Date.now()
+
+    // If pass was scheduled and scheduled time has arrived, auto-activate
+    if (period.status === 'scheduled' && period.scheduled_for) {
+      const scheduledTime = new Date(period.scheduled_for).getTime()
+      if (now >= scheduledTime) {
+        period.status = 'active'
+        period.started_at = new Date(scheduledTime).toISOString()
+        period.expires_at = new Date(scheduledTime + 24 * 60 * 60 * 1000).toISOString()
+        localStorage.setItem(STORAGE_KEYS.ACCESS_PERIOD, JSON.stringify(period))
+      }
+    }
+
     const expiresAt = new Date(period.expires_at).getTime()
     return period.status === 'active' && now < expiresAt
+  },
+
+  isPassScheduled(studentId?: string): { isScheduled: boolean; scheduledFor?: string } {
+    const period = this.getAccessPeriod(studentId)
+    if (!period || period.status !== 'scheduled' || !period.scheduled_for) {
+      return { isScheduled: false }
+    }
+    const now = Date.now()
+    const scheduledTime = new Date(period.scheduled_for).getTime()
+    if (now < scheduledTime) {
+      return { isScheduled: true, scheduledFor: period.scheduled_for }
+    }
+    return { isScheduled: false }
+  },
+
+  startScheduledPassNow(studentId: string = 'guest_student'): AccessPeriod | null {
+    const period = this.getAccessPeriod(studentId)
+    if (!period) return null
+    const now = new Date()
+    const expiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000)
+
+    period.status = 'active'
+    period.started_at = now.toISOString()
+    period.expires_at = expiresAt.toISOString()
+    delete period.scheduled_for
+    localStorage.setItem(STORAGE_KEYS.ACCESS_PERIOD, JSON.stringify(period))
+    return period
   },
 
   activatePass(
@@ -404,10 +443,13 @@ export const db = {
     paymentMethod: 'UPI' | 'Card' | 'NetBanking' = 'UPI',
     studentEmail?: string,
     transactionId?: string,
-    orderId?: string
+    orderId?: string,
+    scheduledFor?: string
   ): { payment: Payment; accessPeriod: AccessPeriod } {
     const now = new Date()
-    const expiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000) // Exactly +24 hours
+    const isScheduled = !!scheduledFor && new Date(scheduledFor).getTime() > now.getTime()
+    const startTime = isScheduled ? new Date(scheduledFor) : now
+    const expiresAt = new Date(startTime.getTime() + 24 * 60 * 60 * 1000) // Exactly +24 hours from start
 
     const payment: Payment = {
       id: `pay_${Date.now()}`,
@@ -424,9 +466,10 @@ export const db = {
       id: `access_${Date.now()}`,
       student_id: studentId,
       payment_id: payment.id,
-      started_at: now.toISOString(),
+      started_at: startTime.toISOString(),
       expires_at: expiresAt.toISOString(),
-      status: 'active',
+      scheduled_for: isScheduled ? scheduledFor : undefined,
+      status: isScheduled ? 'scheduled' : 'active',
     }
 
     // Save payment

@@ -39,6 +39,9 @@ interface AppContextType {
   payments: Payment[]
   accessPeriod: AccessPeriod | null
   isPassActive: boolean
+  isPassScheduled: boolean
+  scheduledStartTime?: string
+  startSprintNow: () => void
   remainingTime: RemainingTime
   currentView: string
   setCurrentView: (view: string) => void
@@ -54,7 +57,8 @@ interface AppContextType {
   activatePass: (
     method?: 'UPI' | 'Card' | 'NetBanking',
     transactionId?: string,
-    orderId?: string
+    orderId?: string,
+    scheduledFor?: string
   ) => void
   simulatePassExpiry: () => void
   simulateRemainingTime: (minutes: number) => void
@@ -268,6 +272,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (!period) {
       return { totalSeconds: 0, hours: 0, minutes: 0, seconds: 0, formatted: 'Inactive', isExpired: false, isInactive: true }
     }
+    if (period.status === 'scheduled' && period.scheduled_for) {
+      const scheduledTime = new Date(period.scheduled_for).getTime()
+      const now = Date.now()
+      const diffMs = scheduledTime - now
+      if (diffMs <= 0) {
+        return { totalSeconds: 0, hours: 0, minutes: 0, seconds: 0, formatted: 'Launching...', isExpired: false, isInactive: false }
+      }
+      const totalSeconds = Math.floor(diffMs / 1000)
+      const hours = Math.floor(totalSeconds / 3600)
+      const minutes = Math.floor((totalSeconds % 3600) / 60)
+      const seconds = totalSeconds % 60
+      const formatted = `Starts in ${hours > 0 ? `${hours}h ` : ''}${minutes}m ${seconds}s`
+      return { totalSeconds, hours, minutes, seconds, formatted, isExpired: false, isInactive: false }
+    }
     if (period.status !== 'active') {
       return { totalSeconds: 0, hours: 0, minutes: 0, seconds: 0, formatted: 'Expired', isExpired: true, isInactive: false }
     }
@@ -307,6 +325,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const isPassActive = useMemo(() => {
     return !remainingTime.isExpired && accessPeriod?.status === 'active'
   }, [remainingTime.isExpired, accessPeriod])
+
+  const isPassScheduled = useMemo(() => {
+    return accessPeriod?.status === 'scheduled' && !!accessPeriod.scheduled_for
+  }, [accessPeriod])
+
+  const scheduledStartTime = useMemo(() => {
+    return accessPeriod?.status === 'scheduled' ? accessPeriod.scheduled_for : undefined
+  }, [accessPeriod])
 
   // Attach match score and sort by relevance
   const jobs: JobWithMatch[] = useMemo(() => {
@@ -358,27 +384,51 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     showToast('Application record removed', 'info')
   }, [showToast])
 
-  const activatePass = useCallback(
-    (
-      method: 'UPI' | 'Card' | 'NetBanking' = 'UPI',
-      transactionId?: string,
-      orderId?: string
-    ) => {
-      const result = db.activatePass(student.id, method, student.email, transactionId, orderId)
-      setAccessPeriod(result.accessPeriod)
-      setPayments(db.getPayments())
-      setIsPaymentModalOpen(false)
-
-      // Confetti burst for excitement!
+  const startSprintNow = useCallback(() => {
+    const period = db.startScheduledPassNow(student.id)
+    if (period) {
+      setAccessPeriod(period)
+      setRemainingTime(calculateTimeRemaining(period))
       confetti({
         particleCount: 100,
         spread: 70,
         origin: { y: 0.6 },
-        colors: ['#6366f1', '#10b981', '#f59e0b', '#3b82f6'],
+        colors: ['#fe7141', '#10b981', '#f59e0b', '#3b82f6'],
       })
+      showToast('⚡ Sprint Launched! 24-Hour Job Hunt is now live.', 'success')
+      setCurrentView('jobs')
+    }
+  }, [student.id, showToast, setCurrentView])
 
-      showToast('🎉 ₹199 Pass Activated! 24-Hour Job Hunt unlocked.', 'success')
-      // Switch view to dashboard or job search
+  const activatePass = useCallback(
+    (
+      method: 'UPI' | 'Card' | 'NetBanking' = 'UPI',
+      transactionId?: string,
+      orderId?: string,
+      scheduledFor?: string
+    ) => {
+      const result = db.activatePass(student.id, method, student.email, transactionId, orderId, scheduledFor)
+      setAccessPeriod(result.accessPeriod)
+      setPayments(db.getPayments())
+      setIsPaymentModalOpen(false)
+
+      const isScheduled = !!scheduledFor && new Date(scheduledFor).getTime() > Date.now()
+      if (isScheduled) {
+        showToast(
+          `🕒 Pass Scheduled! Activates on ${new Date(scheduledFor).toLocaleDateString([], { month: 'short', day: 'numeric' })} at ${new Date(scheduledFor).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}.`,
+          'info'
+        )
+      } else {
+        // Confetti burst for excitement!
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#fe7141', '#10b981', '#f59e0b', '#3b82f6'],
+        })
+        showToast('🎉 ₹199 Pass Activated! 24-Hour Job Hunt unlocked.', 'success')
+      }
+
       setCurrentView('dashboard')
     },
     [student.id, student.email, showToast, setCurrentView]
@@ -450,6 +500,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         payments,
         accessPeriod,
         isPassActive,
+        isPassScheduled,
+        scheduledStartTime,
+        startSprintNow,
         remainingTime,
         currentView,
         setCurrentView,

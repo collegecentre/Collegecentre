@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { useApp } from '@/context/AppContext'
 import { ApplicationStatus } from '@/types'
 import { ApplicationTimeline } from '@/components/enterprise/ApplicationTimeline'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import { Input } from '@/components/ui/input'
 import {
   CheckCircle2,
   MapPin,
@@ -13,11 +14,16 @@ import {
   Trash2,
   Edit3,
   Check,
+  Search,
+  X,
+  Briefcase,
+  Zap,
 } from 'lucide-react'
 
 export const ApplicationsPage: React.FC = () => {
-  const { applications, jobs, changeAppStatus, deleteApp } = useApp()
+  const { applications, jobs, changeAppStatus, deleteApp, setCurrentView } = useApp()
   const [selectedStatusTab, setSelectedStatusTab] = useState<string>('All')
+  const [searchQuery, setSearchQuery] = useState<string>('')
   const [editingNotesId, setEditingNotesId] = useState<string | null>(null)
   const [tempNotes, setTempNotes] = useState<string>('')
 
@@ -30,10 +36,29 @@ export const ApplicationsPage: React.FC = () => {
     'Rejected',
   ]
 
-  const filteredApplications = applications.filter((app) => {
-    if (selectedStatusTab === 'All') return true
-    return app.status === selectedStatusTab
-  })
+  const stats = useMemo(() => {
+    return {
+      applied: applications.filter((a) => a.status === 'Applied').length,
+      shortlisted: applications.filter((a) => a.status === 'Shortlisted').length,
+      assessment: applications.filter((a) => a.status === 'Assessment').length,
+      selected: applications.filter((a) => a.status === 'Selected').length,
+    }
+  }, [applications])
+
+  const filteredApplications = useMemo(() => {
+    return applications.filter((app) => {
+      if (selectedStatusTab !== 'All' && app.status !== selectedStatusTab) return false
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase()
+        const job = jobs.find((j) => j.id === app.job_id)
+        const matchesTitle = job?.title.toLowerCase().includes(q)
+        const matchesCompany = job?.company.toLowerCase().includes(q)
+        const matchesNotes = app.notes?.toLowerCase().includes(q)
+        if (!matchesTitle && !matchesCompany && !matchesNotes) return false
+      }
+      return true
+    })
+  }, [applications, selectedStatusTab, searchQuery, jobs])
 
   const handleStartEditNotes = (appId: string, currentNotes: string = '') => {
     setEditingNotesId(appId)
@@ -46,7 +71,7 @@ export const ApplicationsPage: React.FC = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 space-y-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 space-y-6">
       {/* Editorial Header */}
       <div className="border-b border-black/10 dark:border-white/15 pb-6">
         <div className="font-mono text-xs uppercase tracking-widest text-muted-foreground mb-2">
@@ -62,8 +87,53 @@ export const ApplicationsPage: React.FC = () => {
             </p>
           </div>
 
-          <div className="font-mono text-xs px-3 py-1.5 border border-black/10 dark:border-white/15 bg-muted/20 text-foreground">
-            {applications.length} Applications
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setCurrentView('jobs')}
+              className="px-3.5 py-1.5 bg-black dark:bg-white text-white dark:text-black hover:bg-slate-800 dark:hover:bg-slate-200 text-xs font-mono font-bold uppercase tracking-wider rounded-none flex items-center gap-1.5 transition-colors cursor-pointer"
+            >
+              <Briefcase className="w-3.5 h-3.5" />
+              <span>Discover More Jobs</span>
+            </button>
+            <div className="font-mono text-xs px-3 py-1.5 border border-black/10 dark:border-white/15 bg-muted/20 text-foreground">
+              {applications.length} Tracked
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Pipeline Metric Counters HUD */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono text-xs">
+        <div className="border border-black/10 dark:border-white/15 p-3.5 bg-muted/10 space-y-1">
+          <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
+            Applied Roles
+          </span>
+          <div className="text-xl font-black text-foreground tabular-nums">
+            {stats.applied}
+          </div>
+        </div>
+        <div className="border border-black/10 dark:border-white/15 p-3.5 bg-muted/10 space-y-1">
+          <span className="text-[10px] text-blue-600 dark:text-blue-400 uppercase font-bold tracking-wider">
+            Shortlisted
+          </span>
+          <div className="text-xl font-black text-foreground tabular-nums">
+            {stats.shortlisted}
+          </div>
+        </div>
+        <div className="border border-black/10 dark:border-white/15 p-3.5 bg-muted/10 space-y-1">
+          <span className="text-[10px] text-amber-600 dark:text-amber-400 uppercase font-bold tracking-wider">
+            Assessments / Rounds
+          </span>
+          <div className="text-xl font-black text-foreground tabular-nums">
+            {stats.assessment}
+          </div>
+        </div>
+        <div className="border border-black/10 dark:border-white/15 p-3.5 bg-muted/10 space-y-1">
+          <span className="text-[10px] text-emerald-600 dark:text-emerald-400 uppercase font-bold tracking-wider">
+            Offers / Selected
+          </span>
+          <div className="text-xl font-black text-emerald-600 dark:text-emerald-400 tabular-nums">
+            {stats.selected}
           </div>
         </div>
       </div>
@@ -81,37 +151,60 @@ export const ApplicationsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Filter Tabs */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-2 border-b border-black/10 dark:border-white/15 font-mono text-xs">
-        <button
-          onClick={() => setSelectedStatusTab('All')}
-          className={`px-3 py-1.5 border transition-colors uppercase tracking-wider ${
-            selectedStatusTab === 'All'
-              ? 'border-black dark:border-white bg-foreground text-background font-bold'
-              : 'border-black/10 dark:border-white/15 text-muted-foreground hover:text-foreground'
-          }`}
-        >
-          All ({applications.length})
-        </button>
-
-        {statusStages.map((stage) => {
-          const count = applications.filter((a) => a.status === stage).length
-          const isSelected = selectedStatusTab === stage
-          return (
+      {/* Search & Filter Controls */}
+      <div className="space-y-3 font-mono text-xs">
+        {/* Quick Search */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input
+            type="text"
+            placeholder="FILTER APPLIED ROLES BY COMPANY, ROLE, OR NOTES..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9 h-9 text-xs font-mono bg-card border-black/15 dark:border-white/20 rounded-none uppercase"
+          />
+          {searchQuery && (
             <button
-              key={stage}
-              onClick={() => setSelectedStatusTab(stage)}
-              className={`px-3 py-1.5 border whitespace-nowrap transition-colors uppercase tracking-wider flex items-center gap-1.5 ${
-                isSelected
-                  ? 'border-vermilion bg-vermilion text-white font-bold'
-                  : 'border-black/10 dark:border-white/15 text-muted-foreground hover:text-foreground'
-              }`}
+              onClick={() => setSearchQuery('')}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground"
             >
-              <span>{stage.toUpperCase()}</span>
-              {count > 0 && <span className="text-[10px] opacity-80">({count})</span>}
+              <X className="w-3.5 h-3.5" />
             </button>
-          )
-        })}
+          )}
+        </div>
+
+        {/* Status Stage Tabs */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 border-b border-black/10 dark:border-white/15">
+          <button
+            onClick={() => setSelectedStatusTab('All')}
+            className={`px-3 py-1.5 border transition-colors uppercase tracking-wider ${
+              selectedStatusTab === 'All'
+                ? 'border-black dark:border-white bg-foreground text-background font-bold'
+                : 'border-black/10 dark:border-white/15 text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            All ({applications.length})
+          </button>
+
+          {statusStages.map((stage) => {
+            const count = applications.filter((a) => a.status === stage).length
+            const isSelected = selectedStatusTab === stage
+            return (
+              <button
+                key={stage}
+                onClick={() => setSelectedStatusTab(stage)}
+                className={`px-3 py-1.5 border whitespace-nowrap transition-colors uppercase tracking-wider flex items-center gap-1.5 ${
+                  isSelected
+                    ? 'border-vermilion bg-vermilion text-white font-bold'
+                    : 'border-black/10 dark:border-white/15 text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <span>{stage.toUpperCase()}</span>
+                {count > 0 && <span className="text-[10px] opacity-80">({count})</span>}
+              </button>
+            )
+          })}
+        </div>
       </div>
 
       {/* Applications List */}

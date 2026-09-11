@@ -29,6 +29,7 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }
     createOrUpdateApp,
     setIsPaymentModalOpen,
     applications,
+    showToast,
   } = useApp()
 
   const [, setAppliedPrompt] = useState<boolean>(false)
@@ -46,6 +47,7 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }
 
     createOrUpdateApp(job.id, 'Applied', `Applied via ${job.company} portal.`)
     setAppliedPrompt(true)
+    showToast?.(`🚀 Application to ${job.company} logged to your Permanent Pipeline!`, 'success')
     window.open(job.application_url, '_blank', 'noopener,noreferrer')
   }
 
