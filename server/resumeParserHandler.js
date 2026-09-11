@@ -400,22 +400,74 @@ export async function handleParseResume(req, res) {
     ])
   );
 
-  // Extract text from PDF buffer if available (bypasses native PDF engine parsing 400s)
+  // Extract text from PDF buffer with multi-layer fallback resilience
   let extractedPdfText = '';
   if (isPdf) {
+    const pdfBuffer = Buffer.from(base64Content, 'base64');
+    
+    // Layer 1: unpdf
     try {
       const { extractText } = await import('unpdf');
-      const pdfBuffer = Buffer.from(base64Content, 'base64');
       const parsed = await extractText(new Uint8Array(pdfBuffer));
       if (parsed?.text) {
-        extractedPdfText = Array.isArray(parsed.text) ? parsed.text.join('\n\n') : String(parsed.text);
+        const t = Array.isArray(parsed.text) ? parsed.text.join('\n\n') : String(parsed.text);
+        if (t.trim().length > 30) extractedPdfText = t.trim();
       }
     } catch (e) {
-      console.warn('[ResumeParser] PDF text extraction note:', e?.message);
+      console.warn('[ResumeParser] unpdf notice:', e?.message);
+    }
+
+    // Layer 2: pdf-parse (PDFParse)
+    if (!extractedPdfText) {
+      try {
+        const { PDFParse } = await import('pdf-parse');
+        const parser = new PDFParse({ data: pdfBuffer, verbosity: 0 });
+        await parser.load();
+        const res = await parser.getText();
+        const t = res?.text || '';
+        if (t.trim().length > 30) extractedPdfText = t.trim();
+      } catch (e) {
+        console.warn('[ResumeParser] pdf-parse notice:', e?.message);
+      }
+    }
+
+    // Layer 3: Direct Stream & FlateDecode decompression (immune to unterminated string errors)
+    if (!extractedPdfText) {
+      try {
+        const zlib = await import('zlib');
+        const str = pdfBuffer.toString('binary');
+        const chunks = [];
+
+        const streamRegex = /stream\r?\n([\s\S]*?)\r?\nendstream/g;
+        let sMatch;
+        while ((sMatch = streamRegex.exec(str)) !== null) {
+          try {
+            const decompressed = zlib.inflateSync(Buffer.from(sMatch[1], 'binary')).toString('binary');
+            extractTextFromPs(decompressed, chunks);
+          } catch {
+            extractTextFromPs(sMatch[1], chunks);
+          }
+        }
+        extractTextFromPs(str, chunks);
+
+        const joined = chunks.join(' ').replace(/\\([()\\])/g, '$1').replace(/\s+/g, ' ').trim();
+        if (joined.length > 30) {
+          extractedPdfText = joined;
+        } else {
+          // Layer 4: Raw words extraction
+          const words = str.match(/[A-Za-z0-9+@._#\-\/]{3,}/g) || [];
+          const filtered = words.filter(w => !['obj', 'endobj', 'stream', 'endstream', 'xref', 'trailer', 'startxref', 'filter', 'flatedecode', 'length'].includes(w.toLowerCase()));
+          if (filtered.length > 20) {
+            extractedPdfText = filtered.join(' ');
+          }
+        }
+      } catch (e) {
+        console.warn('[ResumeParser] stream extraction notice:', e?.message);
+      }
     }
   }
 
-  const hasText = extractedPdfText && extractedPdfText.trim().length > 30;
+  const hasText = Boolean(extractedPdfText && extractedPdfText.trim().length > 30);
 
   const payload = hasText
     ? {
@@ -533,3 +585,30 @@ export async function handleParseResume(req, res) {
     });
   }
 }
+
+function extractTextFromPs(ps, out) {
+  if (!ps || typeof ps !== 'string') return;
+  const strRegex = /\(([\s\S]*?)\)\s*(?:Tj|'|"|TJ)/g;
+  let m;
+  while ((m = strRegex.exec(ps)) !== null) {
+    const clean = m[1].replace(/\\([()\\])/g, '$1').trim();
+    if (clean.length > 1 && !/^[^\x20-\x7E]+$/.test(clean)) {
+      out.push(clean);
+    }
+  }
+
+  const hexRegex = /<([0-9a-fA-F]{4,})>\s*(?:Tj|TJ)/g;
+  let hm;
+  while ((hm = hexRegex.exec(ps)) !== null) {
+    const hex = hm[1];
+    let decoded = '';
+    for (let i = 0; i < hex.length; i += 2) {
+      const code = parseInt(hex.substr(i, 2), 16);
+      if (code >= 32 && code <= 126) decoded += String.fromCharCode(code);
+    }
+    if (decoded.trim().length > 1) {
+      out.push(decoded.trim());
+    }
+  }
+}
+
