@@ -8,6 +8,7 @@ import {
   Zap,
   Clock,
   SlidersHorizontal,
+  Bookmark,
   Sun,
   Moon,
 } from 'lucide-react'
@@ -34,24 +35,25 @@ export const Navigation: React.FC<NavigationProps> = ({ onOpenDemo }) => {
     signOut,
   } = useApp()
 
-  const publicNavItems = [
-    { id: 'landing', label: 'HOME' },
-    { id: 'jobs', label: 'DISCOVER JOBS' },
-    { id: 'pricing', label: 'PRICING' },
-  ]
-
-  const portalNavItems = [
-    { id: 'dashboard', label: 'DASHBOARD' },
-    { id: 'applications', label: 'TRACKER', count: applications.length },
-    { id: 'saved', label: 'SAVED', count: savedJobs.length },
-  ]
+  const navItems = isAuthenticated
+    ? [
+        { id: 'dashboard', label: 'DASHBOARD' },
+        { id: 'jobs', label: 'DISCOVER JOBS' },
+        { id: 'applications', label: 'TRACKER', count: applications.length },
+        { id: 'saved', label: 'SAVED', count: savedJobs.length },
+      ]
+    : [
+        { id: 'landing', label: 'HOME' },
+        { id: 'jobs', label: 'DISCOVER JOBS' },
+        { id: 'pricing', label: 'PRICING' },
+      ]
 
   const mobileNavItems = isAuthenticated
     ? [
-        { id: 'landing', label: 'Home', icon: Compass },
-        { id: 'jobs', label: 'Jobs', icon: Briefcase },
         { id: 'dashboard', label: 'Desk', icon: SlidersHorizontal },
+        { id: 'jobs', label: 'Jobs', icon: Briefcase },
         { id: 'applications', label: 'Tracker', icon: CheckCircle2, badge: applications.length },
+        { id: 'saved', label: 'Saved', icon: Bookmark, badge: savedJobs.length },
         { id: 'profile', label: 'Profile', icon: User },
       ]
     : [
@@ -70,7 +72,7 @@ export const Navigation: React.FC<NavigationProps> = ({ onOpenDemo }) => {
           <button
             type="button"
             className="flex items-center gap-2.5 text-left select-none group focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-black dark:focus-visible:ring-white p-1 -m-1 cursor-pointer"
-            onClick={() => setCurrentView('landing')}
+            onClick={() => setCurrentView(isAuthenticated ? 'dashboard' : 'landing')}
             aria-label="CollegeCentre Home"
           >
             <div className="h-7 w-7 rounded-sm bg-black dark:bg-white text-white dark:text-black flex items-center justify-center font-mono font-bold text-xs">
@@ -83,10 +85,9 @@ export const Navigation: React.FC<NavigationProps> = ({ onOpenDemo }) => {
             </div>
           </button>
 
-          {/* Monospace Editorial Nav Links: Separated into Public & App Portal */}
+          {/* Monospace Editorial Nav Links */}
           <nav className="hidden md:flex items-center gap-1 font-mono text-[11px] tracking-tight" aria-label="Main Navigation">
-            {/* Public Section */}
-            {publicNavItems.map((item) => {
+            {navItems.map((item) => {
               const isLanding = item.id === 'landing' && (currentView === 'landing' || currentView === 'home')
               const isActive = currentView === item.id || isLanding
               return (
@@ -101,40 +102,14 @@ export const Navigation: React.FC<NavigationProps> = ({ onOpenDemo }) => {
                   }`}
                 >
                   <span>{item.label}</span>
+                  {typeof item.count === 'number' && item.count > 0 && (
+                    <span className="text-[10px] px-1 py-0.2 rounded-xs bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold">
+                      {item.count}
+                    </span>
+                  )}
                 </button>
               )
             })}
-
-            {/* Student App Portal Section - Only visible when logged in */}
-            {isAuthenticated && (
-              <>
-                {/* Subtle Vertical Divider */}
-                <span className="h-3.5 w-px bg-black/15 dark:bg-white/20 mx-1.5" />
-
-                {portalNavItems.map((item) => {
-                  const isActive = currentView === item.id
-                  return (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => setCurrentView(item.id as any)}
-                      className={`px-2.5 py-1 transition-colors relative flex items-center gap-1.5 rounded-sm cursor-pointer ${
-                        isActive
-                          ? 'text-black dark:text-white font-bold bg-slate-100 dark:bg-slate-900'
-                          : 'text-slate-500 hover:text-black dark:text-slate-400 dark:hover:text-white'
-                      }`}
-                    >
-                      <span>{item.label}</span>
-                      {typeof item.count === 'number' && item.count > 0 && (
-                        <span className="text-[10px] px-1 py-0.2 rounded-xs bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold">
-                          {item.count}
-                        </span>
-                      )}
-                    </button>
-                  )
-                })}
-              </>
-            )}
           </nav>
 
           {/* Right Action Bar */}
