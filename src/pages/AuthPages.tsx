@@ -39,13 +39,53 @@ export const AuthPages: React.FC<AuthPagesProps> = ({ initialMode = 'signup' }) 
 
       setIsAuthenticating(true)
       try {
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email: cleanEmail,
-          password: password,
-        })
+        let authUser: any = null
 
-        if (error) {
-          showToast(error.message || 'Invalid credentials. Please check your email and password.', 'warning')
+        // 1. Attempt client direct authentication
+        try {
+          const { data, error } = await supabase.auth.signInWithPassword({
+            email: cleanEmail,
+            password: password,
+          })
+
+          if (error) {
+            // If explicit credential rejection, don't fallback
+            if (!error.message.toLowerCase().includes('fetch')) {
+              showToast(error.message || 'Invalid credentials. Please check your email and password.', 'warning')
+              setIsAuthenticating(false)
+              return
+            }
+            throw error // Trigger same-origin proxy fallback
+          }
+
+          authUser = data?.user
+        } catch (directErr: any) {
+          // 2. Same-Origin Fallback (/api/login)
+          // Bypasses browser ad-blockers, third-party cookie restrictions, and CORS
+          const proxyRes = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: cleanEmail, password }),
+          })
+          const proxyData = await proxyRes.json()
+
+          if (!proxyRes.ok) {
+            showToast(proxyData.error || 'Invalid credentials. Please check your email and password.', 'warning')
+            setIsAuthenticating(false)
+            return
+          }
+
+          if (proxyData.session) {
+            await supabase.auth.setSession({
+              access_token: proxyData.session.access_token,
+              refresh_token: proxyData.session.refresh_token,
+            })
+            authUser = proxyData.user
+          }
+        }
+
+        if (!authUser) {
+          showToast('Could not establish session. Please check your connection.', 'warning')
           setIsAuthenticating(false)
           return
         }
@@ -65,10 +105,10 @@ export const AuthPages: React.FC<AuthPagesProps> = ({ initialMode = 'signup' }) 
           updateStudent(
             {
               ...student,
-              id: data?.user?.id || student.id,
+              id: authUser?.id || student.id,
               email: cleanEmail,
-              name: data?.user?.user_metadata?.full_name || student.name || 'Fresher Student',
-              phone: data?.user?.user_metadata?.phone || student.phone || '',
+              name: authUser?.user_metadata?.full_name || student.name || 'Fresher Student',
+              phone: authUser?.user_metadata?.phone || student.phone || '',
             },
             null
           )

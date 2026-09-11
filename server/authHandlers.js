@@ -1,4 +1,4 @@
-﻿import { supabaseAdmin } from './supabaseAdmin.js';
+import { supabaseAdmin } from './supabaseAdmin.js';
 
 export async function handleRegisterUser(req, res) {
   if (req.method !== 'POST') {
@@ -79,3 +79,47 @@ export async function handleRegisterUser(req, res) {
     return res.status(500).json({ error: err.message || 'Registration failed' });
   }
 }
+
+export async function handleLoginUser(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  const { email, password } = req.body || {};
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email and password are required' });
+  }
+
+  const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+  const anonKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !anonKey) {
+    return res.status(500).json({ error: 'Database service configuration missing' });
+  }
+
+  try {
+    const { createClient } = await import('@supabase/supabase-js');
+    const client = createClient(supabaseUrl, anonKey, {
+      auth: { autoRefreshToken: false, persistSession: false },
+    });
+
+    const { data, error } = await client.auth.signInWithPassword({
+      email: String(email).trim().toLowerCase(),
+      password: String(password),
+    });
+
+    if (error) {
+      return res.status(401).json({ error: error.message });
+    }
+
+    return res.status(200).json({
+      success: true,
+      session: data.session,
+      user: data.user,
+    });
+  } catch (err) {
+    console.error('Login server error:', err);
+    return res.status(500).json({ error: err.message || 'Login failed' });
+  }
+}
+

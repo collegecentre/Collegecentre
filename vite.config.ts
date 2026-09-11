@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import { fileURLToPath, URL } from 'node:url'
 import { createOrder, verifyPayment, verifyPassStatus } from './server/razorpayHandlers.js'
 import { getProtectedJobs, getUserSavedAndAppliedJobs } from './server/jobsHandler.js'
-import { handleRegisterUser } from './server/authHandlers.js'
+import { handleRegisterUser, handleLoginUser } from './server/authHandlers.js'
 import { handleParseResume } from './server/resumeParserHandler.js'
 
 function razorpayDevApiPlugin(env: Record<string, string>) {
@@ -19,6 +19,7 @@ function razorpayDevApiPlugin(env: Record<string, string>) {
           url === '/api/jobs' ||
           url === '/api/user-jobs' ||
           url === '/api/register' ||
+          url === '/api/login' ||
           url === '/api/parse-resume'
         ) {
           // Ensure environment variables are populated in process.env
@@ -75,6 +76,8 @@ function razorpayDevApiPlugin(env: Record<string, string>) {
                 await getUserSavedAndAppliedJobs(req, res)
               } else if (url === '/api/register') {
                 await handleRegisterUser(req, res)
+              } else if (url === '/api/login') {
+                await handleLoginUser(req, res)
               } else if (url === '/api/parse-resume') {
                 await handleParseResume(req, res)
               }
