@@ -30,6 +30,8 @@ export const Navigation: React.FC<NavigationProps> = ({ onOpenDemo }) => {
     setIsPaymentModalOpen,
     resolvedTheme,
     toggleTheme,
+    isAuthenticated,
+    signOut,
   } = useApp()
 
   const publicNavItems = [
@@ -126,20 +128,33 @@ export const Navigation: React.FC<NavigationProps> = ({ onOpenDemo }) => {
           {/* Right Action Bar */}
           <div className="flex items-center gap-2">
             {/* Sign In / Profile Quick Link */}
-            {student.name ? (
-              <button
-                type="button"
-                onClick={() => setCurrentView('profile')}
-                className="font-mono text-[11px] text-muted-foreground hover:text-foreground hidden sm:flex items-center gap-1 px-2.5 py-1 border border-black/10 dark:border-white/15 rounded-sm"
-              >
-                <span>{student.name.split(' ')[0]}</span>
-              </button>
+            {isAuthenticated && student.name ? (
+              <div className="hidden sm:flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setCurrentView('profile')}
+                  className="font-mono text-[11px] text-muted-foreground hover:text-foreground flex items-center gap-1 px-2.5 py-1 border border-black/10 dark:border-white/15 rounded-sm cursor-pointer"
+                  title="View and edit profile"
+                >
+                  <User className="w-3 h-3" />
+                  <span>{student.name.split(' ')[0]}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => signOut()}
+                  className="font-mono text-[10px] text-muted-foreground hover:text-red-500 uppercase px-1 cursor-pointer"
+                  title="Sign Out"
+                >
+                  Logout
+                </button>
+              </div>
             ) : (
               <button
                 type="button"
                 onClick={() => setCurrentView('login')}
-                className="font-mono text-[11px] text-muted-foreground hover:text-foreground hidden sm:flex items-center gap-1 px-2.5 py-1"
+                className="font-mono text-[11px] font-bold text-foreground hover:text-[#fe7141] hidden sm:flex items-center gap-1.5 px-3 py-1 border border-black/15 dark:border-white/20 hover:border-[#fe7141] rounded-sm transition-colors cursor-pointer"
               >
+                <User className="w-3 h-3" />
                 <span>Sign In</span>
               </button>
             )}

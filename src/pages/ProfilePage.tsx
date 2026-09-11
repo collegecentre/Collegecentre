@@ -7,10 +7,13 @@ import {
   Save,
   ShieldCheck,
   CheckCircle2,
+  Sparkles,
+  ArrowRight,
+  Zap,
 } from 'lucide-react'
 
 export const ProfilePage: React.FC = () => {
-  const { student, updateStudent } = useApp()
+  const { student, updateStudent, setCurrentView, setIsPaymentModalOpen } = useApp()
   const [formData, setFormData] = useState<StudentProfile>(student)
 
   useEffect(() => {
@@ -73,10 +76,16 @@ export const ProfilePage: React.FC = () => {
     e.preventDefault()
     updateStudent(formData)
     setSavedFeedback(true)
-    setTimeout(() => setSavedFeedback(false), 3000)
+    setTimeout(() => setSavedFeedback(false), 5000)
   }
 
-  const [activeTab, setActiveTab] = useState<'all' | 'personal' | 'academics' | 'skills' | 'preferences'>('all')
+  const isAcademicMissing = !formData.college?.trim() || !formData.degree?.trim()
+  const isSkillsMissing = !formData.skills || formData.skills.length === 0
+  const isProfileIncomplete = isAcademicMissing || isSkillsMissing
+
+  const [activeTab, setActiveTab] = useState<'all' | 'personal' | 'academics' | 'skills' | 'preferences'>(
+    isAcademicMissing ? 'academics' : 'all'
+  )
 
   const profileTabs = [
     { id: 'all', label: 'All Sections' },
@@ -107,7 +116,7 @@ export const ProfilePage: React.FC = () => {
           <button
             type="submit"
             form="candidate-profile-form"
-            className="px-6 py-3 bg-vermilion hover:bg-vermilion-hover text-white font-mono text-xs font-bold uppercase tracking-wider transition-colors shrink-0 flex items-center gap-2 shadow-xs"
+            className="px-6 py-3 bg-[#fe7141] hover:bg-[#e05828] text-white font-mono text-xs font-bold uppercase tracking-wider transition-colors shrink-0 flex items-center gap-2 shadow-xs cursor-pointer"
           >
             <Save className="w-3.5 h-3.5" />
             <span>{savedFeedback ? '✓ Profile Updated' : 'Save Profile'}</span>
@@ -115,18 +124,88 @@ export const ProfilePage: React.FC = () => {
         </div>
       </div>
 
-      {/* Success Notification Banner */}
-      {savedFeedback && (
-        <div className="border border-emerald-500/40 bg-emerald-500/10 p-4 font-mono text-xs text-emerald-700 dark:text-emerald-400 flex items-center justify-between animate-in fade-in slide-in-from-top-2 duration-200">
-          <div className="flex items-center gap-2.5">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-            <span className="font-bold uppercase">
-              Profile and match criteria updated successfully.
+      {/* Step 2 Onboarding Arrangement Banner (Shown after registration when profile is incomplete) */}
+      {isProfileIncomplete && (
+        <div className="border-2 border-[#fe7141] bg-[#fe7141]/10 p-5 font-mono text-xs text-foreground space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="flex items-center gap-2 text-[#fe7141] font-bold uppercase tracking-wider text-sm">
+              <Sparkles className="w-4 h-4 shrink-0" />
+              <span>Step 2 of 2: Complete Your Job Profile</span>
+            </div>
+            <span className="text-[10px] uppercase font-bold text-muted-foreground px-2 py-0.5 border border-[#fe7141]/30 bg-card self-start sm:self-auto">
+              Required for Matching & ₹199 Pass
             </span>
           </div>
-          <span className="text-[10px] uppercase font-bold text-muted-foreground hidden sm:inline">
-            REAL-TIME MATCH RECALCULATED
-          </span>
+
+          <p className="text-muted-foreground font-sans text-xs leading-relaxed">
+            Welcome{formData.name ? `, ${formData.name}` : ''}! Your account has been registered. Now update your <strong>Institution & Degree</strong> (Section 02) and add your <strong>Technical Skills</strong> (Section 03) below so our engine can calculate your verified match score across 40+ curated fresher jobs.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 font-mono text-[11px]">
+            <div className={`p-2.5 border flex items-center gap-2 ${formData.name && formData.email ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400' : 'border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400'}`}>
+              <span className="font-bold">{formData.name && formData.email ? '✓' : '○'}</span>
+              <span>1. Account Registered</span>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab('academics')}
+              className={`p-2.5 border flex items-center justify-between cursor-pointer transition-colors text-left ${formData.college && formData.degree ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400' : 'border-[#fe7141] bg-card text-[#fe7141] font-bold hover:bg-[#fe7141]/15'}`}
+            >
+              <div className="flex items-center gap-1.5">
+                <span>{formData.college && formData.degree ? '✓' : '○'}</span>
+                <span>2. Academics</span>
+              </div>
+              {(!formData.college || !formData.degree) && <span className="text-[9px] uppercase underline">Update now →</span>}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab('skills')}
+              className={`p-2.5 border flex items-center justify-between cursor-pointer transition-colors text-left ${formData.skills && formData.skills.length > 0 ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400' : 'border-[#fe7141] bg-card text-[#fe7141] font-bold hover:bg-[#fe7141]/15'}`}
+            >
+              <div className="flex items-center gap-1.5">
+                <span>{formData.skills && formData.skills.length > 0 ? '✓' : '○'}</span>
+                <span>3. Skills ({formData.skills ? formData.skills.length : 0})</span>
+              </div>
+              {(!formData.skills || formData.skills.length === 0) && <span className="text-[9px] uppercase underline">Add skills →</span>}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Success Notification Banner with Post-Save Action Buttons */}
+      {savedFeedback && (
+        <div className="border border-emerald-500/50 bg-emerald-500/10 p-4 font-mono text-xs text-foreground flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="flex items-center gap-2.5">
+            <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
+            <div>
+              <div className="font-bold uppercase text-emerald-700 dark:text-emerald-400">
+                Profile and match criteria updated successfully!
+              </div>
+              <div className="text-[11px] text-muted-foreground font-sans">
+                Real-time match scores recalculated across all curated openings.
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => setCurrentView('jobs')}
+              className="px-3 py-1.5 bg-black dark:bg-white text-white dark:text-black font-bold uppercase tracking-wider text-[11px] hover:opacity-90 transition-opacity flex items-center gap-1 cursor-pointer"
+            >
+              <span>View Jobs</span>
+              <ArrowRight className="w-3 h-3" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsPaymentModalOpen(true)}
+              className="px-3 py-1.5 bg-[#fe7141] hover:bg-[#e05828] text-white font-bold uppercase tracking-wider text-[11px] transition-colors flex items-center gap-1 cursor-pointer"
+            >
+              <Zap className="w-3 h-3 fill-current" />
+              <span>Unlock Pass</span>
+            </button>
+          </div>
         </div>
       )}
 

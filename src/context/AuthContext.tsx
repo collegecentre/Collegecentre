@@ -21,33 +21,37 @@ export const AuthProvider: React.FC<{
 
   // Supabase Auth session synchronization across devices
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }: { data: any }) => {
-      const session = data?.session
+    const hydrateUser = async (session: any) => {
       if (session?.user) {
         setIsAuthenticated(true)
-        setStudent((prev) => ({
-          ...prev,
-          id: session.user.id,
-          email: session.user.email || prev.email,
-          name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || prev.name,
-        }))
+        const email = session.user.email || ''
+        const cloud = email ? await db.fetchCloudStudentByEmail(email) : null
+        if (cloud) {
+          setStudent(cloud)
+        } else {
+          setStudent((prev) => ({
+            ...prev,
+            id: session.user.id,
+            email: session.user.email || prev.email,
+            name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || prev.name,
+            phone: session.user.user_metadata?.phone || prev.phone || '',
+          }))
+        }
+      } else {
+        setIsAuthenticated(false)
+      }
+    }
+
+    supabase.auth.getSession().then(({ data }: { data: any }) => {
+      if (data?.session) {
+        hydrateUser(data.session)
       }
     })
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
-      if (session?.user) {
-        setIsAuthenticated(true)
-        setStudent((prev) => ({
-          ...prev,
-          id: session.user.id,
-          email: session.user.email || prev.email,
-          name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || prev.name,
-        }))
-      } else {
-        setIsAuthenticated(false)
-      }
+      hydrateUser(session)
     })
 
     return () => subscription.unsubscribe()

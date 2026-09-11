@@ -56,6 +56,7 @@ export interface AppContextType {
   simulateRemainingTime: (minutes: number) => void
   resetData: () => void
   signOut: () => Promise<void>
+  isAuthenticated: boolean
   showToast: (message: string, type?: 'success' | 'info' | 'warning') => void
   theme: ThemeMode
   resolvedTheme: 'light' | 'dark'
@@ -196,6 +197,7 @@ const AppInnerComposer: React.FC<{
     simulateRemainingTime: pass.simulateRemainingTime,
     resetData,
     signOut: auth.signOut,
+    isAuthenticated: auth.isAuthenticated,
     showToast,
     theme,
     resolvedTheme,
