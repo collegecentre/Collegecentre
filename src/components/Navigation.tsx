@@ -46,13 +46,20 @@ export const Navigation: React.FC<NavigationProps> = ({ onOpenDemo }) => {
     { id: 'saved', label: 'SAVED', count: savedJobs.length },
   ]
 
-  const mobileNavItems = [
-    { id: 'landing', label: 'Home', icon: Compass },
-    { id: 'jobs', label: 'Jobs', icon: Briefcase },
-    { id: 'dashboard', label: 'Desk', icon: SlidersHorizontal },
-    { id: 'applications', label: 'Tracker', icon: CheckCircle2, badge: applications.length },
-    { id: 'profile', label: 'Profile', icon: User },
-  ]
+  const mobileNavItems = isAuthenticated
+    ? [
+        { id: 'landing', label: 'Home', icon: Compass },
+        { id: 'jobs', label: 'Jobs', icon: Briefcase },
+        { id: 'dashboard', label: 'Desk', icon: SlidersHorizontal },
+        { id: 'applications', label: 'Tracker', icon: CheckCircle2, badge: applications.length },
+        { id: 'profile', label: 'Profile', icon: User },
+      ]
+    : [
+        { id: 'landing', label: 'Home', icon: Compass },
+        { id: 'jobs', label: 'Jobs', icon: Briefcase },
+        { id: 'pricing', label: 'Pricing', icon: Zap },
+        { id: 'login', label: 'Sign In', icon: User },
+      ]
 
   return (
     <>
@@ -77,10 +84,11 @@ export const Navigation: React.FC<NavigationProps> = ({ onOpenDemo }) => {
           </button>
 
           {/* Monospace Editorial Nav Links: Separated into Public & App Portal */}
-          <nav className="hidden lg:flex items-center gap-1 font-mono text-[11px] tracking-tight" aria-label="Main Navigation">
+          <nav className="hidden md:flex items-center gap-1 font-mono text-[11px] tracking-tight" aria-label="Main Navigation">
             {/* Public Section */}
             {publicNavItems.map((item) => {
-              const isActive = currentView === item.id
+              const isLanding = item.id === 'landing' && (currentView === 'landing' || currentView === 'home')
+              const isActive = currentView === item.id || isLanding
               return (
                 <button
                   key={item.id}
@@ -97,32 +105,36 @@ export const Navigation: React.FC<NavigationProps> = ({ onOpenDemo }) => {
               )
             })}
 
-            {/* Subtle Vertical Divider */}
-            <span className="h-3.5 w-px bg-black/15 dark:bg-white/20 mx-1.5" />
+            {/* Student App Portal Section - Only visible when logged in */}
+            {isAuthenticated && (
+              <>
+                {/* Subtle Vertical Divider */}
+                <span className="h-3.5 w-px bg-black/15 dark:bg-white/20 mx-1.5" />
 
-            {/* Student App Portal Section */}
-            {portalNavItems.map((item) => {
-              const isActive = currentView === item.id
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => setCurrentView(item.id as any)}
-                  className={`px-2.5 py-1 transition-colors relative flex items-center gap-1.5 rounded-sm cursor-pointer ${
-                    isActive
-                      ? 'text-black dark:text-white font-bold bg-slate-100 dark:bg-slate-900'
-                      : 'text-slate-500 hover:text-black dark:text-slate-400 dark:hover:text-white'
-                  }`}
-                >
-                  <span>{item.label}</span>
-                  {typeof item.count === 'number' && item.count > 0 && (
-                    <span className="text-[10px] px-1 py-0.2 rounded-xs bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold">
-                      {item.count}
-                    </span>
-                  )}
-                </button>
-              )
-            })}
+                {portalNavItems.map((item) => {
+                  const isActive = currentView === item.id
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setCurrentView(item.id as any)}
+                      className={`px-2.5 py-1 transition-colors relative flex items-center gap-1.5 rounded-sm cursor-pointer ${
+                        isActive
+                          ? 'text-black dark:text-white font-bold bg-slate-100 dark:bg-slate-900'
+                          : 'text-slate-500 hover:text-black dark:text-slate-400 dark:hover:text-white'
+                      }`}
+                    >
+                      <span>{item.label}</span>
+                      {typeof item.count === 'number' && item.count > 0 && (
+                        <span className="text-[10px] px-1 py-0.2 rounded-xs bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold">
+                          {item.count}
+                        </span>
+                      )}
+                    </button>
+                  )
+                })}
+              </>
+            )}
           </nav>
 
           {/* Right Action Bar */}
@@ -234,16 +246,21 @@ export const Navigation: React.FC<NavigationProps> = ({ onOpenDemo }) => {
 
       {/* Mobile Bottom Navigation Bar */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-black/95 backdrop-blur-xl border-t border-black/10 dark:border-white/15 px-2 py-1">
-        <div className="grid grid-cols-5 gap-1 items-center max-w-md mx-auto">
+        <div
+          className={`grid ${
+            isAuthenticated ? 'grid-cols-5' : 'grid-cols-4'
+          } gap-1 items-center max-w-md mx-auto`}
+        >
           {mobileNavItems.map((item) => {
             const Icon = item.icon
-            const isActive = currentView === item.id
+            const isLanding = item.id === 'landing' && (currentView === 'landing' || currentView === 'home')
+            const isActive = currentView === item.id || isLanding
             return (
               <button
                 key={item.id}
                 type="button"
                 onClick={() => setCurrentView(item.id as any)}
-                className={`flex flex-col items-center justify-center py-2 px-1 rounded-sm transition-colors relative min-h-[48px] ${
+                className={`flex flex-col items-center justify-center py-2 px-1 rounded-sm transition-colors relative min-h-[48px] cursor-pointer ${
                   isActive
                     ? 'text-black dark:text-white font-bold'
                     : 'text-slate-400 hover:text-black dark:hover:text-white'

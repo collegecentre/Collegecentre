@@ -22,10 +22,16 @@ import {
 import { BackgroundGrid } from '@/components/reactbits/BackgroundGrid'
 
 const AppContent: React.FC = () => {
-  const { currentView, setCurrentView, selectedJob, setSelectedJob } = useApp()
+  const { currentView, setCurrentView, selectedJob, setSelectedJob, isAuthenticated } = useApp()
   const [isDemoOpen, setIsDemoOpen] = useState<boolean>(false)
 
   const renderCurrentView = () => {
+    // Protected views require authentication
+    const protectedViews = ['dashboard', 'applications', 'saved', 'profile', 'account']
+    if (protectedViews.includes(currentView) && !isAuthenticated) {
+      return <AuthPages key="login" initialMode="login" />
+    }
+
     switch (currentView) {
       case 'home':
       case 'landing':
@@ -107,18 +113,22 @@ const AppContent: React.FC = () => {
                 Pass Simulator
               </button>
             )}
-            <button
-              onClick={() => setCurrentView('profile')}
-              className="hover:text-foreground transition-colors"
-            >
-              My Profile
-            </button>
-            <button
-              onClick={() => setCurrentView('account')}
-              className="hover:text-foreground transition-colors"
-            >
-              Account
-            </button>
+            {isAuthenticated && (
+              <>
+                <button
+                  onClick={() => setCurrentView('profile')}
+                  className="hover:text-foreground transition-colors cursor-pointer"
+                >
+                  My Profile
+                </button>
+                <button
+                  onClick={() => setCurrentView('account')}
+                  className="hover:text-foreground transition-colors cursor-pointer"
+                >
+                  Account
+                </button>
+              </>
+            )}
             <span className="text-black/20 dark:text-white/20 hidden sm:inline">|</span>
             <button
               onClick={() => setCurrentView('terms')}
