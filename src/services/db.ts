@@ -319,7 +319,7 @@ export const db = {
     try {
       if (!student.email || !student.email.trim()) return
       const cleanPhone = student.phone || ''
-      const payload = {
+      const payload: any = {
         id: student.id || `cand_${Date.now()}`,
         name: student.name || 'Candidate',
         email: student.email.trim().toLowerCase(),
@@ -333,6 +333,15 @@ export const db = {
         preferred_categories: student.preferred_categories || [],
         preferred_locations: student.preferred_locations || [],
         preferred_work_mode: student.preferred_work_mode || ['Remote', 'Hybrid'],
+        linkedin_url: student.linkedin_url || null,
+        github_url: student.github_url || null,
+        portfolio_url: student.portfolio_url || null,
+        projects: student.projects || [],
+        internships: student.internships || [],
+        certifications: student.certifications || [],
+        achievements: student.achievements || [],
+        resume_file_name: student.resume_file_name || null,
+        resume_parsed_at: student.resume_parsed_at || null,
         updated_at: new Date().toISOString(),
       }
       const { error } = await supabase.from('cc_student_profiles').upsert(payload, { onConflict: 'email' })
@@ -368,6 +377,15 @@ export const db = {
         preferred_categories: data.preferred_categories || [],
         preferred_locations: data.preferred_locations || [],
         preferred_work_mode: data.preferred_work_mode || ['Remote', 'Hybrid'],
+        linkedin_url: data.linkedin_url || undefined,
+        github_url: data.github_url || undefined,
+        portfolio_url: data.portfolio_url || undefined,
+        projects: data.projects || [],
+        internships: data.internships || [],
+        certifications: data.certifications || [],
+        achievements: data.achievements || [],
+        resume_file_name: data.resume_file_name || undefined,
+        resume_parsed_at: data.resume_parsed_at || undefined,
       }
     } catch {
       return null

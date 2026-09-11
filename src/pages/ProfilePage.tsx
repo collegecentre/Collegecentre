@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { useApp } from '@/context/AppContext'
 import { StudentProfile, WorkMode } from '@/types'
+import { ResumeExtractedProfile, ProfileMergeSummary } from '@/types/resume'
+import { ResumeUploadModal } from '@/components/ResumeUploadModal'
+import { ResumeReviewModal } from '@/components/ResumeReviewModal'
 import { Input } from '@/components/ui/input'
 import {
   X,
@@ -10,6 +13,11 @@ import {
   Sparkles,
   ArrowRight,
   Zap,
+  Upload,
+  FileText,
+  Briefcase,
+  FolderGit2,
+  ExternalLink,
 } from 'lucide-react'
 
 export const ProfilePage: React.FC = () => {
@@ -22,6 +30,13 @@ export const ProfilePage: React.FC = () => {
   const [newSkill, setNewSkill] = useState<string>('')
   const [newLocation, setNewLocation] = useState<string>('')
   const [savedFeedback, setSavedFeedback] = useState<boolean>(false)
+
+  // AI Resume Builder States
+  const [isResumeUploadOpen, setIsResumeUploadOpen] = useState<boolean>(false)
+  const [isResumeReviewOpen, setIsResumeReviewOpen] = useState<boolean>(false)
+  const [extractedResume, setExtractedResume] = useState<ResumeExtractedProfile | null>(null)
+  const [resumeFileName, setResumeFileName] = useState<string>('')
+  const [resumeMergeToast, setResumeMergeToast] = useState<string | null>(null)
 
   const availableModes: WorkMode[] = ['Remote', 'Hybrid', 'Onsite']
 
@@ -83,9 +98,27 @@ export const ProfilePage: React.FC = () => {
   const isSkillsMissing = !formData.skills || formData.skills.length === 0
   const isProfileIncomplete = isAcademicMissing || isSkillsMissing
 
-  const [activeTab, setActiveTab] = useState<'all' | 'personal' | 'academics' | 'skills' | 'preferences'>(
+  const [activeTab, setActiveTab] = useState<'all' | 'personal' | 'academics' | 'skills' | 'preferences' | 'projects'>(
     isAcademicMissing ? 'academics' : 'all'
   )
+
+  const handleResumeExtracted = (extracted: ResumeExtractedProfile, rawFileName: string) => {
+    setExtractedResume(extracted)
+    setResumeFileName(rawFileName)
+    setIsResumeUploadOpen(false)
+    setIsResumeReviewOpen(true)
+  }
+
+  const handleResumeMergeSave = (merged: StudentProfile, summary: ProfileMergeSummary) => {
+    updateStudent(merged)
+    setFormData(merged)
+    setIsResumeReviewOpen(false)
+    const summaryText = `✓ Resume merged! Added ${summary.skillsAdded} new skills, ${summary.projectsAdded} projects, and updated credentials.`
+    setResumeMergeToast(summaryText)
+    setTimeout(() => setResumeMergeToast(null), 8000)
+  }
+
+  const totalProjectsAndExp = (formData.projects?.length || 0) + (formData.internships?.length || 0)
 
   const profileTabs = [
     { id: 'all', label: 'All Sections' },
@@ -93,6 +126,7 @@ export const ProfilePage: React.FC = () => {
     { id: 'academics', label: '02. Academics' },
     { id: 'skills', label: '03. Skills Matrix' },
     { id: 'preferences', label: '04. Preferences' },
+    { id: 'projects', label: `05. Projects & Exp${totalProjectsAndExp > 0 ? ` (${totalProjectsAndExp})` : ''}` },
   ] as const
 
   return (
@@ -209,15 +243,76 @@ export const ProfilePage: React.FC = () => {
         </div>
       )}
 
-      {/* Zero Resume Guarantee Box */}
+      {/* AI-Powered "Build Profile from Resume" Section */}
+      <div className="border-2 border-[#fe7141]/50 bg-gradient-to-r from-[#fe7141]/10 via-[#fe7141]/5 to-transparent p-5 sm:p-6 font-mono text-xs text-foreground space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2 text-[#fe7141] font-bold uppercase tracking-wider text-xs">
+            <Sparkles className="w-4 h-4 shrink-0" />
+            <span>AI Profile Builder • Gemini 2.5 Flash</span>
+          </div>
+          {formData.resume_file_name && (
+            <div className="flex items-center gap-1.5 text-[11px] text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-500/10 px-2.5 py-1 border border-emerald-500/30">
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              <span>Parsed from: {formData.resume_file_name}</span>
+            </div>
+          )}
+        </div>
+
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
+          <div className="space-y-1.5 max-w-2xl">
+            <h2 className="text-lg sm:text-xl font-black tracking-tight text-foreground">
+              Build my profile from resume
+            </h2>
+            <p className="text-muted-foreground font-sans text-xs leading-relaxed">
+              Upload your PDF/DOCX resume and let CollegeCentre extract your skills, education, experience, and projects. You can review and edit before saving.
+            </p>
+            <div className="flex flex-wrap items-center gap-3 pt-1 text-[10px] text-muted-foreground">
+              <span>✓ Normalized tech stack</span>
+              <span>•</span>
+              <span>✓ Non-destructive merge</span>
+              <span>•</span>
+              <span>✓ Real-time match recalibration</span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setIsResumeUploadOpen(true)}
+            className="px-5 py-3 bg-[#fe7141] hover:bg-[#e05828] text-white font-mono text-xs font-bold uppercase tracking-wider transition-colors shrink-0 flex items-center justify-center gap-2 shadow-sm cursor-pointer"
+          >
+            <Upload className="w-4 h-4" />
+            <span>{formData.resume_file_name ? 'Re-upload Resume' : 'Upload Resume (PDF / DOCX)'}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Resume Merged Success Toast Banner */}
+      {resumeMergeToast && (
+        <div className="border border-emerald-500/50 bg-emerald-500/10 p-4 font-mono text-xs text-foreground flex items-center justify-between gap-3 animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="flex items-center gap-2.5">
+            <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
+            <span className="font-bold text-emerald-700 dark:text-emerald-400">{resumeMergeToast}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setResumeMergeToast(null)}
+            className="p-1 hover:text-foreground text-muted-foreground cursor-pointer"
+            aria-label="Close"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
+      {/* Direct Specification Matching Guarantee Box */}
       <div className="border border-black/10 dark:border-white/15 p-4 sm:p-5 bg-muted/10 flex items-start gap-4 font-mono text-xs">
         <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
         <div className="space-y-1">
           <div className="font-bold text-foreground uppercase tracking-wider">
-            DIRECT SPECIFICATION MATCHING · ZERO RESUME REQUIRED
+            DIRECT SPECIFICATION MATCHING · VERIFIED CRITERIA ENGINE
           </div>
           <p className="text-muted-foreground font-sans text-xs leading-relaxed">
-            Unlike traditional job boards that rely on faulty PDF resume parsers, CollegeCentre scores your fit transparently using your verified degree, graduation batch, technical skills matrix, and work mode preferences.
+            CollegeCentre combines your verified degree, graduation batch, normalized technical skills matrix, and demonstrated projects to calculate real-time match percentages across all curated fresher openings.
           </p>
         </div>
       </div>
@@ -605,12 +700,202 @@ export const ProfilePage: React.FC = () => {
                 >
                   ← Prev: Skills
                 </button>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-vermilion hover:bg-vermilion-hover text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2"
+                  >
+                    <Save className="w-3.5 h-3.5" />
+                    <span>Save Preferences</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('projects')}
+                    className="px-4 py-2 border border-black dark:border-white hover:bg-muted/40 text-xs font-bold uppercase tracking-wider"
+                  >
+                    Next: Projects & Exp →
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Section 05: Projects & Professional Experience */}
+        {(activeTab === 'all' || activeTab === 'projects') && (
+          <div className="border border-black/10 dark:border-white/15 bg-card p-6 space-y-6">
+            <div className="flex items-baseline justify-between pb-3 border-b border-black/10 dark:border-white/10">
+              <div className="font-mono text-xs font-bold text-foreground uppercase tracking-wider">
+                05. PROJECTS & PROFESSIONAL EXPERIENCE
+              </div>
+              <div className="font-mono text-[10px] text-muted-foreground uppercase">
+                Demonstrated Engineering Stack
+              </div>
+            </div>
+
+            {/* Resume-extracted Projects */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="font-mono text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
+                  <FolderGit2 className="w-4 h-4 text-[#fe7141]" />
+                  <span>Key Projects ({(formData.projects || []).length})</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsResumeUploadOpen(true)}
+                  className="font-mono text-[11px] text-[#fe7141] hover:underline font-bold uppercase cursor-pointer"
+                >
+                  + Extract From Resume
+                </button>
+              </div>
+
+              {(!formData.projects || formData.projects.length === 0) ? (
+                <div className="p-6 border border-dashed border-black/15 dark:border-white/20 bg-muted/5 text-center font-mono text-xs text-muted-foreground space-y-2">
+                  <p>No projects attached to your profile yet.</p>
+                  <p className="text-[11px] font-sans">
+                    Upload your resume to automatically extract project titles, descriptions, and technology stacks that feed directly into job matching.
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {formData.projects.map((proj, i) => (
+                    <div
+                      key={i}
+                      className="border border-black/10 dark:border-white/15 p-4 space-y-2 bg-card relative font-mono text-xs"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="font-bold text-foreground">{proj.title}</div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const updated = (formData.projects || []).filter((_, idx) => idx !== i)
+                            setFormData({ ...formData, projects: updated })
+                          }}
+                          className="text-muted-foreground hover:text-red-500 p-0.5 cursor-pointer"
+                          aria-label="Remove project"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+
+                      {proj.description && (
+                        <p className="font-sans text-xs text-muted-foreground line-clamp-2">
+                          {proj.description}
+                        </p>
+                      )}
+
+                      {proj.technologies && proj.technologies.length > 0 && (
+                        <div className="flex flex-wrap gap-1 pt-1">
+                          {proj.technologies.map((t, ti) => (
+                            <span
+                              key={ti}
+                              className="px-1.5 py-0.5 bg-muted/40 border border-black/10 dark:border-white/10 text-[10px] font-bold"
+                            >
+                              {t}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      {proj.link && (
+                        <a
+                          href={proj.link}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="pt-1 text-[11px] text-[#fe7141] hover:underline flex items-center gap-1"
+                        >
+                          <span>{proj.link}</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Resume-extracted Internships */}
+            <div className="space-y-4 pt-4 border-t border-black/10 dark:border-white/10">
+              <div className="flex items-center justify-between">
+                <div className="font-mono text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
+                  <Briefcase className="w-4 h-4 text-[#fe7141]" />
+                  <span>Internships & Experience ({(formData.internships || []).length})</span>
+                </div>
+              </div>
+
+              {(!formData.internships || formData.internships.length === 0) ? (
+                <div className="p-6 border border-dashed border-black/15 dark:border-white/20 bg-muted/5 text-center font-mono text-xs text-muted-foreground space-y-2">
+                  <p>No internships or work experience recorded.</p>
+                  <p className="text-[11px] font-sans">
+                    Demonstrated internships give your candidate profile an immediate score advantage on openings with 0-1 years requirements.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {formData.internships.map((exp, i) => (
+                    <div
+                      key={i}
+                      className="border border-black/10 dark:border-white/15 p-4 space-y-2 bg-card relative font-mono text-xs"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <div className="font-bold text-foreground">{exp.role}</div>
+                          <div className="text-xs text-[#fe7141] font-bold">
+                            {exp.company} {exp.duration ? `• ${exp.duration}` : ''}
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const updated = (formData.internships || []).filter((_, idx) => idx !== i)
+                            setFormData({ ...formData, internships: updated })
+                          }}
+                          className="text-muted-foreground hover:text-red-500 p-0.5 cursor-pointer"
+                          aria-label="Remove internship"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+
+                      {exp.description && (
+                        <p className="font-sans text-xs text-muted-foreground">
+                          {exp.description}
+                        </p>
+                      )}
+
+                      {exp.skills_used && exp.skills_used.length > 0 && (
+                        <div className="flex flex-wrap gap-1 pt-1">
+                          {exp.skills_used.map((s, si) => (
+                            <span
+                              key={si}
+                              className="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold"
+                            >
+                              {s}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {activeTab === 'projects' && (
+              <div className="flex items-center justify-between pt-4 border-t border-black/10 dark:border-white/10 font-mono text-xs">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('preferences')}
+                  className="px-4 py-2 border border-black/20 dark:border-white/20 hover:bg-muted/40 text-xs font-bold uppercase tracking-wider"
+                >
+                  ← Prev: Preferences
+                </button>
                 <button
                   type="submit"
                   className="px-4 py-2 bg-vermilion hover:bg-vermilion-hover text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2"
                 >
                   <Save className="w-3.5 h-3.5" />
-                  <span>Save Preferences</span>
+                  <span>Save Profile</span>
                 </button>
               </div>
             )}
@@ -654,6 +939,25 @@ export const ProfilePage: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* Resume Upload Modal */}
+      <ResumeUploadModal
+        isOpen={isResumeUploadOpen}
+        onClose={() => setIsResumeUploadOpen(false)}
+        onExtracted={handleResumeExtracted}
+      />
+
+      {/* Resume Review Modal */}
+      {extractedResume && (
+        <ResumeReviewModal
+          isOpen={isResumeReviewOpen}
+          fileName={resumeFileName}
+          extractedProfile={extractedResume}
+          currentProfile={formData}
+          onClose={() => setIsResumeReviewOpen(false)}
+          onSave={handleResumeMergeSave}
+        />
+      )}
     </div>
   )
 }

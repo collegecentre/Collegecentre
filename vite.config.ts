@@ -4,6 +4,7 @@ import { fileURLToPath, URL } from 'node:url'
 import { createOrder, verifyPayment, verifyPassStatus } from './server/razorpayHandlers.js'
 import { getProtectedJobs, getUserSavedAndAppliedJobs } from './server/jobsHandler.js'
 import { handleRegisterUser } from './server/authHandlers.js'
+import { handleParseResume } from './server/resumeParserHandler.js'
 
 function razorpayDevApiPlugin(env: Record<string, string>) {
   return {
@@ -17,7 +18,8 @@ function razorpayDevApiPlugin(env: Record<string, string>) {
           url === '/api/verify-pass' ||
           url === '/api/jobs' ||
           url === '/api/user-jobs' ||
-          url === '/api/register'
+          url === '/api/register' ||
+          url === '/api/parse-resume'
         ) {
           // Ensure environment variables are populated in process.env
           process.env.RAZORPAY_KEY_ID =
@@ -30,6 +32,12 @@ function razorpayDevApiPlugin(env: Record<string, string>) {
             env.SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || env.VITE_SUPABASE_ANON_KEY
           process.env.SUPABASE_SERVICE_ROLE_KEY =
             env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY
+          process.env.GEMINI_API_KEY =
+            env.GEMINI_API_KEY || process.env.GEMINI_API_KEY
+          process.env.GEMINI_MODEL =
+            env.GEMINI_MODEL || process.env.GEMINI_MODEL
+          process.env.GEMINI_MOCK =
+            env.GEMINI_MOCK || process.env.GEMINI_MOCK
 
           let body = ''
           req.on('data', (chunk: any) => {
@@ -67,6 +75,8 @@ function razorpayDevApiPlugin(env: Record<string, string>) {
                 await getUserSavedAndAppliedJobs(req, res)
               } else if (url === '/api/register') {
                 await handleRegisterUser(req, res)
+              } else if (url === '/api/parse-resume') {
+                await handleParseResume(req, res)
               }
             } catch (err: any) {
               res.status(500).json({ error: err?.message || 'Internal server error' })

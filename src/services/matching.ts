@@ -148,6 +148,9 @@ export function doSkillsMatch(skillA: string, skillB: string): boolean {
  */
 export function calculateJobMatch(student: StudentProfile, job: Job): MatchResult {
   const studentSkills = (student.skills || []).map((s) => s.trim())
+  const projectTechs = (student.projects || []).flatMap((p) => p.technologies || []).map((s) => s.trim())
+  const internshipTechs = (student.internships || []).flatMap((i) => i.skills_used || []).map((s) => s.trim())
+  const allStudentSkills = Array.from(new Set([...studentSkills, ...projectTechs, ...internshipTechs]))
   const jobSkills = (job.skills || []).map((s) => s.trim())
 
   // 1. SKILLS MATCHING (Weight: 35%)
@@ -155,7 +158,7 @@ export function calculateJobMatch(student: StudentProfile, job: Job): MatchResul
   const missingSkills: string[] = []
 
   jobSkills.forEach((jobSkill) => {
-    const isMatched = studentSkills.some((sSkill) => doSkillsMatch(sSkill, jobSkill))
+    const isMatched = allStudentSkills.some((sSkill) => doSkillsMatch(sSkill, jobSkill))
     if (isMatched) {
       matchedSkills.push(jobSkill)
     } else {
@@ -214,13 +217,16 @@ export function calculateJobMatch(student: StudentProfile, job: Job): MatchResul
 
   // 4. EXPERIENCE LEVEL MATCH (Weight: 10%)
   let experienceMatch = 80
-  const jobExp = (job.experience || "").toLowerCase()
-  const studentExp = (student.experience_level || "").toLowerCase()
+  const jobExp = (job.experience || "").toLowerCase().replace(/[\u2010-\u2015]/g, "-")
+  const studentExp = (student.experience_level || "").toLowerCase().replace(/[\u2010-\u2015]/g, "-")
+  const hasInternships = (student.internships || []).length > 0
 
   if (jobExp.includes("fresher") || jobExp.includes("0-1") || jobExp.includes("0 years")) {
-    if (studentExp.includes("fresher") || studentExp.includes("0-1") || studentExp.includes("0 years")) {
+    if (studentExp.includes("fresher") || studentExp.includes("0-1") || studentExp.includes("0 years") || hasInternships) {
       experienceMatch = 100
     }
+  } else if (hasInternships) {
+    experienceMatch = 85
   } else {
     experienceMatch = 70
   }

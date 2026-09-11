@@ -1,3 +1,14 @@
+import {
+  ResumeProject,
+  ResumeInternship,
+  ResumeExperience,
+  ResumeCertification,
+  ResumeAchievement,
+  ResumeExtractedProfile,
+} from './resume'
+
+export * from './resume'
+
 export type WorkMode = 'Remote' | 'Hybrid' | 'Onsite'
 export type JobType = 'Full-time' | 'Internship'
 export type ApplicationStatus = 'Saved' | 'Applied' | 'Shortlisted' | 'Assessment' | 'Rejected' | 'Selected'
@@ -16,6 +27,19 @@ export interface StudentProfile {
   preferred_categories: string[] // e.g. ["Software Development", "Data & AI"]
   preferred_locations: string[] // e.g. ["Bengaluru", "Hyderabad", "Remote", "Pune"]
   preferred_work_mode: WorkMode[] // ['Remote', 'Hybrid']
+  cgpa?: string | null
+  // Optional resume-extracted fields
+  linkedin_url?: string | null
+  github_url?: string | null
+  portfolio_url?: string | null
+  projects?: ResumeProject[]
+  internships?: ResumeInternship[]
+  experience?: ResumeExperience[]
+  certifications?: ResumeCertification[]
+  achievements?: ResumeAchievement[]
+  languages?: string[]
+  resume_file_name?: string | null
+  resume_parsed_at?: string | null
 }
 
 export interface Job {
