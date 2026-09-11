@@ -12,7 +12,6 @@ import {
   ArrowUpRight,
   Bookmark,
   CheckCircle2,
-  Lock,
   User,
 } from 'lucide-react'
 

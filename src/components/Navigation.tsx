@@ -3,7 +3,6 @@ import { useApp } from '@/context/AppContext'
 import {
   Briefcase,
   Compass,
-  Bookmark,
   CheckCircle2,
   User,
   Zap,

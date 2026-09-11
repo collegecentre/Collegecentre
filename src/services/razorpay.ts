@@ -35,6 +35,9 @@ export interface RazorpayVerifyPayload {
   razorpay_order_id: string
   razorpay_payment_id: string
   razorpay_signature: string
+  scheduled_for?: string
+  candidate_email?: string
+  candidate_id?: string
 }
 
 export interface RazorpayVerifyResponse {
@@ -42,6 +45,8 @@ export interface RazorpayVerifyResponse {
   message: string
   order_id?: string
   payment_id?: string
+  pass?: any
+  payment?: any
   error?: string
 }
 
@@ -53,7 +58,11 @@ export interface CheckoutParams {
     contact?: string
   }
   notes?: Record<string, string>
-  onSuccess: (response: { paymentId: string; orderId: string; signature: string }) => void
+  authToken?: string
+  scheduledFor?: string
+  candidateEmail?: string
+  candidateId?: string
+  onSuccess: (response: { paymentId: string; orderId: string; signature: string; serverPass?: any }) => void
   onError: (error: string) => void
   onDismiss?: () => void
 }
@@ -102,11 +111,17 @@ export async function createRazorpayOrder(
  * Calls backend POST /api/verify-payment to verify the cryptographic HMAC-SHA256 signature
  */
 export async function verifyRazorpayPayment(
-  payload: RazorpayVerifyPayload
+  payload: RazorpayVerifyPayload,
+  authToken?: string
 ): Promise<RazorpayVerifyResponse> {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+  if (authToken) {
+    headers['Authorization'] = `Bearer ${authToken}`
+  }
+
   const res = await fetch('/api/verify-payment', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify(payload),
   })
 
@@ -123,7 +138,7 @@ export async function verifyRazorpayPayment(
  * 2. Creates order on server
  * 3. Opens Razorpay modal with order_id
  * 4. Verifies HMAC-SHA256 signature on server
- * 5. Calls onSuccess callback
+ * 5. Calls onSuccess callback with authoritative server pass
  */
 export async function openRazorpayCheckout(params: CheckoutParams): Promise<void> {
   const keyId = import.meta.env.VITE_RAZORPAY_KEY_ID
@@ -158,17 +173,24 @@ export async function openRazorpayCheckout(params: CheckoutParams): Promise<void
     },
     handler: async function (response: any) {
       try {
-        // Step 3: Verify signature on backend
-        await verifyRazorpayPayment({
-          razorpay_order_id: response.razorpay_order_id,
-          razorpay_payment_id: response.razorpay_payment_id,
-          razorpay_signature: response.razorpay_signature,
-        })
+        // Step 3: Verify signature and issue pass on backend
+        const verifyRes = await verifyRazorpayPayment(
+          {
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature,
+            scheduled_for: params.scheduledFor,
+            candidate_email: params.candidateEmail || params.prefill?.email,
+            candidate_id: params.candidateId,
+          },
+          params.authToken
+        )
 
         params.onSuccess({
           paymentId: response.razorpay_payment_id,
           orderId: response.razorpay_order_id,
           signature: response.razorpay_signature,
+          serverPass: verifyRes.pass,
         })
       } catch (verifyErr: any) {
         console.error('Signature verification error:', verifyErr)

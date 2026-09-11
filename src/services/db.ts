@@ -430,6 +430,11 @@ export const db = {
     return null
   },
 
+  saveAccessPeriod(period: AccessPeriod, studentId?: string): void {
+    const toSave: AccessPeriod = studentId ? { ...period, student_id: studentId } : period
+    localStorage.setItem(STORAGE_KEYS.ACCESS_PERIOD, JSON.stringify(toSave))
+  },
+
   isPassActive(studentId?: string): boolean {
     const period = this.getAccessPeriod(studentId)
     if (!period) return false

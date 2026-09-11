@@ -26,6 +26,8 @@ import {
 } from 'lucide-react'
 import { openRazorpayCheckout } from '@/services/razorpay'
 import { StudentProfile } from '@/types'
+import { supabase } from '@/services/supabase'
+import { db } from '@/services/db'
 
 /**
  * Checks whether a candidate's profile is complete enough to proceed to payment.
@@ -198,8 +200,14 @@ export const PaymentModal: React.FC = () => {
     // If real Razorpay key is configured
     if (razorpayKey && razorpayKey.startsWith('rzp_') && razorpayKey !== 'rzp_test_placeholder') {
       try {
+        const { data: { session } } = await supabase.auth.getSession()
+
         await openRazorpayCheckout({
           amountInPaise: 19900, // ₹199
+          authToken: session?.access_token,
+          scheduledFor: effectiveScheduledFor,
+          candidateEmail: student?.email || profileEmail.trim(),
+          candidateId: student?.id,
           prefill: {
             name: student?.name || profileName.trim() || 'Candidate',
             email: student?.email || profileEmail.trim() || 'candidate@collegecentre.in',
@@ -212,8 +220,11 @@ export const PaymentModal: React.FC = () => {
             college: student?.college || profileCollege,
             batch: String(student?.graduation_year || profileBatch),
           },
-          onSuccess: ({ paymentId, orderId }) => {
+          onSuccess: ({ paymentId, orderId, serverPass }) => {
             setIsProcessing(false)
+            if (serverPass) {
+              db.saveAccessPeriod(serverPass, student?.id)
+            }
             activatePass('UPI', paymentId, orderId, effectiveScheduledFor)
           },
           onError: (errorMessage) => {

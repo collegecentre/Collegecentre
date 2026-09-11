@@ -89,4 +89,6 @@ export interface MatchResult {
     fresherMatch: number
   }
   reasons: string[]
+  matchedSkills?: string[]
+  missingSkills?: string[]
 }

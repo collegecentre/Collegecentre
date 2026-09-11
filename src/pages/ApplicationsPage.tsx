@@ -17,7 +17,6 @@ import {
   Search,
   X,
   Briefcase,
-  Zap,
 } from 'lucide-react'
 
 export const ApplicationsPage: React.FC = () => {

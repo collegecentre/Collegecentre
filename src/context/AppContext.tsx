@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react'
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import {
   AccessPeriod,
   Application,
@@ -9,28 +9,20 @@ import {
   SavedJob,
   StudentProfile,
 } from '@/types'
-import { db, INITIAL_STUDENT } from '@/services/db'
-import { supabase } from '@/services/supabase'
-import { calculateJobMatch } from '@/services/matching'
-import confetti from 'canvas-confetti'
+import { db } from '@/services/db'
+import { AuthProvider, useAuth } from './AuthContext'
+import { PassProvider, usePass, RemainingTime } from './PassContext'
+import { JobsProvider, useJobs } from './JobsContext'
+import { TrackerProvider, useTracker } from './TrackerContext'
 
 export interface JobWithMatch extends Job {
   match: MatchResult
 }
 
-export interface RemainingTime {
-  totalSeconds: number
-  hours: number
-  minutes: number
-  seconds: number
-  formatted: string
-  isExpired: boolean
-  isInactive?: boolean
-}
-
+export type { RemainingTime }
 export type ThemeMode = 'light' | 'dark' | 'system'
 
-interface AppContextType {
+export interface AppContextType {
   student: StudentProfile
   updateStudent: (student: StudentProfile, customToast?: string | null) => void
   jobs: JobWithMatch[]
@@ -73,483 +65,196 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | null>(null)
 
-export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [student, setStudent] = useState<StudentProfile>(() => db.getStudent())
-  const [jobsRaw, setJobsRaw] = useState<Job[]>(() => db.getJobs())
+interface ToastState {
+  message: string
+  type: 'success' | 'info' | 'warning'
+}
 
-  // Fetch live active fresher openings from Supabase cloud database
-  useEffect(() => {
-    let isMounted = true
-    db.fetchCloudJobs().then((cloudJobs) => {
-      if (isMounted && cloudJobs && cloudJobs.length > 0) {
-        setJobsRaw(cloudJobs)
-      }
-    })
-    return () => {
-      isMounted = false
-    }
-  }, [])
+/**
+ * Inner Bridge Component:
+ * Binds modularized contexts (Auth, Pass, Jobs, Tracker) together with UI state.
+ */
+const AppInnerComposer: React.FC<{
+  children: React.ReactNode
+  showToast: (message: string, type?: 'success' | 'info' | 'warning') => void
+}> = ({ children, showToast }) => {
+  const auth = useAuth()
+  const pass = usePass()
+  const jobs = useJobs()
+  const tracker = useTracker()
 
-  // Supabase Auth session synchronization
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }: { data: any }) => {
-      const session = data?.session
-      if (session?.user) {
-        setStudent((prev) => ({
-          ...prev,
-          id: session.user.id,
-          email: session.user.email || prev.email,
-          name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || prev.name,
-        }))
-      }
-    })
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
-      if (session?.user) {
-        setStudent((prev) => ({
-          ...prev,
-          id: session.user.id,
-          email: session.user.email || prev.email,
-          name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || prev.name,
-        }))
-      }
-    })
-
-    return () => subscription.unsubscribe()
-  }, [])
-
-  const [savedJobs, setSavedJobs] = useState<SavedJob[]>(() => db.getSavedJobs())
-  const [applications, setApplications] = useState<Application[]>(() => db.getApplications())
-  const [payments, setPayments] = useState<Payment[]>(() => db.getPayments())
-  const [accessPeriod, setAccessPeriod] = useState<AccessPeriod | null>(() => db.getAccessPeriod())
-  const [selectedJob, setSelectedJob] = useState<JobWithMatch | null>(null)
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState<boolean>(false)
 
+  // Route / View state from URL Hash
   const getInitialView = (): string => {
     if (typeof window !== 'undefined' && window.location.hash) {
       const route = window.location.hash.replace(/^#\/?/, '').toLowerCase()
-      const validViews = [
-        'home',
-        'landing',
-        'pricing',
-        'dashboard',
-        'jobs',
-        'saved',
-        'applications',
-        'profile',
-        'account',
-        'login',
-        'signup',
-        'terms',
-        'privacy',
-        'refunds',
-        'contact',
-      ]
+      const validViews = ['home', 'landing', 'search', 'saved', 'applications', 'dashboard', 'pricing', 'profile', 'login', 'signup', 'account']
       if (validViews.includes(route)) return route
     }
-    return 'landing'
+    return 'home'
   }
 
-  const [currentView, setCurrentViewState] = useState<string>(getInitialView)
+  const [currentView, setInternalCurrentView] = useState<string>(getInitialView)
 
   const setCurrentView = useCallback((view: string) => {
-    setCurrentViewState(view)
-    setIsPaymentModalOpen(false) // Automatically close checkout modal on navigation
+    setInternalCurrentView(view)
     if (typeof window !== 'undefined') {
-      const targetHash = `#/${view}`
-      if (window.location.hash !== targetHash) {
-        window.location.hash = targetHash
-      }
+      window.location.hash = `#/${view}`
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     }
+    setIsPaymentModalOpen(false)
   }, [])
 
-  // Sync with browser back/forward and external hash navigation
   useEffect(() => {
     const handleHashChange = () => {
       const route = window.location.hash.replace(/^#\/?/, '').toLowerCase()
-      const validViews = [
-        'home',
-        'landing',
-        'pricing',
-        'dashboard',
-        'jobs',
-        'saved',
-        'applications',
-        'profile',
-        'account',
-        'login',
-        'signup',
-        'terms',
-        'privacy',
-        'refunds',
-        'contact',
-      ]
-      setIsPaymentModalOpen(false)
+      const validViews = ['home', 'landing', 'search', 'saved', 'applications', 'dashboard', 'pricing', 'profile', 'login', 'signup', 'account']
       if (validViews.includes(route)) {
-        setCurrentViewState(route)
-      } else {
-        setCurrentViewState('landing')
-        if (window.location.hash !== '#/landing') {
-          window.location.hash = '#/landing'
-        }
+        setInternalCurrentView(route)
+        setIsPaymentModalOpen(false)
       }
     }
-
-    if (!window.location.hash) {
-      window.location.hash = '#/landing'
-    }
-
     window.addEventListener('hashchange', handleHashChange)
     return () => window.removeEventListener('hashchange', handleHashChange)
   }, [])
 
-  // Theme state & dark mode persistence
+  // Theme Management
   const [theme, setThemeState] = useState<ThemeMode>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('collegecentre-theme') as ThemeMode
-      if (saved === 'light' || saved === 'dark' || saved === 'system') return saved
-    }
-    return 'system'
+    const saved = localStorage.getItem('cc_theme') as ThemeMode
+    return saved || 'system'
   })
 
-  const [systemIsDark, setSystemIsDark] = useState<boolean>(() => {
-    if (typeof window !== 'undefined' && window.matchMedia) {
-      return window.matchMedia('(prefers-color-scheme: dark)').matches
-    }
-    return false
-  })
+  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('dark')
 
   useEffect(() => {
-    if (typeof window === 'undefined' || !window.matchMedia) return
-    const media = window.matchMedia('(prefers-color-scheme: dark)')
-    const listener = (e: MediaQueryListEvent) => setSystemIsDark(e.matches)
-    media.addEventListener('change', listener)
-    return () => media.removeEventListener('change', listener)
-  }, [])
-
-  const resolvedTheme: 'light' | 'dark' = useMemo(() => {
-    if (theme === 'system') {
-      return systemIsDark ? 'dark' : 'light'
-    }
-    return theme
-  }, [theme, systemIsDark])
-
-  useEffect(() => {
-    if (typeof document === 'undefined') return
     const root = document.documentElement
-    if (resolvedTheme === 'dark') {
-      root.classList.add('dark')
-    } else {
-      root.classList.remove('dark')
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+
+    const applyTheme = () => {
+      let isDark = false
+      if (theme === 'system') {
+        isDark = mediaQuery.matches
+      } else {
+        isDark = theme === 'dark'
+      }
+
+      if (isDark) {
+        root.classList.add('dark')
+        setResolvedTheme('dark')
+      } else {
+        root.classList.remove('dark')
+        setResolvedTheme('light')
+      }
     }
-  }, [resolvedTheme])
 
-  // Toast state
-  const [toastInfo, setToastInfo] = useState<{ message: string; type: string } | null>(null)
-
-  const showToast = useCallback((message: string, type: 'success' | 'info' | 'warning' = 'success') => {
-    setToastInfo({ message, type })
-    setTimeout(() => {
-      setToastInfo((current) => (current?.message === message ? null : current))
-    }, 4000)
-  }, [])
+    applyTheme()
+    localStorage.setItem('cc_theme', theme)
+    mediaQuery.addEventListener('change', applyTheme)
+    return () => mediaQuery.removeEventListener('change', applyTheme)
+  }, [theme])
 
   const setTheme = useCallback((newTheme: ThemeMode) => {
     setThemeState(newTheme)
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('collegecentre-theme', newTheme)
-    }
   }, [])
 
   const toggleTheme = useCallback(() => {
-    const nextTheme = resolvedTheme === 'dark' ? 'light' : 'dark'
-    setTheme(nextTheme)
-    showToast(`Switched to ${nextTheme.toUpperCase()} mode`, 'info')
-  }, [resolvedTheme, setTheme, showToast])
-
-  // Calculate live countdown timer
-  function calculateTimeRemaining(period: AccessPeriod | null): RemainingTime {
-    if (!period) {
-      return { totalSeconds: 0, hours: 0, minutes: 0, seconds: 0, formatted: 'Inactive', isExpired: false, isInactive: true }
-    }
-    if (period.status === 'scheduled' && period.scheduled_for) {
-      const scheduledTime = new Date(period.scheduled_for).getTime()
-      const now = Date.now()
-      const diffMs = scheduledTime - now
-      if (diffMs <= 0) {
-        return { totalSeconds: 0, hours: 0, minutes: 0, seconds: 0, formatted: 'Launching...', isExpired: false, isInactive: false }
-      }
-      const totalSeconds = Math.floor(diffMs / 1000)
-      const hours = Math.floor(totalSeconds / 3600)
-      const minutes = Math.floor((totalSeconds % 3600) / 60)
-      const seconds = totalSeconds % 60
-      const formatted = `Starts in ${hours > 0 ? `${hours}h ` : ''}${minutes}m ${seconds}s`
-      return { totalSeconds, hours, minutes, seconds, formatted, isExpired: false, isInactive: false }
-    }
-    if (period.status !== 'active') {
-      return { totalSeconds: 0, hours: 0, minutes: 0, seconds: 0, formatted: 'Expired', isExpired: true, isInactive: false }
-    }
-    const expiresAt = new Date(period.expires_at).getTime()
-    const now = Date.now()
-    const diffMs = expiresAt - now
-
-    if (diffMs <= 0) {
-      return { totalSeconds: 0, hours: 0, minutes: 0, seconds: 0, formatted: 'Expired', isExpired: true, isInactive: false }
-    }
-
-    const totalSeconds = Math.floor(diffMs / 1000)
-    const hours = Math.floor(totalSeconds / 3600)
-    const minutes = Math.floor((totalSeconds % 3600) / 60)
-    const seconds = totalSeconds % 60
-
-    const formatted = `${hours}h ${minutes}m ${seconds}s remaining`
-    return { totalSeconds, hours, minutes, seconds, formatted, isExpired: false, isInactive: false }
-  }
-
-  const [remainingTime, setRemainingTime] = useState<RemainingTime>(() => {
-    return calculateTimeRemaining(accessPeriod)
-  })
-
-  // Interval timer tick every second
-  useEffect(() => {
-    const timer = setInterval(() => {
-      const currentPeriod = db.getAccessPeriod()
-      setAccessPeriod(currentPeriod)
-      const calculated = calculateTimeRemaining(currentPeriod)
-      setRemainingTime(calculated)
-    }, 1000)
-
-    return () => clearInterval(timer)
+    setThemeState((prev) => (prev === 'dark' ? 'light' : 'dark'))
   }, [])
-
-  const isPassActive = useMemo(() => {
-    return !remainingTime.isExpired && accessPeriod?.status === 'active'
-  }, [remainingTime.isExpired, accessPeriod])
-
-  const isPassScheduled = useMemo(() => {
-    return accessPeriod?.status === 'scheduled' && !!accessPeriod.scheduled_for
-  }, [accessPeriod])
-
-  const scheduledStartTime = useMemo(() => {
-    return accessPeriod?.status === 'scheduled' ? accessPeriod.scheduled_for : undefined
-  }, [accessPeriod])
-
-  // Attach match score and sort by relevance
-  const jobs: JobWithMatch[] = useMemo(() => {
-    const list = jobsRaw.map((job) => ({
-      ...job,
-      match: calculateJobMatch(student, job),
-    }))
-    // Sort primarily by match score descending
-    return list.sort((a, b) => b.match.score - a.match.score)
-  }, [jobsRaw, student])
-
-  const updateStudent = useCallback((updated: StudentProfile, customToast?: string | null) => {
-    db.saveStudent(updated)
-    setStudent(updated)
-    if (customToast !== null) {
-      showToast(customToast || 'Profile updated successfully! Match scores recalculated.', 'success')
-    }
-  }, [showToast])
-
-  const toggleSaveJob = useCallback((jobId: string) => {
-    const isSavedNow = db.toggleSaveJob(jobId)
-    setSavedJobs(db.getSavedJobs())
-    showToast(isSavedNow ? 'Job saved to your permanent list!' : 'Job removed from saved list', 'info')
-  }, [showToast])
-
-  const isJobSaved = useCallback((jobId: string) => {
-    return savedJobs.some((s) => s.job_id === jobId)
-  }, [savedJobs])
-
-  const createOrUpdateApp = useCallback(
-    (jobId: string, status: ApplicationStatus, notes?: string) => {
-      db.createOrUpdateApplication(jobId, status, notes)
-      setApplications(db.getApplications())
-      showToast(`Application updated: ${status}`, 'success')
-    },
-    [showToast]
-  )
-
-  const changeAppStatus = useCallback(
-    (appId: string, status: ApplicationStatus, notes?: string) => {
-      db.updateApplicationStatus(appId, status, notes)
-      setApplications(db.getApplications())
-      showToast(`Status moved to ${status}`, 'info')
-    },
-    [showToast]
-  )
-
-  const deleteApp = useCallback((appId: string) => {
-    db.deleteApplication(appId)
-    setApplications(db.getApplications())
-    showToast('Application record removed', 'info')
-  }, [showToast])
-
-  const startSprintNow = useCallback(() => {
-    const period = db.startScheduledPassNow(student.id)
-    if (period) {
-      setAccessPeriod(period)
-      setRemainingTime(calculateTimeRemaining(period))
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 },
-        colors: ['#fe7141', '#10b981', '#f59e0b', '#3b82f6'],
-      })
-      showToast('⚡ Sprint Launched! 24-Hour Job Hunt is now live.', 'success')
-      setCurrentView('jobs')
-    }
-  }, [student.id, showToast, setCurrentView])
-
-  const activatePass = useCallback(
-    (
-      method: 'UPI' | 'Card' | 'NetBanking' = 'UPI',
-      transactionId?: string,
-      orderId?: string,
-      scheduledFor?: string
-    ) => {
-      const result = db.activatePass(student.id, method, student.email, transactionId, orderId, scheduledFor)
-      setAccessPeriod(result.accessPeriod)
-      setPayments(db.getPayments())
-      setIsPaymentModalOpen(false)
-
-      const isScheduled = !!scheduledFor && new Date(scheduledFor).getTime() > Date.now()
-      if (isScheduled) {
-        showToast(
-          `🕒 Pass Scheduled! Activates on ${new Date(scheduledFor).toLocaleDateString([], { month: 'short', day: 'numeric' })} at ${new Date(scheduledFor).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}.`,
-          'info'
-        )
-      } else {
-        // Confetti burst for excitement!
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 },
-          colors: ['#fe7141', '#10b981', '#f59e0b', '#3b82f6'],
-        })
-        showToast('🎉 ₹199 Pass Activated! 24-Hour Job Hunt unlocked.', 'success')
-      }
-
-      setCurrentView('dashboard')
-    },
-    [student.id, student.email, showToast, setCurrentView]
-  )
-
-  const simulatePassExpiry = useCallback(() => {
-    db.simulateExpirePass(student.id)
-    const period = db.getAccessPeriod()
-    setAccessPeriod(period)
-    setRemainingTime(calculateTimeRemaining(period))
-    showToast('Simulation: Pass has been expired.', 'warning')
-  }, [student.id, showToast])
-
-  const simulateRemainingTime = useCallback(
-    (minutes: number) => {
-      db.setPassRemainingMinutes(minutes, student.id)
-      const period = db.getAccessPeriod()
-      setAccessPeriod(period)
-      setRemainingTime(calculateTimeRemaining(period))
-      showToast(`Simulation: Pass remaining time set to ${minutes} minutes.`, 'info')
-    },
-    [student.id, showToast]
-  )
 
   const resetData = useCallback(() => {
     db.resetAllData()
-    setStudent(db.getStudent())
-    setJobsRaw(db.getJobs())
-    setSavedJobs(db.getSavedJobs())
-    setApplications(db.getApplications())
-    setPayments(db.getPayments())
-    setAccessPeriod(db.getAccessPeriod())
-    showToast('Data reset to default values.', 'info')
+    showToast('Data reset to defaults.', 'info')
   }, [showToast])
 
-  const signOut = useCallback(async () => {
-    try {
-      await supabase.auth.signOut()
-    } catch {
-      // ignore
-    }
-    db.resetAllData()
-    setStudent(INITIAL_STUDENT)
-    setSavedJobs([])
-    setApplications([])
-    setPayments([])
-    setAccessPeriod(null)
-    setRemainingTime({
-      totalSeconds: 0,
-      hours: 0,
-      minutes: 0,
-      seconds: 0,
-      formatted: 'Inactive',
-      isExpired: false,
-      isInactive: true,
-    })
-    showToast('Signed out of session.', 'info')
-    setCurrentView('landing')
-  }, [showToast, setCurrentView])
+  const contextValue: AppContextType = {
+    student: auth.student,
+    updateStudent: auth.updateStudent,
+    jobs: jobs.jobs,
+    savedJobs: tracker.savedJobs,
+    applications: tracker.applications,
+    payments: pass.payments,
+    accessPeriod: pass.accessPeriod,
+    isPassActive: pass.isPassActive,
+    isPassScheduled: pass.isPassScheduled,
+    scheduledStartTime: pass.scheduledStartTime,
+    startSprintNow: pass.startSprintNow,
+    remainingTime: pass.remainingTime,
+    currentView,
+    setCurrentView,
+    selectedJob: jobs.selectedJob,
+    setSelectedJob: jobs.setSelectedJob,
+    isPaymentModalOpen,
+    setIsPaymentModalOpen,
+    toggleSaveJob: tracker.toggleSaveJob,
+    isJobSaved: tracker.isJobSaved,
+    createOrUpdateApp: tracker.createOrUpdateApp,
+    changeAppStatus: tracker.changeAppStatus,
+    deleteApp: tracker.deleteApp,
+    activatePass: pass.activatePass,
+    simulatePassExpiry: pass.simulatePassExpiry,
+    simulateRemainingTime: pass.simulateRemainingTime,
+    resetData,
+    signOut: auth.signOut,
+    showToast,
+    theme,
+    resolvedTheme,
+    setTheme,
+    toggleTheme,
+  }
+
+  return <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>
+}
+
+/**
+ * Root AppProvider:
+ * Composes domain providers in correct dependency order.
+ */
+export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [toastInfo, setToastInfo] = useState<ToastState | null>(null)
+
+  const showToast = useCallback(
+    (message: string, type: 'success' | 'info' | 'warning' = 'info') => {
+      setToastInfo({ message, type })
+      setTimeout(() => {
+        setToastInfo((current) => (current?.message === message ? null : current))
+      }, 4000)
+    },
+    []
+  )
+
+  const [student] = useState<StudentProfile>(() => db.getStudent())
+  const [isPassActive] = useState<boolean>(() => db.isPassActive(student.id))
 
   return (
-    <AppContext.Provider
-      value={{
-        student,
-        updateStudent,
-        jobs,
-        savedJobs,
-        applications,
-        payments,
-        accessPeriod,
-        isPassActive,
-        isPassScheduled,
-        scheduledStartTime,
-        startSprintNow,
-        remainingTime,
-        currentView,
-        setCurrentView,
-        selectedJob,
-        setSelectedJob,
-        isPaymentModalOpen,
-        setIsPaymentModalOpen,
-        toggleSaveJob,
-        isJobSaved,
-        createOrUpdateApp,
-        changeAppStatus,
-        deleteApp,
-        activatePass,
-        simulatePassExpiry,
-        simulateRemainingTime,
-        resetData,
-        signOut,
-        showToast,
-        theme,
-        resolvedTheme,
-        setTheme,
-        toggleTheme,
-      }}
-    >
-      {children}
+    <AuthProvider showToast={showToast}>
+      <PassProvider studentId={student.id} showToast={showToast}>
+        <JobsProvider student={student} isPassActive={isPassActive}>
+          <TrackerProvider studentId={student.id} showToast={showToast}>
+            <AppInnerComposer showToast={showToast}>
+              {children}
 
-      {/* Floating Toast Notification */}
-      {toastInfo && (
-        <div className="fixed bottom-16 sm:bottom-6 right-4 left-4 sm:left-auto z-50 animate-in slide-in-from-bottom-5 duration-200 max-w-sm sm:max-w-md mx-auto sm:mx-0">
-          <div
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg shadow-xl border text-xs sm:text-sm font-mono font-medium ${
-              toastInfo.type === 'success'
-                ? 'bg-emerald-950 text-emerald-100 border-emerald-600'
-                : toastInfo.type === 'warning'
-                ? 'bg-amber-950 text-amber-100 border-amber-600'
-                : 'bg-slate-950 text-slate-100 border-slate-700'
-            }`}
-          >
-            <span>{toastInfo.message}</span>
-          </div>
-        </div>
-      )}
-    </AppContext.Provider>
+              {/* Floating Toast Notification */}
+              {toastInfo && (
+                <div className="fixed bottom-16 sm:bottom-6 right-4 left-4 sm:left-auto z-50 animate-in slide-in-from-bottom-5 duration-200 max-w-sm sm:max-w-md mx-auto sm:mx-0">
+                  <div
+                    className={`flex items-center gap-3 px-4 py-3 rounded-lg shadow-xl border text-xs sm:text-sm font-mono font-medium ${
+                      toastInfo.type === 'success'
+                        ? 'bg-emerald-950 text-emerald-100 border-emerald-600'
+                        : toastInfo.type === 'warning'
+                        ? 'bg-amber-950 text-amber-100 border-amber-600'
+                        : 'bg-slate-950 text-slate-100 border-slate-700'
+                    }`}
+                  >
+                    <span>{toastInfo.message}</span>
+                  </div>
+                </div>
+              )}
+            </AppInnerComposer>
+          </TrackerProvider>
+        </JobsProvider>
+      </PassProvider>
+    </AuthProvider>
   )
 }
 
