@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useApp } from '@/context/AppContext'
 import { StudentProfile, WorkMode } from '@/types'
 import { Input } from '@/components/ui/input'
@@ -12,6 +12,10 @@ import {
 export const ProfilePage: React.FC = () => {
   const { student, updateStudent } = useApp()
   const [formData, setFormData] = useState<StudentProfile>(student)
+
+  useEffect(() => {
+    setFormData(student)
+  }, [student])
   const [newSkill, setNewSkill] = useState<string>('')
   const [newLocation, setNewLocation] = useState<string>('')
   const [savedFeedback, setSavedFeedback] = useState<boolean>(false)

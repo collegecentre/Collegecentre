@@ -3,6 +3,7 @@ import { useApp } from '@/context/AppContext'
 import { Input } from '@/components/ui/input'
 import { ShieldCheck, ArrowRight } from 'lucide-react'
 import { supabase } from '@/services/supabase'
+import { db } from '@/services/db'
 
 interface AuthPagesProps {
   initialMode?: 'login' | 'signup'
@@ -39,8 +40,19 @@ export const AuthPages: React.FC<AuthPagesProps> = ({ initialMode = 'signup' }) 
     }
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (isLogin && email.trim()) {
+      const cloudStudent = await db.fetchCloudStudentByEmail(email.trim())
+      if (cloudStudent) {
+        updateStudent(cloudStudent)
+        showToast('Logged in! Loaded existing candidate profile.', 'success')
+        setCurrentView('dashboard')
+        return
+      }
+    }
+
     updateStudent({
       ...student,
       name: name.trim() || student.name || 'Fresher Student',

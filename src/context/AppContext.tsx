@@ -32,7 +32,7 @@ export type ThemeMode = 'light' | 'dark' | 'system'
 
 interface AppContextType {
   student: StudentProfile
-  updateStudent: (student: StudentProfile) => void
+  updateStudent: (student: StudentProfile, customToast?: string | null) => void
   jobs: JobWithMatch[]
   savedJobs: SavedJob[]
   applications: Application[]
@@ -346,10 +346,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return list.sort((a, b) => b.match.score - a.match.score)
   }, [jobsRaw, student])
 
-  const updateStudent = useCallback((updated: StudentProfile) => {
+  const updateStudent = useCallback((updated: StudentProfile, customToast?: string | null) => {
     db.saveStudent(updated)
     setStudent(updated)
-    showToast('Profile updated successfully! Match scores recalculated.', 'success')
+    if (customToast !== null) {
+      showToast(customToast || 'Profile updated successfully! Match scores recalculated.', 'success')
+    }
   }, [showToast])
 
   const toggleSaveJob = useCallback((jobId: string) => {

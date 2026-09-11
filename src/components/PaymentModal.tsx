@@ -180,8 +180,7 @@ export const PaymentModal: React.FC = () => {
       graduation_year: profileBatch,
     }
 
-    updateStudent(updatedStudent)
-    showToast?.('Candidate profile verified! Proceeding to payment.', 'success')
+    updateStudent(updatedStudent, 'Candidate profile verified! Proceeding to payment.')
     setStep(2)
   }
 

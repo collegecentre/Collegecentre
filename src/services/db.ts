@@ -303,33 +303,72 @@ export const db = {
   },
 
   saveStudent(student: StudentProfile): void {
-    localStorage.setItem(STORAGE_KEYS.STUDENT, JSON.stringify(student))
-    this.saveStudentToCloud(student)
+    const studentToSave: StudentProfile = {
+      ...student,
+      id: (!student.id || student.id === 'guest_student')
+        ? `cand_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`
+        : student.id,
+    }
+    localStorage.setItem(STORAGE_KEYS.STUDENT, JSON.stringify(studentToSave))
+    this.saveStudentToCloud(studentToSave)
   },
 
   async saveStudentToCloud(student: StudentProfile): Promise<void> {
     try {
-      await supabase.from('cc_student_profiles').upsert(
-        {
-          id: student.id,
-          name: student.name,
-          email: student.email,
-          phone: student.phone,
-          education_level: student.education_level,
-          degree: student.degree,
-          college: student.college,
-          graduation_year: student.graduation_year,
-          skills: student.skills,
-          experience_level: student.experience_level,
-          preferred_categories: student.preferred_categories,
-          preferred_locations: student.preferred_locations,
-          preferred_work_mode: student.preferred_work_mode,
-          updated_at: new Date().toISOString(),
-        },
-        { onConflict: 'id' }
-      )
+      if (!student.email || !student.email.trim()) return
+      const cleanPhone = student.phone || ''
+      const payload = {
+        id: student.id || `cand_${Date.now()}`,
+        name: student.name || 'Candidate',
+        email: student.email.trim().toLowerCase(),
+        phone: cleanPhone,
+        education_level: student.education_level || 'Undergraduate',
+        degree: student.degree || 'Computer Science',
+        college: student.college || '',
+        graduation_year: student.graduation_year || 2026,
+        skills: student.skills || [],
+        experience_level: student.experience_level || 'Fresher',
+        preferred_categories: student.preferred_categories || [],
+        preferred_locations: student.preferred_locations || [],
+        preferred_work_mode: student.preferred_work_mode || ['Remote', 'Hybrid'],
+        updated_at: new Date().toISOString(),
+      }
+      const { error } = await supabase.from('cc_student_profiles').upsert(payload, { onConflict: 'email' })
+      if (error) {
+        console.warn('Supabase student sync warning:', error.message)
+      }
     } catch (err) {
       console.warn('Supabase student sync warning', err)
+    }
+  },
+
+  async fetchCloudStudentByEmail(email: string): Promise<StudentProfile | null> {
+    try {
+      if (!email || !email.trim()) return null
+      const { data, error } = await supabase
+        .from('cc_student_profiles')
+        .select('*')
+        .eq('email', email.trim().toLowerCase())
+        .maybeSingle()
+
+      if (error || !data) return null
+      return {
+        id: data.id,
+        name: data.name,
+        email: data.email,
+        phone: data.phone || '',
+        education_level: data.education_level || 'Undergraduate',
+        degree: data.degree || '',
+        college: data.college || '',
+        graduation_year: data.graduation_year || 2026,
+        skills: data.skills || [],
+        experience_level: data.experience_level || 'Fresher',
+        preferred_categories: data.preferred_categories || [],
+        preferred_locations: data.preferred_locations || [],
+        preferred_work_mode: data.preferred_work_mode || ['Remote', 'Hybrid'],
+      }
+    } catch {
+      return null
     }
   },
 
