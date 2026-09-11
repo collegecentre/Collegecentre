@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import crypto from 'node:crypto'
 import { isPaymentReplayed } from '../server/supabaseAdmin.js'
 import { getProtectedJobs } from '../server/jobsHandler.js'
@@ -112,5 +112,57 @@ describe('Adversarial Security Attack Vector Tests', () => {
     // Attacker attempts to replay the same payment ID to unlock a second account:
     const isReplayDetected = await isPaymentReplayed(replayPaymentId, replayOrderId)
     expect(isReplayDetected).toBe(true)
+  })
+
+  it('Attack Vector 6: Residual Session Data Leakage on User Logout', async () => {
+    const store = new Map<string, string>()
+    const mockStorage = {
+      getItem: (k: string) => store.get(k) || null,
+      setItem: (k: string, v: string) => store.set(k, v),
+      removeItem: (k: string) => store.delete(k),
+      clear: () => store.clear(),
+    }
+    vi.stubGlobal('localStorage', mockStorage)
+
+    const { db, INITIAL_STUDENT } = await import('../src/services/db')
+
+    // Simulate an authenticated user with private data
+    const userProfile = {
+      id: 'student_private_123',
+      name: 'Private Candidate',
+      email: 'private@university.edu',
+      phone: '9988776655',
+      college: 'Secret Institute',
+      degree: 'B.Tech IT',
+      graduation_year: 2025,
+      skills: ['Python', 'SQL'],
+      education_level: 'Undergraduate',
+      experience_level: 'Fresher',
+      preferred_categories: ['Software Development'],
+      preferred_locations: ['Bengaluru'],
+      preferred_work_mode: ['Remote'] as any,
+    }
+
+    db.saveStudent(userProfile)
+    expect(db.getStudent().name).toBe('Private Candidate')
+    expect(db.getStudent().email).toBe('private@university.edu')
+
+    // Now execute session clearance on logout
+    db.clearUserSession()
+
+    // Must be purged to clean guest student state
+    const loggedOutStudent = db.getStudent()
+    expect(loggedOutStudent.id).toBe(INITIAL_STUDENT.id)
+    expect(loggedOutStudent.name).toBe('')
+    expect(loggedOutStudent.email).toBe('')
+    expect(loggedOutStudent.phone).toBe('')
+    expect(loggedOutStudent.college).toBe('')
+    expect(loggedOutStudent.skills).toHaveLength(0)
+
+    // Saved jobs, applications, access periods must also be empty
+    expect(db.getSavedJobs(loggedOutStudent.id)).toHaveLength(0)
+    expect(db.getApplications(loggedOutStudent.id)).toHaveLength(0)
+    expect(db.getPayments(loggedOutStudent.id)).toHaveLength(0)
+    expect(db.getAccessPeriod(loggedOutStudent.id)).toBeNull()
   })
 })

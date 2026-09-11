@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback } from 'react'
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { Application, ApplicationStatus, SavedJob } from '@/types'
 import { db } from '@/services/db'
 
@@ -21,6 +21,11 @@ export const TrackerProvider: React.FC<{
 }> = ({ children, studentId, showToast }) => {
   const [savedJobs, setSavedJobs] = useState<SavedJob[]>(() => db.getSavedJobs(studentId))
   const [applications, setApplications] = useState<Application[]>(() => db.getApplications(studentId))
+
+  useEffect(() => {
+    setSavedJobs(db.getSavedJobs(studentId))
+    setApplications(db.getApplications(studentId))
+  }, [studentId])
 
   const toggleSaveJob = useCallback(
     (jobId: string) => {

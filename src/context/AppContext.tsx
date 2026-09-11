@@ -196,7 +196,10 @@ const AppInnerComposer: React.FC<{
     simulatePassExpiry: pass.simulatePassExpiry,
     simulateRemainingTime: pass.simulateRemainingTime,
     resetData,
-    signOut: auth.signOut,
+    signOut: async () => {
+      await auth.signOut()
+      setCurrentView('home')
+    },
     isAuthenticated: auth.isAuthenticated,
     showToast,
     theme,
@@ -206,6 +209,28 @@ const AppInnerComposer: React.FC<{
   }
 
   return <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>
+}
+
+/**
+ * Connects Auth state reactively to downstream domain providers.
+ * Whenever student logs in or logs out, child providers receive the live student identity.
+ */
+const DataProvidersBridge: React.FC<{
+  children: React.ReactNode
+  showToast: (message: string, type?: 'success' | 'info' | 'warning') => void
+}> = ({ children, showToast }) => {
+  const { student } = useAuth()
+  const isPassActive = db.isPassActive(student.id)
+
+  return (
+    <PassProvider studentId={student.id} showToast={showToast}>
+      <JobsProvider student={student} isPassActive={isPassActive}>
+        <TrackerProvider studentId={student.id} showToast={showToast}>
+          <AppInnerComposer showToast={showToast}>{children}</AppInnerComposer>
+        </TrackerProvider>
+      </JobsProvider>
+    </PassProvider>
+  )
 }
 
 /**
@@ -225,37 +250,28 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     []
   )
 
-  const [student] = useState<StudentProfile>(() => db.getStudent())
-  const [isPassActive] = useState<boolean>(() => db.isPassActive(student.id))
-
   return (
     <AuthProvider showToast={showToast}>
-      <PassProvider studentId={student.id} showToast={showToast}>
-        <JobsProvider student={student} isPassActive={isPassActive}>
-          <TrackerProvider studentId={student.id} showToast={showToast}>
-            <AppInnerComposer showToast={showToast}>
-              {children}
+      <DataProvidersBridge showToast={showToast}>
+        {children}
 
-              {/* Floating Toast Notification */}
-              {toastInfo && (
-                <div className="fixed bottom-16 sm:bottom-6 right-4 left-4 sm:left-auto z-50 animate-in slide-in-from-bottom-5 duration-200 max-w-sm sm:max-w-md mx-auto sm:mx-0">
-                  <div
-                    className={`flex items-center gap-3 px-4 py-3 rounded-lg shadow-xl border text-xs sm:text-sm font-mono font-medium ${
-                      toastInfo.type === 'success'
-                        ? 'bg-emerald-950 text-emerald-100 border-emerald-600'
-                        : toastInfo.type === 'warning'
-                        ? 'bg-amber-950 text-amber-100 border-amber-600'
-                        : 'bg-slate-950 text-slate-100 border-slate-700'
-                    }`}
-                  >
-                    <span>{toastInfo.message}</span>
-                  </div>
-                </div>
-              )}
-            </AppInnerComposer>
-          </TrackerProvider>
-        </JobsProvider>
-      </PassProvider>
+        {/* Floating Toast Notification */}
+        {toastInfo && (
+          <div className="fixed bottom-16 sm:bottom-6 right-4 left-4 sm:left-auto z-50 animate-in slide-in-from-bottom-5 duration-200 max-w-sm sm:max-w-md mx-auto sm:mx-0">
+            <div
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg shadow-xl border text-xs sm:text-sm font-mono font-medium ${
+                toastInfo.type === 'success'
+                  ? 'bg-emerald-950 text-emerald-100 border-emerald-600'
+                  : toastInfo.type === 'warning'
+                  ? 'bg-amber-950 text-amber-100 border-amber-600'
+                  : 'bg-slate-950 text-slate-100 border-slate-700'
+              }`}
+            >
+              <span>{toastInfo.message}</span>
+            </div>
+          </div>
+        )}
+      </DataProvidersBridge>
     </AuthProvider>
   )
 }

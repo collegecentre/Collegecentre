@@ -8,6 +8,7 @@ import {
   Sun,
   Moon,
   Laptop,
+  LogOut,
 } from 'lucide-react'
 
 export const AccountPage: React.FC = () => {
@@ -19,6 +20,7 @@ export const AccountPage: React.FC = () => {
     payments,
     setIsPaymentModalOpen,
     resetData,
+    signOut,
     theme,
     resolvedTheme,
     setTheme,
@@ -229,16 +231,27 @@ export const AccountPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Reset Data option */}
-      <div className="pt-2 flex justify-between items-center font-mono text-xs text-muted-foreground border-t border-black/10 dark:border-white/15">
-        <span>AUTHENTICATED: {student.email}</span>
-        <button
-          onClick={resetData}
-          className="text-xs text-muted-foreground hover:text-red-600 flex items-center gap-1 uppercase tracking-wider"
-        >
-          <RotateCcw className="w-3 h-3" />
-          <span>Reset Demo Data</span>
-        </button>
+      {/* Session Management & Reset */}
+      <div className="pt-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 font-mono text-xs text-muted-foreground border-t border-black/10 dark:border-white/15">
+        <span>AUTHENTICATED: {student.email || 'GUEST USER'}</span>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={resetData}
+            className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 uppercase tracking-wider cursor-pointer"
+          >
+            <RotateCcw className="w-3 h-3" />
+            <span>Reset Demo Data</span>
+          </button>
+          {student.email && (
+            <button
+              onClick={signOut}
+              className="text-xs text-[#fe7141] hover:text-red-600 font-bold flex items-center gap-1 uppercase tracking-wider cursor-pointer"
+            >
+              <LogOut className="w-3 h-3" />
+              <span>Sign Out</span>
+            </button>
+          )}
+        </div>
       </div>
     </div>
   )

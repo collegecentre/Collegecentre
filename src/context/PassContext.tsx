@@ -41,8 +41,14 @@ export const PassProvider: React.FC<{
   showToast: (msg: string, type?: 'success' | 'info' | 'warning') => void
 }> = ({ children, studentId, showToast }) => {
   const [accessPeriod, setAccessPeriod] = useState<AccessPeriod | null>(() => db.getAccessPeriod(studentId))
-  const [payments, setPayments] = useState<Payment[]>(() => db.getPayments())
+  const [payments, setPayments] = useState<Payment[]>(() => db.getPayments(studentId))
   const [now, setNow] = useState<number>(() => Date.now())
+
+  // Reload pass and payment records whenever studentId changes (e.g. login or logout)
+  useEffect(() => {
+    setAccessPeriod(db.getAccessPeriod(studentId))
+    setPayments(db.getPayments(studentId))
+  }, [studentId])
 
   // Ticker for display-only countdown
   useEffect(() => {

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { StudentProfile } from '@/types'
-import { db } from '@/services/db'
+import { db, INITIAL_STUDENT } from '@/services/db'
 import { supabase } from '@/services/supabase'
 
 interface AuthContextType {
@@ -39,12 +39,17 @@ export const AuthProvider: React.FC<{
         }
       } else {
         setIsAuthenticated(false)
+        db.clearUserSession()
+        setStudent(INITIAL_STUDENT)
       }
     }
 
     supabase.auth.getSession().then(({ data }: { data: any }) => {
       if (data?.session) {
         hydrateUser(data.session)
+      } else {
+        // No active session: ensure clean unauthenticated guest state
+        setIsAuthenticated(false)
       }
     })
 
@@ -74,8 +79,8 @@ export const AuthProvider: React.FC<{
     } catch {
       // ignore
     }
-    const freshGuest = db.getStudent()
-    setStudent(freshGuest)
+    db.clearUserSession()
+    setStudent(INITIAL_STUDENT)
     setIsAuthenticated(false)
     showToast('Signed out of student profile', 'info')
   }, [showToast])

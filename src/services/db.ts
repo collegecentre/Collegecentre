@@ -24,13 +24,13 @@ export const INITIAL_STUDENT: StudentProfile = {
   email: '',
   phone: '',
   education_level: 'Undergraduate (B.Tech / B.E.)',
-  degree: 'Computer Science & Engineering',
+  degree: '',
   college: '',
   graduation_year: 2026,
-  skills: ['JavaScript', 'React', 'Python', 'SQL', 'Git'],
+  skills: [],
   experience_level: 'Fresher (0–1 years)',
-  preferred_categories: ['Software Development', 'Frontend Development', 'Full Stack', 'Data & AI'],
-  preferred_locations: ['Bengaluru', 'Remote', 'Hyderabad', 'Pune', 'Gurugram'],
+  preferred_categories: ['Software Development', 'Data & AI'],
+  preferred_locations: ['Bengaluru', 'Remote', 'Hyderabad', 'Pune'],
   preferred_work_mode: ['Remote', 'Hybrid'],
 }
 
@@ -309,7 +309,9 @@ export const db = {
         ? `cand_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`
         : student.id,
     }
-    localStorage.setItem(STORAGE_KEYS.STUDENT, JSON.stringify(studentToSave))
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(STORAGE_KEYS.STUDENT, JSON.stringify(studentToSave))
+    }
     this.saveStudentToCloud(studentToSave)
   },
 
@@ -749,6 +751,19 @@ export const db = {
   deleteApplication(applicationId: string, studentId?: string): void {
     const list = this.getApplications(studentId).filter((a) => a.id !== applicationId)
     localStorage.setItem(STORAGE_KEYS.APPLICATIONS, JSON.stringify(list))
+  },
+
+  // Clear authenticated user's session data on logout (keeps jobs intact)
+  clearUserSession(): void {
+    try {
+      localStorage.removeItem(STORAGE_KEYS.STUDENT)
+      localStorage.removeItem(STORAGE_KEYS.SAVED_JOBS)
+      localStorage.removeItem(STORAGE_KEYS.APPLICATIONS)
+      localStorage.removeItem(STORAGE_KEYS.PAYMENTS)
+      localStorage.removeItem(STORAGE_KEYS.ACCESS_PERIOD)
+    } catch {
+      // ignore
+    }
   },
 
   // Reset entire database to initial state
