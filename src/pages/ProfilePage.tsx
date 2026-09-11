@@ -273,7 +273,7 @@ export const ProfilePage: React.FC = () => {
   ).slice(0, 6)
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 md:py-10 space-y-6 relative pb-28">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 md:py-10 space-y-6 relative pb-12">
       {/* Editorial Header */}
       <div className="border-b border-black/10 dark:border-white/15 pb-4">
         <div className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground mb-1">
@@ -288,15 +288,6 @@ export const ProfilePage: React.FC = () => {
               Minimum needed to match jobs: <strong>Degree</strong> and <strong>1+ Skill</strong>. All other fields are optional.
             </p>
           </div>
-
-          <button
-            type="submit"
-            form="candidate-profile-form"
-            className="px-5 py-2.5 bg-[#fe7141] hover:bg-[#e05828] text-white font-mono text-xs font-bold uppercase tracking-wider transition-colors shrink-0 flex items-center gap-2 shadow-xs cursor-pointer"
-          >
-            <Save className="w-3.5 h-3.5" />
-            <span>{savedFeedback ? '✓ Saved' : 'Save Profile'}</span>
-          </button>
         </div>
       </div>
 
@@ -587,21 +578,6 @@ export const ProfilePage: React.FC = () => {
                 </div>
               )}
             </div>
-
-            {activeTab === 'essentials' && (
-              <div className="flex items-center justify-between pt-3 border-t border-black/10 dark:border-white/10 font-mono text-xs">
-                <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">
-                  {isMinimumComplete ? '✓ Minimum Complete! Save to start matching.' : 'Fill Degree & 1 Skill to finish.'}
-                </span>
-                <button
-                  type="submit"
-                  className="px-5 py-2 bg-[#fe7141] hover:bg-[#e05828] text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 cursor-pointer shadow-xs"
-                >
-                  <Save className="w-3.5 h-3.5" />
-                  <span>Save Minimum Profile</span>
-                </button>
-              </div>
-            )}
           </div>
         )}
 
@@ -957,7 +933,7 @@ export const ProfilePage: React.FC = () => {
                       disabled={!newProjectTitle.trim()}
                       className="px-3 py-1 bg-[#fe7141] text-white text-xs font-bold uppercase cursor-pointer disabled:opacity-40"
                     >
-                      Save Project
+                      + Add Project
                     </button>
                   </div>
                 </div>
@@ -1061,7 +1037,7 @@ export const ProfilePage: React.FC = () => {
                       disabled={!newInternCompany.trim() || !newInternRole.trim()}
                       className="px-3 py-1 bg-[#fe7141] text-white text-xs font-bold uppercase cursor-pointer disabled:opacity-40"
                     >
-                      Save Internship
+                      + Add Internship
                     </button>
                   </div>
                 </div>
@@ -1119,23 +1095,6 @@ export const ProfilePage: React.FC = () => {
           </button>
         </div>
       </form>
-
-      {/* Floating Save Trigger */}
-      <div className="sticky bottom-4 z-20 flex justify-end pointer-events-none">
-        <div className="pointer-events-auto border border-black/20 dark:border-white/25 bg-background/95 backdrop-blur-md p-1.5 shadow-xl flex items-center gap-2 font-mono">
-          <span className="text-[10px] text-muted-foreground uppercase px-2 font-bold hidden sm:inline">
-            {isMinimumComplete ? '✓ MINIMUM COMPLETE' : 'MINIMUM NEEDED'}
-          </span>
-          <button
-            type="submit"
-            form="candidate-profile-form"
-            className="px-5 py-2 bg-[#fe7141] hover:bg-[#e05828] text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer"
-          >
-            <Save className="w-3 h-3" />
-            <span>{savedFeedback ? '✓ Saved' : 'Save Profile'}</span>
-          </button>
-        </div>
-      </div>
 
       {/* Resume Upload Modal */}
       <ResumeUploadModal
