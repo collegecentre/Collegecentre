@@ -349,32 +349,6 @@ export async function harvestFresherJobs() {
 }
 
 /**
- * Optional Telegram Digest Alert
- */
-async function sendTelegramAlert(newJobs) {
-  const token = process.env.TELEGRAM_BOT_TOKEN;
-  const chatId = process.env.TELEGRAM_CHAT_ID;
-  if (!token || !chatId || !newJobs.length) return false;
-
-  try {
-    const count = newJobs.length;
-    const topJobs = newJobs.slice(0, 5).map((j) => '• ' + j.title + ' @ ' + j.company + '\n  ' + j.application_url).join('\n\n');
-    const text = '🎓 CollegeCentre Auto Job Adder\n\nDiscovered ' + count + ' new verified fresher job(s):\n\n' + topJobs;
-
-    await fetch('https://api.telegram.org/bot' + token + '/sendMessage', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: chatId, text, disable_web_page_preview: true }),
-      signal: AbortSignal.timeout(10000),
-    });
-    return true;
-  } catch (err) {
-    console.warn('Telegram alert failed:', err.message);
-    return false;
-  }
-}
-
-/**
  * Main Auto Job Adder Pipeline:
  * Harvests, filters, deduplicates, cleans stale jobs, and syncs to Supabase.
  */
@@ -391,7 +365,6 @@ export async function runAutoJobAdder(options = {}) {
     newInserted: 0,
     alreadyExisting: 0,
     staleRemoved: 0,
-    telegramNotified: false,
     dryRun,
     jobs: harvest.jobs,
   };
@@ -447,7 +420,6 @@ export async function runAutoJobAdder(options = {}) {
         console.error('Failed to upsert jobs into cc_jobs:', insertError);
       } else {
         summary.newInserted = toInsert.length;
-        summary.telegramNotified = await sendTelegramAlert(toInsert);
       }
     }
   } catch (err) {

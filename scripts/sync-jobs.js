@@ -37,9 +37,7 @@ async function main() {
     console.log(`?? Raw Jobs Fetched: ${summary.totalRawFetched}`);
     console.log(`?? Fresher Eligible: ${summary.fresherEligible}`);
     console.log(`? New Jobs Inserted: ${summary.newInserted}`);
-    console.log(`?? Already in DB: ${summary.alreadyExisting}`);
-    console.log(`?? Stale Jobs Cleaned: ${summary.staleRemoved}`);
-    console.log(`?? Telegram Alert: ${summary.telegramNotified ? 'Sent' : 'Skipped/Disabled'}`);
+    console.log(`🧹 Stale Jobs Cleaned: ${summary.staleRemoved}`);
     console.log('----------------------------------------------------\n');
 
     if (summary.jobs && summary.jobs.length > 0) {
