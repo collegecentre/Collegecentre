@@ -12,7 +12,6 @@ import {
   CheckCircle2,
   AlertCircle,
   ArrowRight,
-  Zap,
   Upload,
   Briefcase,
   FolderGit2,
@@ -54,7 +53,7 @@ const POPULAR_LOCATIONS = [
 ]
 
 export const ProfilePage: React.FC = () => {
-  const { student, updateStudent, setCurrentView, setIsPaymentModalOpen } = useApp()
+  const { student, updateStudent, setCurrentView } = useApp()
   const [formData, setFormData] = useState<StudentProfile>(student)
 
   useEffect(() => {
@@ -354,14 +353,6 @@ export const ProfilePage: React.FC = () => {
             >
               <span>View Jobs</span>
               <ArrowRight className="w-3 h-3" />
-            </button>
-            <button
-              type="button"
-              onClick={() => setIsPaymentModalOpen(true)}
-              className="px-3 py-1 bg-[#fe7141] hover:bg-[#e05828] text-white font-bold uppercase tracking-wider text-[11px] flex items-center gap-1 cursor-pointer"
-            >
-              <Zap className="w-3 h-3 fill-current" />
-              <span>Unlock Pass</span>
             </button>
           </div>
         </div>

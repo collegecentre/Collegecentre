@@ -25,23 +25,23 @@ export const TermsPage: React.FC = () => {
 
       <div className="space-y-6 text-xs text-foreground/90 leading-relaxed bg-card p-6 border border-black/10 dark:border-white/15">
         <section className="space-y-2">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-vermilion">1. Service Specification</h2>
+          <h2 className="text-sm font-bold uppercase tracking-wider text-vermilion">1. Free Service Specification</h2>
           <p className="font-sans">
-            CollegeCentre is a student-first fresher career discovery platform. We provide a focused ₹199 flat-rate 24-Hour Job Hunt Sprint Pass that enables candidates to browse verified fresher openings and receive real-time AI suitability match scores.
+            CollegeCentre is a 100% free fresher career discovery platform. We empower college candidates and recent graduates to explore verified fresher opportunities, calculate criteria match scores, and apply directly without paywalls or fees.
           </p>
         </section>
 
         <section className="space-y-2">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-vermilion">2. Rule 11 Permanent Access Guarantee</h2>
+          <h2 className="text-sm font-bold uppercase tracking-wider text-vermilion">2. Permanent Candidate Pipeline</h2>
           <p className="font-sans">
-            Once an application is logged or a job opening is saved during an active sprint, access to the Application Tracker (Applied, Shortlisted, Interviewing, Offered) and saved job bookmarks shall remain permanently available and will never be locked behind any recurring renewal fee.
+            Candidate job bookmarks and application records (Saved, Applied, Shortlisted, Assessment, Interviewing, Offered) remain permanently available at all times without restrictions or subscriptions.
           </p>
         </section>
 
         <section className="space-y-2">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-vermilion">3. Candidate Credentials & Zero Resume Policy</h2>
+          <h2 className="text-sm font-bold uppercase tracking-wider text-vermilion">3. Candidate Credentials & Accuracy</h2>
           <p className="font-sans">
-            Students agree to provide accurate educational batch years, degree programs, and technical competencies. CollegeCentre operates on direct parameter matching without retaining unsolicited third-party document parsers.
+            Students agree to provide accurate educational batch years, degree programs, and technical competencies. Direct links redirect candidates to official company careers portals.
           </p>
         </section>
 
@@ -81,21 +81,21 @@ export const PrivacyPolicyPage: React.FC = () => {
         <section className="space-y-2">
           <h2 className="text-sm font-bold uppercase tracking-wider text-vermilion">1. Information Collected</h2>
           <p className="font-sans">
-            We collect only candidate-provided profile attributes: full name, college/university, degree discipline, graduation batch, technical skill tags, and location preferences. We do not sell or trade student data to third-party telemarketers.
+            We collect only candidate-provided profile attributes: full name, college/university, degree discipline, graduation batch, technical skill tags, and location preferences. We do not sell or trade student data to third parties.
           </p>
         </section>
 
         <section className="space-y-2">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-vermilion">2. Payment Data Privacy</h2>
+          <h2 className="text-sm font-bold uppercase tracking-wider text-vermilion">2. Zero Payment Data</h2>
           <p className="font-sans">
-            All payments (UPI, Cards, NetBanking) are processed via PCI-DSS certified Indian payment gateways (such as Razorpay). CollegeCentre never handles or stores sensitive credit card numbers or banking passwords on its servers.
+            CollegeCentre is completely free for candidates. We do not collect, process, or store financial credentials, card numbers, UPI handles, or bank accounts.
           </p>
         </section>
 
         <section className="space-y-2">
           <h2 className="text-sm font-bold uppercase tracking-wider text-vermilion">3. Cookies & Storage</h2>
           <p className="font-sans">
-            We use secure local storage and session cookies solely to preserve student preferences (such as dark/light interface theme, active sprint countdowns, and authentication state).
+            We use secure local storage and session cookies solely to preserve student preferences (such as dark/light interface theme and authentication state).
           </p>
         </section>
       </div>
@@ -115,34 +115,27 @@ export const RefundPolicyPage: React.FC = () => {
       </button>
 
       <div className="border-b border-black/10 dark:border-white/15 pb-6">
-        <div className="text-xs uppercase tracking-widest text-muted-foreground mb-1">Commerce & Settlement</div>
+        <div className="text-xs uppercase tracking-widest text-muted-foreground mb-1">Pricing & Policies</div>
         <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground font-sans">
-          Refund & Cancellation Policy
+          Policy Notice
         </h1>
         <p className="text-xs text-muted-foreground mt-2">
-          Standard Indian Payment Gateway & Banking Compliance Guidelines
+          100% Free Platform for College Freshers
         </p>
       </div>
 
       <div className="space-y-6 text-xs text-foreground/90 leading-relaxed bg-card p-6 border border-black/10 dark:border-white/15">
         <section className="space-y-2">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-vermilion">1. Sprint Pass Non-Recurring Nature</h2>
+          <h2 className="text-sm font-bold uppercase tracking-wider text-vermilion">1. Free Access Guarantee</h2>
           <p className="font-sans">
-            The ₹199 Sprint Pass is a one-time, flat-rate digital access ticket valid for 24 continuous hours. There are NO recurring subscriptions or unexpected auto-debits on your account.
+            CollegeCentre is entirely free of charge for students and job seekers. There are no paid passes, fees, charges, subscriptions, or paywalls for any fresher job listing.
           </p>
         </section>
 
         <section className="space-y-2">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-vermilion">2. Digital Delivery & Cancellation</h2>
+          <h2 className="text-sm font-bold uppercase tracking-wider text-vermilion">2. Non-Applicability of Billing or Refunds</h2>
           <p className="font-sans">
-            Due to the immediate digital unlock of active fresher contacts and AI match scores upon payment confirmation, cancellation is generally not accepted once access is granted.
-          </p>
-        </section>
-
-        <section className="space-y-2">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-vermilion">3. Duplicate & Erroneous Charges</h2>
-          <p className="font-sans">
-            If your account was debited multiple times due to a banking network glitch, or if payment succeeded but pass access was not provisioned, please email support@collegecentre.in with your UPI transaction ID. Full refunds will be credited within 5–7 working days via original payment mode.
+            Because our services are 100% free, no payment processing or billing occurs on CollegeCentre. No purchases or financial transactions are conducted on this site.
           </p>
         </section>
       </div>
@@ -173,9 +166,9 @@ export const ContactPage: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="p-6 bg-card border border-black/10 dark:border-white/15 space-y-3">
-          <div className="text-xs font-bold uppercase text-vermilion">Support & Grievances</div>
+          <div className="text-xs font-bold uppercase text-vermilion">Student Support</div>
           <p className="font-sans text-xs text-muted-foreground">
-            For sprint pass activation issues, payment receipt inquiries, or student data updates:
+            For questions about job listings, candidate profiles, or application tracking:
           </p>
           <div className="text-xs font-bold text-foreground">
             Email: support@collegecentre.in

@@ -7,12 +7,7 @@ import {
   Briefcase,
   X,
   Filter,
-  Zap,
-  Clock,
-  Lock,
-  Sparkles,
   GraduationCap,
-  ArrowRight,
 } from 'lucide-react'
 
 interface JobSearchPageProps {
@@ -22,11 +17,6 @@ interface JobSearchPageProps {
 export const JobSearchPage: React.FC<JobSearchPageProps> = ({ onSelectJob }) => {
   const {
     jobs,
-    isPassActive,
-    isPassScheduled,
-    scheduledStartTime,
-    startSprintNow,
-    setIsPaymentModalOpen,
   } = useApp()
 
   // Filter States
@@ -181,35 +171,6 @@ export const JobSearchPage: React.FC<JobSearchPageProps> = ({ onSelectJob }) => 
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-6 md:py-8 space-y-6">
-      {/* Scheduled Pass Notice Banner */}
-      {isPassScheduled && (
-        <div className="border border-blue-500/40 bg-blue-50/50 dark:bg-blue-950/20 p-4 font-mono text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <Clock className="w-4 h-4 text-blue-500 shrink-0" />
-            <div>
-              <span className="font-bold text-foreground">Sprint Scheduled: </span>
-              <span className="text-muted-foreground">
-                Your 24-hour pass is scheduled to start at{' '}
-                {scheduledStartTime
-                  ? new Date(scheduledStartTime).toLocaleString([], {
-                      dateStyle: 'medium',
-                      timeStyle: 'short',
-                    })
-                  : 'your chosen time'}
-                . You can browse preview jobs now or launch early:
-              </span>
-            </div>
-          </div>
-          <button
-            onClick={() => startSprintNow()}
-            className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-[11px] uppercase tracking-wider rounded-xs shrink-0 flex items-center gap-1.5 cursor-pointer"
-          >
-            <Zap className="w-3 h-3 fill-current" />
-            <span>Start Sprint Early Now</span>
-          </button>
-        </div>
-      )}
-
       {/* Search Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-black/10 dark:border-white/15 pb-4">
         <div>
@@ -217,21 +178,12 @@ export const JobSearchPage: React.FC<JobSearchPageProps> = ({ onSelectJob }) => 
             <span className="font-mono text-xs text-[#fe7141] font-bold">Discovery Feed</span>
             <span className="font-mono text-xs text-muted-foreground">/</span>
             <span className="font-mono text-xs text-foreground font-bold">{filteredJobs.length} RESULTS</span>
-            {!isPassActive && (
-              <span className="px-1.5 py-0.2 border border-vermilion/40 bg-vermilion/10 text-vermilion text-[10px] font-mono font-bold uppercase">
-                3 Free Previews
-              </span>
-            )}
           </div>
           <h1 className="text-2xl font-black text-foreground tracking-tight mt-1 uppercase">
             Discover Fresher Jobs
           </h1>
           <p className="font-mono text-xs text-muted-foreground mt-0.5">
-            {isPassActive
-              ? '24-hour sprint active. Direct employer apply links enabled.'
-              : isPassScheduled
-              ? 'Pass scheduled. Top 3 roles available to preview right now.'
-              : 'Free preview: Top 3 fresher roles unlocked. Start 24h sprint to unlock all 40+.'}
+            Verified fresher job openings with direct employer applications and real-time skill matching.
           </p>
         </div>
 
@@ -473,98 +425,11 @@ export const JobSearchPage: React.FC<JobSearchPageProps> = ({ onSelectJob }) => 
             Reset All Filters
           </button>
         </div>
-      ) : isPassActive ? (
-        /* Full Sprint Active: All jobs unlocked with standard grid */
+      ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredJobs.map((job) => (
-            <JobCard key={job.id} job={job} onSelect={onSelectJob} isLocked={false} />
+            <JobCard key={job.id} job={job} onSelect={onSelectJob} />
           ))}
-        </div>
-      ) : (
-        /* Free Teaser Architecture: 3 Unlocked + Sprint Gate + Locked Roles */
-        <div className="space-y-6">
-          {/* Top 3 Unlocked Fresher Jobs */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-xs font-mono text-muted-foreground border-b border-black/10 dark:border-white/10 pb-1.5">
-              <span className="uppercase tracking-wider font-bold text-foreground flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-vermilion" /> Free Unlocked Preview (Top {Math.min(3, filteredJobs.length)} Openings)
-              </span>
-              <span className="text-emerald-600 font-bold">100% Free to View & Apply</span>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredJobs.slice(0, 3).map((job) => (
-                <JobCard key={job.id} job={job} onSelect={onSelectJob} isLocked={false} />
-              ))}
-            </div>
-          </div>
-
-          {/* Sprint Access Gate Banner (Shown if there are more roles) */}
-          {filteredJobs.length > 3 && (
-            <div className="border-2 border-vermilion bg-gradient-to-br from-vermilion/5 via-background to-vermilion/10 p-6 md:p-8 shadow-md space-y-4 font-mono">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div className="space-y-2 max-w-xl">
-                  <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-vermilion text-white text-[10px] font-bold uppercase tracking-wider">
-                    <Sparkles className="w-3 h-3" /> Sprint Access Gate • 3 Free Previews Shown
-                  </div>
-                  <h2 className="text-xl md:text-2xl font-black text-foreground tracking-tight uppercase font-sans">
-                    Unlock All {filteredJobs.length - 3}+ More Verified Fresher Openings
-                  </h2>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    Activate your 24-hour application sprint for flat ₹199. Get unmasked company portals, verified CTC breakdowns, direct HR apply links, and save every role permanently to your desk.
-                  </p>
-                </div>
-
-                <div className="flex flex-col sm:flex-row md:flex-col items-start md:items-end gap-2.5 shrink-0">
-                  <button
-                    onClick={() => setIsPaymentModalOpen(true)}
-                    className="w-full sm:w-auto px-6 py-3.5 bg-vermilion hover:bg-vermilion-hover text-white text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-md cursor-pointer"
-                  >
-                    <Zap className="w-4 h-4 fill-current" />
-                    <span>Start 24-Hour Sprint (₹199)</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
-                  <span className="text-[10px] text-muted-foreground">
-                    ⚡ Instant or Scheduled Start • No Auto-Renewal
-                  </span>
-                </div>
-              </div>
-
-              {/* Sprint Inclusions */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-black/10 dark:border-white/10 text-[11px] text-foreground/85">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-vermilion font-bold">✓</span> 40+ Fresh Jobs
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-vermilion font-bold">✓</span> Direct HR Links
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-vermilion font-bold">✓</span> Schedule Anytime
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-vermilion font-bold">✓</span> Keep Interviews Forever
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Locked Roles Teaser List */}
-          {filteredJobs.length > 3 && (
-            <div className="space-y-3">
-              <div className="flex items-center justify-between text-xs font-mono text-muted-foreground border-b border-black/10 dark:border-white/10 pb-2">
-                <span className="uppercase tracking-wider font-bold text-foreground flex items-center gap-1.5">
-                  <Lock className="w-3.5 h-3.5 text-vermilion" /> Locked Roles ({filteredJobs.length - 3} Openings)
-                </span>
-                <span className="text-vermilion font-bold flex items-center gap-1 text-[11px]">
-                  Pass Required to View Company & Apply
-                </span>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredJobs.slice(3).map((job) => (
-                  <JobCard key={job.id} job={job} onSelect={onSelectJob} isLocked={true} />
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       )}
     </div>

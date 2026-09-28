@@ -206,11 +206,11 @@ export function generateMockProfile(fileName) {
     experience: [],
     internships: [
       {
-        company: 'Razorpay Software',
+        company: 'Swiggy Technologies',
         role: 'Software Engineering Intern',
         duration: 'May 2025 – July 2025',
         technologies: ['TypeScript', 'React', 'FastAPI', 'PostgreSQL'],
-        description: 'Engineered high-concurrency payment webhook processing service handling 2,000+ RPS.',
+        description: 'Engineered high-concurrency order webhook processing service handling 2,000+ RPS.',
       },
     ],
     projects: [

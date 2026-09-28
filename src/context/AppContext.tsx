@@ -1,17 +1,14 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import {
-  AccessPeriod,
   Application,
   ApplicationStatus,
   Job,
   MatchResult,
-  Payment,
   SavedJob,
   StudentProfile,
 } from '@/types'
 import { db } from '@/services/db'
 import { AuthProvider, useAuth } from './AuthContext'
-import { PassProvider, usePass, RemainingTime } from './PassContext'
 import { JobsProvider, useJobs } from './JobsContext'
 import { TrackerProvider, useTracker } from './TrackerContext'
 
@@ -19,7 +16,6 @@ export interface JobWithMatch extends Job {
   match: MatchResult
 }
 
-export type { RemainingTime }
 export type ThemeMode = 'light' | 'dark' | 'system'
 
 export interface AppContextType {
@@ -28,32 +24,15 @@ export interface AppContextType {
   jobs: JobWithMatch[]
   savedJobs: SavedJob[]
   applications: Application[]
-  payments: Payment[]
-  accessPeriod: AccessPeriod | null
-  isPassActive: boolean
-  isPassScheduled: boolean
-  scheduledStartTime?: string
-  startSprintNow: () => void
-  remainingTime: RemainingTime
   currentView: string
   setCurrentView: (view: string) => void
   selectedJob: JobWithMatch | null
   setSelectedJob: (job: JobWithMatch | null) => void
-  isPaymentModalOpen: boolean
-  setIsPaymentModalOpen: (open: boolean) => void
   toggleSaveJob: (jobId: string) => void
   isJobSaved: (jobId: string) => boolean
   createOrUpdateApp: (jobId: string, status: ApplicationStatus, notes?: string) => void
   changeAppStatus: (appId: string, status: ApplicationStatus, notes?: string) => void
   deleteApp: (appId: string) => void
-  activatePass: (
-    method?: 'UPI' | 'Card' | 'NetBanking',
-    transactionId?: string,
-    orderId?: string,
-    scheduledFor?: string
-  ) => void
-  simulatePassExpiry: () => void
-  simulateRemainingTime: (minutes: number) => void
   resetData: () => void
   signOut: () => Promise<void>
   isAuthenticated: boolean
@@ -73,25 +52,22 @@ interface ToastState {
 
 /**
  * Inner Bridge Component:
- * Binds modularized contexts (Auth, Pass, Jobs, Tracker) together with UI state.
+ * Binds modularized contexts (Auth, Jobs, Tracker) together with UI state.
  */
 const AppInnerComposer: React.FC<{
   children: React.ReactNode
   showToast: (message: string, type?: 'success' | 'info' | 'warning') => void
 }> = ({ children, showToast }) => {
   const auth = useAuth()
-  const pass = usePass()
   const jobs = useJobs()
   const tracker = useTracker()
-
-  const [isPaymentModalOpen, setInternalIsPaymentModalOpen] = useState<boolean>(false)
 
   // Route / View state from URL Hash
   const getInitialView = (): string => {
     if (typeof window !== 'undefined' && window.location.hash) {
       const route = window.location.hash.replace(/^#\/?/, '').toLowerCase()
-      const validViews = ['home', 'landing', 'search', 'saved', 'applications', 'dashboard', 'pricing', 'profile', 'login', 'signup', 'account']
-      if (validViews.includes(route)) return route
+      const validViews = ['home', 'landing', 'search', 'jobs', 'saved', 'applications', 'dashboard', 'profile', 'login', 'signup', 'account']
+      if (validViews.includes(route)) return route === 'search' ? 'jobs' : route
     }
     return 'home'
   }
@@ -104,28 +80,14 @@ const AppInnerComposer: React.FC<{
       window.location.hash = `#/${view}`
       window.scrollTo({ top: 0, behavior: 'smooth' })
     }
-    setInternalIsPaymentModalOpen(false)
   }, [])
-
-  const setIsPaymentModalOpen = useCallback(
-    (open: boolean) => {
-      if (open && !auth.isAuthenticated) {
-        showToast('Please sign in or create an account to unlock your Sprint Pass.', 'info')
-        setCurrentView('login')
-        return
-      }
-      setInternalIsPaymentModalOpen(open)
-    },
-    [auth.isAuthenticated, setCurrentView, showToast]
-  )
 
   useEffect(() => {
     const handleHashChange = () => {
       const route = window.location.hash.replace(/^#\/?/, '').toLowerCase()
-      const validViews = ['home', 'landing', 'search', 'saved', 'applications', 'dashboard', 'pricing', 'profile', 'login', 'signup', 'account']
+      const validViews = ['home', 'landing', 'search', 'jobs', 'saved', 'applications', 'dashboard', 'profile', 'login', 'signup', 'account']
       if (validViews.includes(route)) {
-        setInternalCurrentView(route)
-        setInternalIsPaymentModalOpen(false)
+        setInternalCurrentView(route === 'search' ? 'jobs' : route)
       }
     }
     window.addEventListener('hashchange', handleHashChange)
@@ -186,27 +148,15 @@ const AppInnerComposer: React.FC<{
     jobs: jobs.jobs,
     savedJobs: tracker.savedJobs,
     applications: tracker.applications,
-    payments: pass.payments,
-    accessPeriod: pass.accessPeriod,
-    isPassActive: pass.isPassActive,
-    isPassScheduled: pass.isPassScheduled,
-    scheduledStartTime: pass.scheduledStartTime,
-    startSprintNow: pass.startSprintNow,
-    remainingTime: pass.remainingTime,
     currentView,
     setCurrentView,
     selectedJob: jobs.selectedJob,
     setSelectedJob: jobs.setSelectedJob,
-    isPaymentModalOpen,
-    setIsPaymentModalOpen,
     toggleSaveJob: tracker.toggleSaveJob,
     isJobSaved: tracker.isJobSaved,
     createOrUpdateApp: tracker.createOrUpdateApp,
     changeAppStatus: tracker.changeAppStatus,
     deleteApp: tracker.deleteApp,
-    activatePass: pass.activatePass,
-    simulatePassExpiry: pass.simulatePassExpiry,
-    simulateRemainingTime: pass.simulateRemainingTime,
     resetData,
     signOut: async () => {
       await auth.signOut()
@@ -232,16 +182,13 @@ const DataProvidersBridge: React.FC<{
   showToast: (message: string, type?: 'success' | 'info' | 'warning') => void
 }> = ({ children, showToast }) => {
   const { student } = useAuth()
-  const isPassActive = db.isPassActive(student.id)
 
   return (
-    <PassProvider studentId={student.id} showToast={showToast}>
-      <JobsProvider student={student} isPassActive={isPassActive}>
-        <TrackerProvider studentId={student.id} showToast={showToast}>
-          <AppInnerComposer showToast={showToast}>{children}</AppInnerComposer>
-        </TrackerProvider>
-      </JobsProvider>
-    </PassProvider>
+    <JobsProvider student={student}>
+      <TrackerProvider studentId={student.id} showToast={showToast}>
+        <AppInnerComposer showToast={showToast}>{children}</AppInnerComposer>
+      </TrackerProvider>
+    </JobsProvider>
   )
 }
 

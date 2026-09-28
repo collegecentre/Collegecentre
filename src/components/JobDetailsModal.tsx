@@ -23,11 +23,9 @@ interface JobDetailsModalProps {
 
 export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }) => {
   const {
-    isPassActive,
     toggleSaveJob,
     isJobSaved,
     createOrUpdateApp,
-    setIsPaymentModalOpen,
     applications,
     showToast,
   } = useApp()
@@ -40,11 +38,6 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }
   const existingApp = applications.find((a) => a.job_id === job.id)
 
   const handleApply = () => {
-    if (!isPassActive) {
-      setIsPaymentModalOpen(true)
-      return
-    }
-
     createOrUpdateApp(job.id, 'Applied', `Applied via ${job.company} portal.`)
     setAppliedPrompt(true)
     showToast?.(`🚀 Application to ${job.company} logged to your Permanent Pipeline!`, 'success')

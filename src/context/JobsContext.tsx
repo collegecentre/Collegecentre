@@ -18,13 +18,12 @@ const JobsContext = createContext<JobsContextType | null>(null)
 export const JobsProvider: React.FC<{
   children: React.ReactNode
   student: StudentProfile
-  isPassActive: boolean
-}> = ({ children, student, isPassActive }) => {
+}> = ({ children, student }) => {
   const [jobsRaw, setJobsRaw] = useState<Job[]>(() => db.getJobs())
   const [selectedJob, setSelectedJob] = useState<JobWithMatch | null>(null)
   const [isLoadingJobs, setIsLoadingJobs] = useState<boolean>(false)
 
-  // Fetch protected jobs from server endpoint
+  // Fetch jobs from server endpoint
   const refetchJobs = useCallback(async () => {
     setIsLoadingJobs(true)
     try {
@@ -43,7 +42,7 @@ export const JobsProvider: React.FC<{
         }
       }
     } catch (err) {
-      console.warn('Server protected jobs fetch warning, falling back to local database:', err)
+      console.warn('Jobs fetch warning, falling back to local database:', err)
     } finally {
       setIsLoadingJobs(false)
     }
@@ -55,10 +54,9 @@ export const JobsProvider: React.FC<{
     }
   }, [])
 
-  // Refetch jobs whenever pass status changes (e.g. user just activated pass)
   useEffect(() => {
     refetchJobs()
-  }, [isPassActive, refetchJobs])
+  }, [refetchJobs])
 
   // Compute criteria matches for every job against the verified candidate profile
   const jobs = useMemo((): JobWithMatch[] => {

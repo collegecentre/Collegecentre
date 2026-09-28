@@ -4,15 +4,13 @@ import {
   MapPin,
   Bookmark,
   Calendar,
-  ArrowUpRight,
-  Lock,
   Check,
+  ArrowUpRight,
 } from 'lucide-react'
 
 interface JobCardProps {
   job: JobWithMatch
   onSelect: (job: JobWithMatch) => void
-  isLocked?: boolean
 }
 
 const formatLocationDisplay = (location: string, workMode: string): string => {
@@ -24,12 +22,10 @@ const formatLocationDisplay = (location: string, workMode: string): string => {
   return `${cleanLoc} • ${cleanMode}`
 }
 
-export const JobCard: React.FC<JobCardProps> = ({ job, onSelect, isLocked = false }) => {
+export const JobCard: React.FC<JobCardProps> = ({ job, onSelect }) => {
   const {
     toggleSaveJob,
     isJobSaved,
-    isPassActive,
-    setIsPaymentModalOpen,
     createOrUpdateApp,
     showToast,
     applications,
@@ -39,10 +35,6 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSelect, isLocked = fals
 
   const handleApplyClick = (e: React.MouseEvent) => {
     e.stopPropagation()
-    if (isLocked || !isPassActive) {
-      setIsPaymentModalOpen(true)
-      return
-    }
     createOrUpdateApp(job.id, 'Applied', `Applied via ${job.company} portal.`)
     showToast?.(`🚀 Application to ${job.company} logged to your Permanent Pipeline!`, 'success')
     const popup = window.open(job.application_url, '_blank', 'noopener,noreferrer')
@@ -52,42 +44,24 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSelect, isLocked = fals
   }
 
   const handleCardClick = () => {
-    if (isLocked) {
-      setIsPaymentModalOpen(true)
-      return
-    }
     onSelect(job)
   }
 
   const handleSaveClick = (e: React.MouseEvent) => {
     e.stopPropagation()
-    if (isLocked) {
-      setIsPaymentModalOpen(true)
-      return
-    }
     toggleSaveJob(job.id)
   }
 
   return (
     <div
       onClick={handleCardClick}
-      className={`group cursor-pointer rounded-lg border transition-all duration-150 p-5 flex flex-col justify-between space-y-4 ${
-        isLocked
-          ? 'border-black/10 dark:border-white/10 bg-muted/5 hover:border-vermilion/50 hover:bg-muted/10'
-          : 'border-black/10 dark:border-white/15 bg-card hover:border-black dark:hover:border-white'
-      }`}
+      className="group cursor-pointer rounded-lg border transition-all duration-150 p-5 flex flex-col justify-between space-y-4 border-black/10 dark:border-white/15 bg-card hover:border-black dark:hover:border-white"
     >
       <div className="space-y-3">
         {/* Top Monospace Metadata Header */}
         <div className="flex items-center justify-between border-b border-black/10 dark:border-white/10 pb-2 text-[11px] font-mono text-muted-foreground">
           <div className="flex items-center gap-2">
-            {isLocked ? (
-              <span className="font-bold text-foreground/80 uppercase tracking-wider font-mono flex items-center gap-1 text-[10px]">
-                <Lock className="w-2.5 h-2.5 text-vermilion" /> [Verified Top Employer]
-              </span>
-            ) : (
-              <span className="font-bold text-foreground uppercase tracking-wider">{job.company}</span>
-            )}
+            <span className="font-bold text-foreground uppercase tracking-wider">{job.company}</span>
             <span>/</span>
             <span className="flex items-center gap-1">
               <MapPin className="w-3 h-3" />
@@ -136,20 +110,9 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSelect, isLocked = fals
             )}
           </div>
           <div className="flex items-baseline gap-2 mt-1">
-            {isLocked ? (
-              <div className="flex items-center gap-1.5">
-                <span className="font-mono font-bold text-sm text-foreground/60 select-none filter blur-[2px]">
-                  ₹8.5 - 14 LPA
-                </span>
-                <span className="text-[9px] font-mono text-vermilion font-bold uppercase tracking-wider">
-                  (Locked)
-                </span>
-              </div>
-            ) : (
-              <span className="font-mono font-bold text-sm text-[#fe7141] tabular-nums">
-                {job.salary}
-              </span>
-            )}
+            <span className="font-mono font-bold text-sm text-[#fe7141] tabular-nums">
+              {job.salary}
+            </span>
             <span className="text-[11px] font-mono text-muted-foreground">
               · {job.education}
             </span>
@@ -182,26 +145,15 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSelect, isLocked = fals
         </span>
 
         <div className="flex items-center gap-2">
-          {!isLocked && (
-            <button
-              type="button"
-              className="px-2.5 py-1 text-xs text-muted-foreground hover:text-foreground hover:underline transition-colors"
-              onClick={() => onSelect(job)}
-            >
-              DETAILS
-            </button>
-          )}
+          <button
+            type="button"
+            className="px-2.5 py-1 text-xs text-muted-foreground hover:text-foreground hover:underline transition-colors"
+            onClick={() => onSelect(job)}
+          >
+            DETAILS
+          </button>
 
-          {isLocked ? (
-            <button
-              type="button"
-              className="px-3 py-1.5 text-[11px] font-bold font-mono bg-vermilion hover:bg-vermilion-hover text-white transition-colors rounded-sm flex items-center gap-1.5 shadow-sm"
-              onClick={handleApplyClick}
-            >
-              <Lock className="w-3 h-3" />
-              <span>UNLOCK (₹199)</span>
-            </button>
-          ) : isApplied ? (
+          {isApplied ? (
             <button
               type="button"
               className="px-3 py-1 text-xs font-bold font-mono border border-emerald-500/40 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 rounded-sm flex items-center gap-1"

@@ -16,7 +16,6 @@ export const SavedJobsPage: React.FC<SavedJobsPageProps> = ({ onSelectJob }) => 
     savedJobs,
     jobs,
     setCurrentView,
-    isPassActive,
   } = useApp()
 
   // Match saved jobs with their full job entity and score
@@ -46,8 +45,8 @@ export const SavedJobsPage: React.FC<SavedJobsPageProps> = ({ onSelectJob }) => 
               {savedJobList.length} Saved Roles
             </span>
             <button
-              onClick={() => setCurrentView(isPassActive ? 'jobs' : 'pricing')}
-              className="px-4 py-1.5 border border-black dark:border-white text-xs font-mono font-bold uppercase tracking-wider hover:bg-muted/40 transition-colors"
+              onClick={() => setCurrentView('jobs')}
+              className="px-4 py-1.5 border border-black dark:border-white text-xs font-mono font-bold uppercase tracking-wider hover:bg-muted/40 transition-colors cursor-pointer"
             >
               + Discover More
             </button>
@@ -55,15 +54,15 @@ export const SavedJobsPage: React.FC<SavedJobsPageProps> = ({ onSelectJob }) => 
         </div>
       </div>
 
-      {/* Rule 11 Permanent Access Notice */}
+      {/* Permanent Access Notice */}
       <div className="border border-black/10 dark:border-white/15 p-4 sm:p-5 bg-muted/10 flex items-start gap-4">
         <ShieldCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
         <div className="space-y-1">
           <div className="font-mono text-xs font-bold uppercase tracking-wider text-foreground">
-            Rule 11: Permanent Student Access Guarantee
+            Permanent Student Access Guarantee
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            All positions saved during your ₹199 / 24-hour pass stay unlocked forever. You can return at any time, review details, check AI match insights, and apply directly without purchasing another sprint pass.
+            All positions bookmarked to your desk remain saved permanently. You can return at any time, review details, check skill match insights, and apply directly to official employer career portals.
           </p>
         </div>
       </div>
@@ -83,10 +82,10 @@ export const SavedJobsPage: React.FC<SavedJobsPageProps> = ({ onSelectJob }) => 
             </p>
           </div>
           <button
-            onClick={() => setCurrentView(isPassActive ? 'jobs' : 'pricing')}
-            className="inline-flex items-center gap-2 px-6 py-2.5 bg-vermilion hover:bg-vermilion-hover text-white text-xs font-mono font-bold uppercase tracking-wider transition-colors"
+            onClick={() => setCurrentView('jobs')}
+            className="inline-flex items-center gap-2 px-6 py-2.5 bg-black dark:bg-white text-white dark:text-black hover:bg-slate-800 dark:hover:bg-slate-200 text-xs font-mono font-bold uppercase tracking-wider transition-colors cursor-pointer"
           >
-            <span>{isPassActive ? 'BROWSE OPPORTUNITIES' : 'ACTIVATE 24H PASS (₹199)'}</span>
+            <span>BROWSE OPPORTUNITIES</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>

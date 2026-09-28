@@ -1,11 +1,8 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { AppProvider, useApp } from '@/context/AppContext'
 import { Navigation } from '@/components/Navigation'
-import { DemoController } from '@/components/DemoController'
-import { PaymentModal } from '@/components/PaymentModal'
 import { JobDetailsModal } from '@/components/JobDetailsModal'
 import { LandingPage } from '@/pages/LandingPage'
-import { PricingPage } from '@/pages/PricingPage'
 import { DashboardPage } from '@/pages/DashboardPage'
 import { JobSearchPage } from '@/pages/JobSearchPage'
 import { SavedJobsPage } from '@/pages/SavedJobsPage'
@@ -23,7 +20,6 @@ import { BackgroundGrid } from '@/components/reactbits/BackgroundGrid'
 
 const AppContent: React.FC = () => {
   const { currentView, setCurrentView, selectedJob, setSelectedJob, isAuthenticated } = useApp()
-  const [isDemoOpen, setIsDemoOpen] = useState<boolean>(false)
 
   const renderCurrentView = () => {
     // Protected views require authentication
@@ -36,8 +32,6 @@ const AppContent: React.FC = () => {
       case 'home':
       case 'landing':
         return <LandingPage />
-      case 'pricing':
-        return <PricingPage />
       case 'dashboard':
         return <DashboardPage onSelectJob={(job) => setSelectedJob(job)} />
       case 'jobs':
@@ -71,14 +65,12 @@ const AppContent: React.FC = () => {
     <div className="min-h-screen flex flex-col bg-background text-foreground selection:bg-indigo-600 selection:text-white pb-16 md:pb-0 relative">
       <BackgroundGrid />
       {/* Top and Mobile Navigation */}
-      <Navigation onOpenDemo={() => setIsDemoOpen(true)} />
+      <Navigation />
 
       {/* Main Page Area */}
       <main className="flex-1">{renderCurrentView()}</main>
 
       {/* Global Modals */}
-      {import.meta.env.DEV && <DemoController open={isDemoOpen} onOpenChange={setIsDemoOpen} />}
-      <PaymentModal />
       <JobDetailsModal job={selectedJob} onClose={() => setSelectedJob(null)} />
 
       {/* Footer */}
@@ -89,7 +81,7 @@ const AppContent: React.FC = () => {
               CC
             </div>
             <span className="font-bold text-foreground">CollegeCentre</span>
-            <span>— The ₹199 / 24-Hour Fresher Job Discovery Platform</span>
+            <span>— 100% Free Fresher Job Discovery Platform</span>
           </div>
 
           <div className="flex flex-wrap items-center gap-4">
@@ -100,19 +92,11 @@ const AppContent: React.FC = () => {
               Overview
             </button>
             <button
-              onClick={() => setCurrentView('pricing')}
+              onClick={() => setCurrentView('jobs')}
               className="hover:text-foreground transition-colors"
             >
-              Pricing & Model
+              Discover Jobs
             </button>
-            {import.meta.env.DEV && (
-              <button
-                onClick={() => setIsDemoOpen(true)}
-                className="text-vermilion font-semibold hover:underline"
-              >
-                Pass Simulator
-              </button>
-            )}
             {isAuthenticated && (
               <>
                 <button
@@ -141,12 +125,6 @@ const AppContent: React.FC = () => {
               className="hover:text-foreground transition-colors"
             >
               Privacy
-            </button>
-            <button
-              onClick={() => setCurrentView('refunds')}
-              className="hover:text-foreground transition-colors"
-            >
-              Refund Policy
             </button>
             <button
               onClick={() => setCurrentView('contact')}

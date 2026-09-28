@@ -275,8 +275,8 @@ export const AuthPages: React.FC<AuthPagesProps> = ({ initialMode = 'signup' }) 
           <span className="text-muted-foreground uppercase tracking-widest">
             {isLogin ? 'Candidate Login' : 'New User Registration'}
           </span>
-          <span className="font-bold text-[#fe7141] uppercase tracking-wider">
-            ₹199 / 24-Hour Pass
+          <span className="font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
+            100% Free Forever
           </span>
         </div>
 

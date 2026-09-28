@@ -1,6 +1,5 @@
 import {
   authenticateRequestUser,
-  checkServerUserPassStatus,
   supabaseAdmin,
 } from './supabaseAdmin.js';
 
@@ -129,8 +128,8 @@ const FALLBACK_SEED_JOBS = [
   {
     id: 'job_07',
     title: 'QA Automation Engineer - Fresher',
-    company: 'Razorpay',
-    company_logo: 'R',
+    company: 'Postman',
+    company_logo: 'P',
     location: 'Bengaluru',
     work_mode: 'Hybrid',
     salary: '₹9–13 LPA',
@@ -141,10 +140,10 @@ const FALLBACK_SEED_JOBS = [
     job_type: 'Full-time',
     posted_at: new Date(Date.now() - 22 * 3600 * 1000).toISOString(),
     deadline: '2026-10-12',
-    description: 'Build automated test suites ensuring 99.99% availability across checkout rails.',
+    description: 'Build automated test suites ensuring 99.99% availability across API platform rails.',
     fresher_eligibility: true,
-    application_url: 'https://razorpay.com/jobs/',
-    source: 'Razorpay University Hiring',
+    application_url: 'https://www.postman.com/company/careers/',
+    source: 'Postman University Hiring',
   },
   {
     id: 'job_08',
@@ -169,50 +168,15 @@ const FALLBACK_SEED_JOBS = [
 ];
 
 /**
- * Server-Side Redaction:
- * Redacts direct application URLs, real company names, and salary numbers
- * for protected jobs so unpaying clients cannot scrape or inspect them.
- */
-function redactJobForFreeUser(job, index) {
-  // Top 3 jobs remain unmasked as the official preview teaser
-  if (index < 3) {
-    return {
-      ...job,
-      is_locked: false,
-    };
-  }
-
-  // Jobs 4+ are redacted on the server
-  return {
-    ...job,
-    company: '[Verified Top Employer]',
-    salary: '₹••–•• LPA (Locked)',
-    application_url: '', // Redacted on server! Never sent over the wire
-    description: job.description ? `${job.description.slice(0, 110)}... [Unlock 24h Pass to read full job description]` : '',
-    is_locked: true,
-  };
-}
-
-/**
  * Endpoint: GET /api/jobs
- * Protected Job Discovery: Returns full unmasked data only if user has active pass.
+ * 100% Free Job Discovery: Returns full unmasked data with direct application URLs.
  */
 export async function getProtectedJobs(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // 1. Authenticate user if token is provided
-  const authUser = await authenticateRequestUser(req);
-
-  // 2. Check if user has an active pass server-side
-  let userHasPass = false;
-  if (authUser) {
-    const passStatus = await checkServerUserPassStatus(authUser.id);
-    userHasPass = Boolean(passStatus.isActive);
-  }
-
-  // 3. Fetch jobs from Supabase or fallback
+  // Fetch jobs from Supabase or fallback
   let allJobs = [];
   if (supabaseAdmin) {
     try {
@@ -234,16 +198,12 @@ export async function getProtectedJobs(req, res) {
     allJobs = FALLBACK_SEED_JOBS;
   }
 
-  // 4. Return full data if user has active pass; otherwise return server-redacted dataset
-  const responseJobs = userHasPass
-    ? allJobs.map((job) => ({ ...job, is_locked: false }))
-    : allJobs.map((job, idx) => redactJobForFreeUser(job, idx));
+  // All jobs are completely free and unlocked
+  const responseJobs = allJobs.map((job) => ({ ...job, is_locked: false }));
 
   return res.status(200).json({
     success: true,
-    userHasPass,
     count: responseJobs.length,
-    previewCount: 3,
     jobs: responseJobs,
   });
 }

@@ -2,8 +2,6 @@ import React, { useState, useMemo } from 'react'
 import { useApp, JobWithMatch } from '@/context/AppContext'
 import { JobCard } from '@/components/JobCard'
 import {
-  Clock,
-  Zap,
   Sparkles,
   Briefcase,
   Laptop,
@@ -23,14 +21,8 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onSelectJob }) => 
   const {
     student,
     jobs,
-    isPassActive,
-    isPassScheduled,
-    scheduledStartTime,
-    startSprintNow,
-    remainingTime,
     savedJobs,
     applications,
-    setIsPaymentModalOpen,
     setCurrentView,
   } = useApp()
 
@@ -58,7 +50,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onSelectJob }) => 
             <span className="font-mono text-xs text-muted-foreground">{student.graduation_year} BATCH</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight mt-1">
-            {student.name ? `Welcome back, ${student.name.split(' ')[0]}` : 'Welcome to your Sprint Desk'}
+            {student.name ? `Welcome back, ${student.name.split(' ')[0]}` : 'Welcome to your Career Desk'}
           </h1>
           <p className="font-mono text-xs text-muted-foreground mt-0.5">
             {student.degree} {student.college ? `· ${student.college}` : '· College Placement & Fresher Matching'}
@@ -68,108 +60,44 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onSelectJob }) => 
         <button
           type="button"
           onClick={() => setCurrentView('profile')}
-          className="font-mono text-xs px-3 py-2 rounded-sm border border-black/15 dark:border-white/20 hover:border-black dark:hover:border-white transition-colors text-foreground flex items-center gap-1.5 self-start sm:self-auto"
+          className="font-mono text-xs px-3 py-2 rounded-sm border border-black/15 dark:border-white/20 hover:border-black dark:hover:border-white transition-colors text-foreground flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
         >
           <User className="w-3.5 h-3.5" />
           <span>Update Profile</span>
         </button>
       </div>
 
-      {/* Main Situation & 24-Hour Pass Hairline Block */}
+      {/* Main Situation & Platform Overview Block */}
       <div className="rounded-lg border border-black/15 dark:border-white/20 bg-card p-6 space-y-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-black/10 dark:border-white/10">
           <div>
             <div className="flex items-center gap-2 font-mono text-xs">
-              <span className="text-muted-foreground uppercase">Status:</span>
-              <span
-                className={`font-bold px-1.5 py-0.2 rounded-xs ${
-                  isPassActive
-                    ? 'bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-300'
-                    : isPassScheduled
-                    ? 'bg-blue-100 text-blue-900 dark:bg-blue-950 dark:text-blue-300'
-                    : remainingTime.isInactive
-                    ? 'bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-slate-200'
-                    : 'bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300'
-                }`}
-              >
-                {isPassActive
-                  ? '24-HOUR PASS ACTIVE'
-                  : isPassScheduled
-                  ? 'SPRINT SCHEDULED'
-                  : remainingTime.isInactive
-                  ? 'PASS INACTIVE / SPRINT READY'
-                  : 'PASS EXPIRED / SEARCH LOCKED'}
+              <span className="text-muted-foreground uppercase">Access Tier:</span>
+              <span className="font-bold px-1.5 py-0.2 rounded-xs bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-300">
+                100% FREE UNRESTRICTED
               </span>
             </div>
 
             <div className="flex items-baseline gap-2.5 mt-2">
-              <Clock
-                className={`w-4 h-4 shrink-0 ${
-                  isPassActive
-                    ? 'text-emerald-600'
-                    : isPassScheduled
-                    ? 'text-blue-500'
-                    : 'text-muted-foreground'
-                }`}
-              />
-              <div className="text-xl sm:text-2xl font-mono font-bold tracking-tight tabular-nums text-foreground">
-                {isPassActive
-                  ? `${remainingTime.hours}h ${remainingTime.minutes}m ${remainingTime.seconds}s remaining`
-                  : isPassScheduled
-                  ? `Starts at ${
-                      scheduledStartTime
-                        ? new Date(scheduledStartTime).toLocaleString([], {
-                            dateStyle: 'short',
-                            timeStyle: 'short',
-                          })
-                        : 'Scheduled Time'
-                    }`
-                  : remainingTime.isInactive
-                  ? 'Sprint Pass Not Activated'
-                  : 'Sprint Window Closed (Preserved Forever)'}
+              <Sparkles className="w-4 h-4 shrink-0 text-emerald-600" />
+              <div className="text-xl sm:text-2xl font-mono font-bold tracking-tight text-foreground">
+                All Verified Fresher Openings Unlocked
               </div>
             </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Direct employer applications, real-time criteria match scores, and permanent pipeline tracking.
+            </p>
           </div>
 
           <div>
-            {isPassActive ? (
-              <button
-                type="button"
-                onClick={() => setCurrentView('jobs')}
-                className="font-mono text-xs font-bold px-4 py-2.5 rounded-sm bg-black dark:bg-white text-white dark:text-black hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors flex items-center gap-2 cursor-pointer"
-              >
-                <span>Browse All Jobs</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            ) : isPassScheduled ? (
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => startSprintNow()}
-                  className="font-mono text-xs font-bold px-4 py-2.5 rounded-sm bg-blue-600 hover:bg-blue-700 text-white transition-colors flex items-center gap-2 shadow-sm cursor-pointer"
-                >
-                  <Zap className="w-4 h-4 fill-current" />
-                  <span>Start Sprint Early Now</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setCurrentView('jobs')}
-                  className="font-mono text-xs px-3 py-2.5 rounded-sm border border-black/15 dark:border-white/20 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-                >
-                  Preview Jobs
-                </button>
-              </div>
-            ) : (
-              <button
-                type="button"
-                onClick={() => setIsPaymentModalOpen(true)}
-                className="font-mono text-xs font-bold px-4 py-2.5 rounded-sm bg-[#fe7141] hover:bg-[#e05828] text-white transition-colors flex items-center gap-2 shadow-2xs cursor-pointer"
-              >
-                <Zap className="w-4 h-4 fill-current" />
-                <span>Unlock 24 Hours — ₹199</span>
-                <ArrowUpRight className="w-4 h-4" />
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={() => setCurrentView('jobs')}
+              className="font-mono text-xs font-bold px-4 py-2.5 rounded-sm bg-black dark:bg-white text-white dark:text-black hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors flex items-center gap-2 cursor-pointer"
+            >
+              <span>Explore All Jobs</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
           </div>
         </div>
 
@@ -280,34 +208,13 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onSelectJob }) => 
           </button>
         </div>
 
-        {/* Teaser status notice if not active */}
-        {!isPassActive && (
-          <div className="p-4 rounded-lg border border-vermilion/30 bg-vermilion/5 text-xs font-mono flex flex-col sm:flex-row items-center justify-between gap-3 text-foreground">
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-vermilion shrink-0" />
-              <span>
-                Free Preview: Top 3 fresher roles unlocked. Activate your 24h sprint (₹199) to unlock all 40+ curated openings & direct apply links.
-              </span>
-            </div>
-            <button
-              type="button"
-              onClick={() => setIsPaymentModalOpen(true)}
-              className="px-3 py-1.5 rounded-sm bg-vermilion hover:bg-vermilion-hover text-white font-bold shrink-0 shadow-xs flex items-center gap-1.5 cursor-pointer"
-            >
-              <Zap className="w-3.5 h-3.5 fill-current" />
-              <span>Start 24H Sprint (₹199)</span>
-            </button>
-          </div>
-        )}
-
         {/* Job Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {recommendedJobs.map((job, index) => (
+          {recommendedJobs.map((job) => (
             <JobCard
               key={job.id}
               job={job}
               onSelect={onSelectJob}
-              isLocked={!isPassActive && index >= 3}
             />
           ))}
         </div>

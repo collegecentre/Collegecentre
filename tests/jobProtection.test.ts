@@ -1,14 +1,14 @@
 import { describe, it, expect } from 'vitest'
 import { getProtectedJobs } from '../server/jobsHandler.js'
 
-describe('Protected Job Discovery & Server-Side Redaction', () => {
-  it('redacts sensitive details for jobs #4+ when user has no pass', async () => {
+describe('100% Free Job Discovery API', () => {
+  it('returns all jobs unmasked with direct application links without requiring payment or pass', async () => {
     let responseData: any = null
     let responseStatus: number = 200
 
     const mockReq: any = {
       method: 'GET',
-      headers: {}, // No auth token -> unauthenticated free user
+      headers: {}, // No auth token needed for discovery
     }
 
     const mockRes: any = {
@@ -26,23 +26,14 @@ describe('Protected Job Discovery & Server-Side Redaction', () => {
 
     expect(responseStatus).toBe(200)
     expect(responseData.success).toBe(true)
-    expect(responseData.userHasPass).toBe(false)
-    expect(responseData.jobs.length).toBeGreaterThan(3)
+    expect(responseData.jobs.length).toBeGreaterThan(0)
 
-    // Top 3 preview jobs MUST NOT be locked
-    for (let i = 0; i < 3; i++) {
-      expect(responseData.jobs[i].is_locked).toBe(false)
-      expect(responseData.jobs[i].application_url).toBeTruthy()
-      expect(responseData.jobs[i].company).not.toBe('[Verified Top Employer]')
-    }
-
-    // Jobs 4+ MUST BE REDACTED on the server
-    for (let i = 3; i < responseData.jobs.length; i++) {
-      const lockedJob = responseData.jobs[i]
-      expect(lockedJob.is_locked).toBe(true)
-      expect(lockedJob.company).toBe('[Verified Top Employer]')
-      expect(lockedJob.application_url).toBe('') // Application URL must NEVER leak over wire!
-      expect(lockedJob.salary).toContain('Locked')
+    // ALL jobs MUST be completely unlocked with direct links
+    for (const job of responseData.jobs) {
+      expect(job.is_locked).toBe(false)
+      expect(job.application_url).toBeTruthy()
+      expect(job.company).not.toBe('[Verified Top Employer]')
+      expect(job.salary).not.toContain('Locked')
     }
   })
 

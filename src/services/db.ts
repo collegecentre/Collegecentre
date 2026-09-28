@@ -1,9 +1,7 @@
 import {
-  AccessPeriod,
   Application,
   ApplicationStatus,
   Job,
-  Payment,
   SavedJob,
   StudentProfile,
 } from '@/types'
@@ -14,8 +12,6 @@ const STORAGE_KEYS = {
   JOBS: 'collegecentre_jobs',
   SAVED_JOBS: 'collegecentre_saved_jobs',
   APPLICATIONS: 'collegecentre_applications',
-  PAYMENTS: 'collegecentre_payments',
-  ACCESS_PERIOD: 'collegecentre_access_period',
 }
 
 export const INITIAL_STUDENT: StudentProfile = {
@@ -80,11 +76,11 @@ export const SEED_JOBS: Job[] = [
   {
     id: 'job_03',
     title: 'Associate Software Engineer',
-    company: 'Razorpay',
-    company_logo: 'RZ',
+    company: 'PhonePe',
+    company_logo: 'PP',
     location: 'Bengaluru',
     work_mode: 'Hybrid',
-    salary: '₹12–16 LPA',
+    salary: '₹14–18 LPA',
     experience: '0–1 years',
     education: 'B.Tech / BE / MCA',
     skills: ['Golang', 'Python', 'SQL', 'Distributed Systems', 'Git'],
@@ -93,10 +89,10 @@ export const SEED_JOBS: Job[] = [
     posted_at: new Date(Date.now() - 10 * 3600 * 1000).toISOString(),
     deadline: 'In 18 days',
     description:
-      'Power the financial infrastructure of India. You will work on low-latency payment processing, merchant checkout SDKs, and automated fraud prevention systems.',
+      'Power large-scale payment platforms and fintech infrastructure in India. You will work on low-latency transaction processing, merchant SDKs, and automated fraud prevention systems.',
     fresher_eligibility: true,
-    application_url: 'https://razorpay.com/jobs/',
-    source: 'Razorpay Early Careers',
+    application_url: 'https://www.phonepe.com/careers/job-openings/',
+    source: 'PhonePe Early Careers',
   },
   {
     id: 'job_04',
@@ -427,211 +423,6 @@ export const db = {
     return this.getJobs().find((j) => j.id === id)
   },
 
-  // Access Period (₹199 / 24-Hour Pass)
-  getAccessPeriod(studentId?: string): AccessPeriod | null {
-    try {
-      const data = localStorage.getItem(STORAGE_KEYS.ACCESS_PERIOD)
-      if (data) {
-        const period: AccessPeriod = JSON.parse(data)
-        if (!studentId || period.student_id === studentId) {
-          // Check if expired
-          const now = Date.now()
-          const expiresAt = new Date(period.expires_at).getTime()
-          if (now >= expiresAt && period.status === 'active') {
-            period.status = 'expired'
-            localStorage.setItem(STORAGE_KEYS.ACCESS_PERIOD, JSON.stringify(period))
-          }
-          return period
-        }
-      }
-    } catch {
-      // ignore
-    }
-    return null
-  },
-
-  saveAccessPeriod(period: AccessPeriod, studentId?: string): void {
-    const toSave: AccessPeriod = studentId ? { ...period, student_id: studentId } : period
-    localStorage.setItem(STORAGE_KEYS.ACCESS_PERIOD, JSON.stringify(toSave))
-  },
-
-  isPassActive(studentId?: string): boolean {
-    const period = this.getAccessPeriod(studentId)
-    if (!period) return false
-    const now = Date.now()
-
-    // If pass was scheduled and scheduled time has arrived, auto-activate
-    if (period.status === 'scheduled' && period.scheduled_for) {
-      const scheduledTime = new Date(period.scheduled_for).getTime()
-      if (now >= scheduledTime) {
-        period.status = 'active'
-        period.started_at = new Date(scheduledTime).toISOString()
-        period.expires_at = new Date(scheduledTime + 24 * 60 * 60 * 1000).toISOString()
-        localStorage.setItem(STORAGE_KEYS.ACCESS_PERIOD, JSON.stringify(period))
-      }
-    }
-
-    const expiresAt = new Date(period.expires_at).getTime()
-    return period.status === 'active' && now < expiresAt
-  },
-
-  isPassScheduled(studentId?: string): { isScheduled: boolean; scheduledFor?: string } {
-    const period = this.getAccessPeriod(studentId)
-    if (!period || period.status !== 'scheduled' || !period.scheduled_for) {
-      return { isScheduled: false }
-    }
-    const now = Date.now()
-    const scheduledTime = new Date(period.scheduled_for).getTime()
-    if (now < scheduledTime) {
-      return { isScheduled: true, scheduledFor: period.scheduled_for }
-    }
-    return { isScheduled: false }
-  },
-
-  startScheduledPassNow(studentId: string = 'guest_student'): AccessPeriod | null {
-    const period = this.getAccessPeriod(studentId)
-    if (!period) return null
-    const now = new Date()
-    const expiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000)
-
-    period.status = 'active'
-    period.started_at = now.toISOString()
-    period.expires_at = expiresAt.toISOString()
-    delete period.scheduled_for
-    localStorage.setItem(STORAGE_KEYS.ACCESS_PERIOD, JSON.stringify(period))
-    return period
-  },
-
-  activatePass(
-    studentId: string = 'guest_student',
-    paymentMethod: 'UPI' | 'Card' | 'NetBanking' = 'UPI',
-    studentEmail?: string,
-    transactionId?: string,
-    orderId?: string,
-    scheduledFor?: string
-  ): { payment: Payment; accessPeriod: AccessPeriod } {
-    const now = new Date()
-    const isScheduled = !!scheduledFor && new Date(scheduledFor).getTime() > now.getTime()
-    const startTime = isScheduled ? new Date(scheduledFor) : now
-    const expiresAt = new Date(startTime.getTime() + 24 * 60 * 60 * 1000) // Exactly +24 hours from start
-
-    const payment: Payment = {
-      id: `pay_${Date.now()}`,
-      student_id: studentId,
-      amount: 199,
-      status: 'Success',
-      payment_method: paymentMethod,
-      transaction_id: transactionId || `TXN_CC_${Math.floor(100000000 + Math.random() * 900000000)}`,
-      order_id: orderId,
-      created_at: now.toISOString(),
-    }
-
-    const accessPeriod: AccessPeriod = {
-      id: `access_${Date.now()}`,
-      student_id: studentId,
-      payment_id: payment.id,
-      started_at: startTime.toISOString(),
-      expires_at: expiresAt.toISOString(),
-      scheduled_for: isScheduled ? scheduledFor : undefined,
-      status: isScheduled ? 'scheduled' : 'active',
-    }
-
-    // Save payment
-    const payments = this.getPayments(studentId)
-    payments.unshift(payment)
-    localStorage.setItem(STORAGE_KEYS.PAYMENTS, JSON.stringify(payments))
-
-    // Save access period
-    localStorage.setItem(STORAGE_KEYS.ACCESS_PERIOD, JSON.stringify(accessPeriod))
-
-    this.syncPassToCloud(payment, accessPeriod, studentEmail)
-
-    return { payment, accessPeriod }
-  },
-
-  async syncPassToCloud(payment: Payment, period: AccessPeriod, email?: string): Promise<void> {
-    try {
-      const studentEmail = email || this.getStudent().email || 'student@collegecentre.in'
-      await Promise.all([
-        supabase.from('cc_payments').insert({
-          id: payment.id,
-          user_id: payment.student_id,
-          amount: payment.amount,
-          currency: 'INR',
-          payment_method: payment.payment_method,
-          status: payment.status,
-          transaction_id: payment.transaction_id,
-          created_at: payment.created_at,
-        }),
-        supabase.from('cc_access_passes').insert({
-          id: period.id,
-          user_id: period.student_id,
-          student_email: studentEmail,
-          started_at: period.started_at,
-          expires_at: period.expires_at,
-          amount: 199.0,
-          status: period.status,
-          payment_method: payment.payment_method,
-          transaction_id: payment.transaction_id,
-          created_at: period.started_at,
-        }),
-      ])
-    } catch (err) {
-      console.warn('Supabase pass sync warning', err)
-    }
-  },
-
-  // Developer simulation helper: immediately expire pass to test locked state
-  simulateExpirePass(studentId: string = 'guest_student'): void {
-    const period = this.getAccessPeriod(studentId)
-    if (period) {
-      const pastTime = new Date(Date.now() - 1000 * 60 * 30).toISOString() // 30 mins ago
-      period.expires_at = pastTime
-      period.status = 'expired'
-      localStorage.setItem(STORAGE_KEYS.ACCESS_PERIOD, JSON.stringify(period))
-    } else {
-      // create expired period
-      const dummyPeriod: AccessPeriod = {
-        id: `access_exp_${Date.now()}`,
-        student_id: studentId,
-        payment_id: 'pay_dummy',
-        started_at: new Date(Date.now() - 25 * 3600 * 1000).toISOString(),
-        expires_at: new Date(Date.now() - 1 * 3600 * 1000).toISOString(),
-        status: 'expired',
-      }
-      localStorage.setItem(STORAGE_KEYS.ACCESS_PERIOD, JSON.stringify(dummyPeriod))
-    }
-  },
-
-  // Developer simulation helper: set remaining time in minutes
-  setPassRemainingMinutes(minutes: number, studentId: string = 'guest_student'): void {
-    const now = Date.now()
-    const expiresAt = new Date(now + minutes * 60 * 1000)
-    const period: AccessPeriod = {
-      id: `access_sim_${now}`,
-      student_id: studentId,
-      payment_id: 'pay_sim',
-      started_at: new Date(now - (24 * 60 - minutes) * 60 * 1000).toISOString(),
-      expires_at: expiresAt.toISOString(),
-      status: 'active',
-    }
-    localStorage.setItem(STORAGE_KEYS.ACCESS_PERIOD, JSON.stringify(period))
-  },
-
-  // Payments History
-  getPayments(studentId?: string): Payment[] {
-    try {
-      const data = localStorage.getItem(STORAGE_KEYS.PAYMENTS)
-      if (data) {
-        const list: Payment[] = JSON.parse(data)
-        if (studentId) return list.filter((p) => p.student_id === studentId)
-        return list
-      }
-    } catch {
-      // ignore
-    }
-    return []
-  },
 
   // Saved Jobs (PERMANENT - never deleted or locked on expiry)
   getSavedJobs(studentId?: string): SavedJob[] {
@@ -738,7 +529,7 @@ export const db = {
         job_id: jobId,
         status,
         applied_at: new Date().toISOString(),
-        notes: notes || 'Applied via CollegeCentre pass',
+        notes: notes || 'Applied via CollegeCentre',
         updated_at: new Date().toISOString(),
       }
       list.unshift(newApp)
@@ -777,8 +568,6 @@ export const db = {
       localStorage.removeItem(STORAGE_KEYS.STUDENT)
       localStorage.removeItem(STORAGE_KEYS.SAVED_JOBS)
       localStorage.removeItem(STORAGE_KEYS.APPLICATIONS)
-      localStorage.removeItem(STORAGE_KEYS.PAYMENTS)
-      localStorage.removeItem(STORAGE_KEYS.ACCESS_PERIOD)
     } catch {
       // ignore
     }
@@ -790,7 +579,5 @@ export const db = {
     localStorage.removeItem(STORAGE_KEYS.JOBS)
     localStorage.removeItem(STORAGE_KEYS.SAVED_JOBS)
     localStorage.removeItem(STORAGE_KEYS.APPLICATIONS)
-    localStorage.removeItem(STORAGE_KEYS.PAYMENTS)
-    localStorage.removeItem(STORAGE_KEYS.ACCESS_PERIOD)
   },
 }

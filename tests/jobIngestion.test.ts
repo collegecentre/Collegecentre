@@ -10,7 +10,7 @@ import {
 describe('Job Ingestion Pipeline & Freshness Checks', () => {
   const validRawJob: RawJobInput = {
     title: 'Software Engineer - Campus 2026',
-    company: 'Razorpay',
+    company: 'Postman',
     location: 'Bengaluru',
     work_mode: 'Hybrid',
     salary: '₹14–18 LPA',
@@ -20,8 +20,8 @@ describe('Job Ingestion Pipeline & Freshness Checks', () => {
     category: 'Backend Development',
     job_type: 'Full-time',
     deadline: '2026-12-31',
-    application_url: 'https://razorpay.com/jobs/se-fresher',
-    source: 'Razorpay Official Careers Portal',
+    application_url: 'https://postman.com/jobs/se-fresher',
+    source: 'Postman Official Careers Portal',
   }
 
   it('normalizes raw job fields into consistent types', () => {

@@ -82,26 +82,6 @@ export interface Application {
   follow_up_date?: string
 }
 
-export interface Payment {
-  id: string
-  student_id: string
-  amount: number // 199
-  status: 'Success' | 'Failed' | 'Pending'
-  payment_method: 'UPI' | 'Card' | 'NetBanking'
-  transaction_id: string
-  order_id?: string
-  created_at: string
-}
-
-export interface AccessPeriod {
-  id: string
-  student_id: string
-  payment_id: string
-  started_at: string
-  expires_at: string
-  scheduled_for?: string
-  status: 'active' | 'scheduled' | 'expired'
-}
 
 export interface MatchResult {
   score: number
