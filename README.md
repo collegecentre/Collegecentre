@@ -28,7 +28,16 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 npx vitest run
 ```
 
-### 4. Build for Production
+### 4. Run Auto Job Adder
+```bash
+# Preview fresh roles without DB modification
+npm run sync-jobs -- --dry-run
+
+# Live harvest & Supabase sync
+npm run sync-jobs
+```
+
+### 5. Build for Production
 ```bash
 npm run build
 ```
@@ -37,6 +46,11 @@ npm run build
 
 ## Features
 
+- **Automated Multi-Network Fresher Job Ingestion**:
+  - Continuously harvests entry-level and fresher opportunities from 7 global remote job networks (**Remotive**, **RemoteOK**, **Arbeitnow**, **Jobicy**, **Himalayas**, **WorkingNomads**, **WeWorkRemotely**).
+  - Strict fresher filter rejects senior/management roles and checks $\le 1$–$2$ years experience bounds.
+  - Automatically deduplicates via normalized URL and content fingerprints.
+  - Automates scheduled updates via GitHub Actions (`.github/workflows/job-sync.yml`) every 6 hours and `/api/sync-jobs`.
 - **Direct Employer Application Links**: Verified job listings directing candidates straight to official company career portals (Workday, Greenhouse, Lever, etc.).
 - **Deterministic Rule-Based Matching Engine**:
   - Compares student profile against job openings across Skills, Education, Experience, Location, and Fresher Eligibility.

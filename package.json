@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "test": "vitest run",
     "lint": "oxlint",
+    "sync-jobs": "node scripts/sync-jobs.js",
     "preview": "vite preview"
   },
   "dependencies": {

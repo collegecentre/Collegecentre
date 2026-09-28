@@ -4,6 +4,7 @@ import { fileURLToPath, URL } from 'node:url'
 import { getProtectedJobs, getUserSavedAndAppliedJobs } from './server/jobsHandler.js'
 import { handleRegisterUser, handleLoginUser } from './server/authHandlers.js'
 import { handleParseResume } from './server/resumeParserHandler.js'
+import { handleSyncJobs } from './server/autoJobAdder.js'
 
 function devApiPlugin(env: Record<string, string>) {
   return {
@@ -16,7 +17,9 @@ function devApiPlugin(env: Record<string, string>) {
           url === '/api/user-jobs' ||
           url === '/api/register' ||
           url === '/api/login' ||
-          url === '/api/parse-resume'
+          url === '/api/parse-resume' ||
+          url === '/api/sync-jobs' ||
+          url === '/api/cron'
         ) {
           process.env.SUPABASE_URL =
             env.SUPABASE_URL || process.env.SUPABASE_URL || env.VITE_SUPABASE_URL
@@ -59,6 +62,8 @@ function devApiPlugin(env: Record<string, string>) {
                 await handleLoginUser(req, res)
               } else if (url === '/api/parse-resume') {
                 await handleParseResume(req, res)
+              } else if (url === '/api/sync-jobs' || url === '/api/cron') {
+                await handleSyncJobs(req, res)
               }
             } catch (err: any) {
               res.status(500).json({ error: err?.message || 'Internal server error' })
