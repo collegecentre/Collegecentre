@@ -1,6 +1,7 @@
 /**
  * CollegeCentre 2.0 Core Types
  * Phase 0: Design System & Project Foundation
+ * Phase 2: Authentication & Onboarding
  */
 
 export type ThemeMode = "light" | "dark" | "system";
@@ -38,4 +39,63 @@ export interface ToastOptions {
     label: string;
     onClick: () => void;
   };
+}
+
+// -------------------------------------------------------------
+// Phase 2: Profiles, Usernames & Social Links
+// -------------------------------------------------------------
+
+export type ProfileTheme = "obsidian" | "academic" | "cobalt" | "terminal";
+
+export interface Profile {
+  id: string;
+  username: string;
+  full_name: string | null;
+  avatar_url: string | null;
+  bio: string | null;
+  college: string | null;
+  course: string | null;
+  graduation_year: number | null;
+  theme: ProfileTheme;
+  onboarding_completed: boolean;
+  onboarding_step: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export type SocialPlatform =
+  | "github"
+  | "linkedin"
+  | "x"
+  | "website"
+  | "instagram"
+  | "youtube"
+  | "email"
+  | "substack"
+  | "other";
+
+export interface SocialLink {
+  id?: string;
+  profile_id?: string;
+  platform: SocialPlatform;
+  url: string;
+  order_index: number;
+}
+
+export interface OnboardingState {
+  username: string;
+  fullName: string;
+  avatarUrl: string;
+  bio: string;
+  college: string;
+  course: string;
+  graduationYear: number | null;
+  socialLinks: SocialLink[];
+  theme: ProfileTheme;
+}
+
+export interface UsernameValidationResult {
+  valid: boolean;
+  available: boolean;
+  error?: string;
 }

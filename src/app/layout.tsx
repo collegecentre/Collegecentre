@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { ThemeProvider } from "@/components/theme-provider";
+import { AuthProvider } from "@/context/AuthContext";
 import { ToastProvider } from "@/components/ui/toast";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
@@ -32,11 +33,13 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen bg-background text-foreground antialiased selection:bg-primary selection:text-primary-foreground font-sans">
         <ThemeProvider defaultTheme="system" storageKey="collegecentre-theme">
-          <ToastProvider>
-            <TooltipProvider delayDuration={150}>
-              {children}
-            </TooltipProvider>
-          </ToastProvider>
+          <AuthProvider>
+            <ToastProvider>
+              <TooltipProvider delayDuration={150}>
+                {children}
+              </TooltipProvider>
+            </ToastProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

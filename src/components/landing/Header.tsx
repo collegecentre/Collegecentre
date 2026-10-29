@@ -1,8 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { Sun, Moon, Menu, X, ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { Sun, Moon, Menu, X, ArrowRight, User } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
+import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
@@ -14,6 +16,7 @@ export interface HeaderProps {
 
 export function Header({ onOpenClaim, onOpenLogin, onOpenExplore }: HeaderProps) {
   const { theme, setTheme, resolvedTheme } = useTheme();
+  const { user, profile } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
   return (
@@ -97,24 +100,39 @@ export function Header({ onOpenClaim, onOpenLogin, onOpenExplore }: HeaderProps)
             <TooltipContent>Theme: {theme}</TooltipContent>
           </Tooltip>
 
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onOpenLogin}
-            className="text-xs"
-          >
-            Login
-          </Button>
+          {user ? (
+            <Link href="/dashboard">
+              <Button
+                variant="default"
+                size="sm"
+                className="text-xs shadow-subtle group"
+                rightIcon={<ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />}
+              >
+                Dashboard {profile?.username ? `(@${profile.username})` : ""}
+              </Button>
+            </Link>
+          ) : (
+            <>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onOpenLogin}
+                className="text-xs"
+              >
+                Login
+              </Button>
 
-          <Button
-            variant="default"
-            size="sm"
-            onClick={onOpenClaim}
-            className="text-xs shadow-subtle group"
-            rightIcon={<ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />}
-          >
-            Create your page
-          </Button>
+              <Button
+                variant="default"
+                size="sm"
+                onClick={onOpenClaim}
+                className="text-xs shadow-subtle group"
+                rightIcon={<ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />}
+              >
+                Create your page
+              </Button>
+            </>
+          )}
         </div>
 
         {/* Mobile Actions */}
@@ -136,14 +154,22 @@ export function Header({ onOpenClaim, onOpenLogin, onOpenExplore }: HeaderProps)
             )}
           </Button>
 
-          <Button
-            variant="default"
-            size="xs"
-            onClick={onOpenClaim}
-            className="text-xs px-2.5"
-          >
-            Create page
-          </Button>
+          {user ? (
+            <Link href="/dashboard">
+              <Button variant="default" size="xs" className="text-xs px-2.5">
+                Dashboard
+              </Button>
+            </Link>
+          ) : (
+            <Button
+              variant="default"
+              size="xs"
+              onClick={onOpenClaim}
+              className="text-xs px-2.5"
+            >
+              Create page
+            </Button>
+          )}
 
           <button
             type="button"
@@ -200,28 +226,42 @@ export function Header({ onOpenClaim, onOpenLogin, onOpenExplore }: HeaderProps)
           </nav>
 
           <div className="pt-2 border-t border-border flex flex-col gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full justify-center"
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onOpenLogin();
-              }}
-            >
-              Login
-            </Button>
-            <Button
-              variant="brand"
-              size="sm"
-              className="w-full justify-center"
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onOpenClaim();
-              }}
-            >
-              Create your CollegeCentre
-            </Button>
+            {user ? (
+              <Link href="/dashboard" className="w-full" onClick={() => setMobileMenuOpen(false)}>
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="w-full justify-center"
+                >
+                  Go to Dashboard
+                </Button>
+              </Link>
+            ) : (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full justify-center"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    onOpenLogin();
+                  }}
+                >
+                  Login
+                </Button>
+                <Button
+                  variant="brand"
+                  size="sm"
+                  className="w-full justify-center"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    onOpenClaim();
+                  }}
+                >
+                  Create your CollegeCentre
+                </Button>
+              </>
+            )}
           </div>
         </div>
       )}

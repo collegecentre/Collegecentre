@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useRouter } from "next/navigation";
 import { CheckCircle2, Sparkles, ArrowRight, School, User } from "lucide-react";
 import {
   Dialog,
@@ -26,6 +27,7 @@ export function ClaimHandleModal({
   onOpenChange,
   initialHandle = "",
 }: ClaimHandleModalProps) {
+  const router = useRouter();
   const [handle, setHandle] = React.useState(() => initialHandle || "yourname");
   const [college, setCollege] = React.useState("");
   const [email, setEmail] = React.useState("");
@@ -148,13 +150,24 @@ export function ClaimHandleModal({
                 <span className="font-mono font-semibold text-foreground">
                   collegecentre.in/{cleanHandle}
                 </span>{" "}
-                is locked for you. When Phase 2 authentication opens, you&apos;ll be first in line to publish your showcase.
+                is locked for you. Let&apos;s create your password and set up your student showcase.
               </DialogDescription>
             </div>
 
-            <div className="pt-2">
-              <Button variant="default" className="w-full" onClick={handleClose}>
-                Done & Return to Preview
+            <div className="pt-2 flex flex-col gap-2">
+              <Button
+                variant="brand"
+                className="w-full text-xs font-semibold"
+                onClick={() => {
+                  handleClose();
+                  router.push(`/signup?handle=${cleanHandle}`);
+                }}
+                rightIcon={<ArrowRight className="h-4 w-4" />}
+              >
+                Set Password &amp; Start Onboarding
+              </Button>
+              <Button variant="ghost" size="xs" onClick={handleClose}>
+                Return to Preview
               </Button>
             </div>
           </div>
