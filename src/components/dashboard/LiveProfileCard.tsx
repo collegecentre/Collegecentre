@@ -4,13 +4,14 @@ import { Copy, Check, ExternalLink, ShieldCheck } from "lucide-react";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { SocialLinksRow } from "@/components/profile/SocialLinksRow";
 import { ProjectsShowcase } from "@/components/profile/ProjectsShowcase";
+import { AchievementsShowcase } from "@/components/profile/AchievementsShowcase";
 import { StudentLinksList } from "@/components/profile/StudentLinksList";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
 import { getProfileTheme } from "@/lib/themes";
 import { supabase } from "@/lib/supabase";
-import type { Profile, SocialLink, StudentLink, Project } from "@/types";
+import type { Profile, SocialLink, StudentLink, Project, Achievement } from "@/types";
 import { cn } from "@/lib/utils";
 
 interface LiveProfileCardProps {
@@ -18,6 +19,7 @@ interface LiveProfileCardProps {
   socialLinks: SocialLink[];
   studentLinks?: StudentLink[];
   projects?: Project[];
+  achievements?: Achievement[];
   className?: string;
 }
 
@@ -26,11 +28,13 @@ export function LiveProfileCard({
   socialLinks,
   studentLinks = [],
   projects,
+  achievements,
   className,
 }: LiveProfileCardProps) {
   const { toast } = useToast();
   const [copied, setCopied] = React.useState(false);
   const [internalProjects, setInternalProjects] = React.useState<Project[]>([]);
+  const [internalAchievements, setInternalAchievements] = React.useState<Achievement[]>([]);
   const themeConfig = getProfileTheme(profile.theme);
 
   React.useEffect(() => {
@@ -46,6 +50,20 @@ export function LiveProfileCard({
         });
     }
   }, [projects, profile?.id]);
+
+  React.useEffect(() => {
+    if (achievements !== undefined) {
+      setInternalAchievements(achievements);
+    } else if (profile?.id) {
+      supabase
+        .from("achievements")
+        .select("*")
+        .eq("profile_id", profile.id)
+        .then((res: { data: any }) => {
+          if (res.data) setInternalAchievements(res.data as Achievement[]);
+        });
+    }
+  }, [achievements, profile?.id]);
 
   const username = profile.username || "student";
   const profileUrl = typeof window !== "undefined"
@@ -131,6 +149,13 @@ export function LiveProfileCard({
             {/* Projects Showcase */}
             <ProjectsShowcase
               projects={projects !== undefined ? projects : internalProjects}
+              themeConfig={themeConfig}
+              studentName={profile.full_name}
+            />
+
+            {/* Achievements Showcase */}
+            <AchievementsShowcase
+              achievements={achievements !== undefined ? achievements : internalAchievements}
               themeConfig={themeConfig}
               studentName={profile.full_name}
             />

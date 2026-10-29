@@ -15,6 +15,7 @@ import {
   Edit3,
   Link2,
   GitBranch,
+  Award,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -346,7 +347,7 @@ export function OverviewTab({
           Quick Management Actions
         </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           <button
             onClick={() => onNavigateTab("profile")}
             className="p-4 rounded-xl border border-border bg-card hover:border-foreground/30 hover:shadow-subtle transition-all text-left space-y-2 group"
@@ -383,6 +384,19 @@ export function OverviewTab({
             <div>
               <span className="text-xs font-bold text-foreground block">Projects &amp; Work</span>
               <span className="text-[11px] text-muted-foreground">Add repositories, demos &amp; stack</span>
+            </div>
+          </button>
+
+          <button
+            onClick={() => onNavigateTab("achievements")}
+            className="p-4 rounded-xl border border-border bg-card hover:border-foreground/30 hover:shadow-subtle transition-all text-left space-y-2 group"
+          >
+            <div className="h-8 w-8 rounded-lg bg-amber-500/10 text-amber-500 flex items-center justify-center group-hover:scale-105 transition-transform">
+              <Award className="h-4 w-4" />
+            </div>
+            <div>
+              <span className="text-xs font-bold text-foreground block">Honors &amp; Awards</span>
+              <span className="text-[11px] text-muted-foreground">Hackathons, preprints &amp; prizes</span>
             </div>
           </button>
 

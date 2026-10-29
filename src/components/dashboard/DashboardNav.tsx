@@ -30,7 +30,7 @@ const NAV_ITEMS: Array<{
   { id: "profile", label: "Profile", icon: User },
   { id: "links", label: "Links", icon: Link2 },
   { id: "projects", label: "Projects", icon: GitBranch },
-  { id: "achievements", label: "Achievements", icon: Award, isPlaceholder: true },
+  { id: "achievements", label: "Achievements", icon: Award },
   { id: "certificates", label: "Certificates", icon: FileCheck2, isPlaceholder: true },
   { id: "resume", label: "Resume", icon: FileText, isPlaceholder: true },
   { id: "appearance", label: "Appearance", icon: Palette, isPlaceholder: true },

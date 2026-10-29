@@ -130,6 +130,38 @@ export interface Project {
   updated_at?: string;
 }
 
+// -------------------------------------------------------------
+// Phase 7: Verified Student Achievements & Honors
+// -------------------------------------------------------------
+
+export type AchievementType =
+  | "hackathon"
+  | "competition"
+  | "award"
+  | "open_source"
+  | "academic"
+  | "leadership"
+  | "certification"
+  | "other";
+
+export interface Achievement {
+  id: string;
+  profile_id: string;
+  title: string;
+  description?: string | null;
+  organization: string;
+  type: AchievementType;
+  date: string;
+  image_url?: string | null;
+  verification_url?: string | null;
+  credential_id?: string | null;
+  is_featured: boolean;
+  is_enabled: boolean;
+  order_index: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export interface OnboardingState {
   username: string;
   fullName: string;

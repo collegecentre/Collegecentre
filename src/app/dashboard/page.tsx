@@ -24,6 +24,7 @@ import { OverviewTab } from "@/components/dashboard/OverviewTab";
 import { ProfileEditTab } from "@/components/dashboard/ProfileEditTab";
 import { LinksManagerTab } from "@/components/dashboard/LinksManagerTab";
 import { ProjectsManagerTab } from "@/components/dashboard/ProjectsManagerTab";
+import { AchievementsManagerTab } from "@/components/dashboard/AchievementsManagerTab";
 import { PlaceholderTab } from "@/components/dashboard/PlaceholderTab";
 import type { DashboardTab } from "@/components/dashboard/dashboard-types";
 import { supabase } from "@/lib/supabase";
@@ -244,10 +245,18 @@ function DashboardContent() {
           />
         )}
 
+        {activeTab === "achievements" && profile && (
+          <AchievementsManagerTab
+            profile={profile}
+            socialLinks={socialLinks}
+          />
+        )}
+
         {activeTab !== "overview" &&
           activeTab !== "profile" &&
           activeTab !== "links" &&
-          activeTab !== "projects" && (
+          activeTab !== "projects" &&
+          activeTab !== "achievements" && (
             <PlaceholderTab tab={activeTab} onNavigateTab={setActiveTab} />
           )}
       </main>

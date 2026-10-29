@@ -38,6 +38,7 @@ const STORAGE_PROFILES_KEY = "cc_mock_profiles";
 const STORAGE_SOCIAL_KEY = "cc_mock_social_links";
 const STORAGE_STUDENT_LINKS_KEY = "cc_mock_student_links";
 const STORAGE_PROJECTS_KEY = "cc_mock_projects";
+const STORAGE_ACHIEVEMENTS_KEY = "cc_mock_achievements";
 
 export const DEFAULT_PROFILES: any[] = [
   {
@@ -314,6 +315,84 @@ export const DEFAULT_PROJECTS: any[] = [
   },
 ];
 
+export const DEFAULT_ACHIEVEMENTS: any[] = [
+  {
+    id: "ach_1",
+    profile_id: "usr_sreehari",
+    title: "1st Place Winner - Systems & Infrastructure",
+    description: "Architected a zero-downtime distributed consensus engine that survived continuous 60% packet drop rates across geo-distributed nodes.",
+    organization: "HackMIT 2025",
+    type: "hackathon",
+    date: "Oct 2025",
+    image_url: "https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?w=400&q=80",
+    verification_url: "https://hackmit.org/winners/2025",
+    credential_id: "HACKMIT-2025-1049",
+    is_featured: true,
+    is_enabled: true,
+    order_index: 0,
+  },
+  {
+    id: "ach_2",
+    profile_id: "usr_sreehari",
+    title: "Google Summer of Code Fellow",
+    description: "Implemented asynchronous disk I/O and atomic batching routines in the Apache Arrow DataFusion query planner.",
+    organization: "Google Open Source",
+    type: "open_source",
+    date: "Aug 2025",
+    image_url: null,
+    verification_url: "https://summerofcode.withgoogle.com/archive/2025/projects/sreehari",
+    credential_id: "GSOC-2025-ARW",
+    is_featured: false,
+    is_enabled: true,
+    order_index: 1,
+  },
+  {
+    id: "ach_3",
+    profile_id: "usr_alex",
+    title: "ACM SIGGRAPH Student Research Finalist",
+    description: "Selected in top 10 international student research papers for GPU-accelerated spatial depth estimation on autonomous quadrotors.",
+    organization: "ACM SIGGRAPH",
+    type: "competition",
+    date: "Aug 2025",
+    image_url: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=400&q=80",
+    verification_url: "https://s2025.siggraph.org/src",
+    credential_id: "SIGGRAPH-SRC-882",
+    is_featured: true,
+    is_enabled: true,
+    order_index: 0,
+  },
+  {
+    id: "ach_4",
+    profile_id: "usr_priya",
+    title: "NeurIPS Workshop Best Paper Award",
+    description: "Honored for empirical user models analyzing human latency tolerance during continuous multi-agent token streaming.",
+    organization: "NeurIPS Foundation",
+    type: "award",
+    date: "Dec 2025",
+    image_url: "https://images.unsplash.com/photo-1532619675605-1ede6c2ed2b0?w=400&q=80",
+    verification_url: "https://neurips.cc/awards/2025",
+    credential_id: "NEURIPS-W-2025-04",
+    is_featured: true,
+    is_enabled: true,
+    order_index: 0,
+  },
+  {
+    id: "ach_5",
+    profile_id: "usr_kavya",
+    title: "Linux Foundation Systems Mentee",
+    description: "Contributed 12 patch sets to upstream BPF network filter routing subsystem in Linux kernel v6.12.",
+    organization: "The Linux Foundation",
+    type: "open_source",
+    date: "Jul 2025",
+    image_url: null,
+    verification_url: "https://mentorship.lfx.linuxfoundation.org/mentees",
+    credential_id: "LFX-2025-KERNEL",
+    is_featured: true,
+    is_enabled: true,
+    order_index: 0,
+  },
+];
+
 const inMemoryStore = new Map<string, string>();
 
 function getStored<T>(key: string, defaultValue: T): T {
@@ -533,6 +612,12 @@ export const mockSupabase = {
                 ? projects.find((p) => p[queryFilter.field!] === queryFilter.value)
                 : projects[0] || null;
               return { data: found || null, error: null };
+            } else if (table === "achievements") {
+              const achievements = getStored<any[]>(STORAGE_ACHIEVEMENTS_KEY, DEFAULT_ACHIEVEMENTS);
+              const found = queryFilter.field
+                ? achievements.find((a) => a[queryFilter.field!] === queryFilter.value)
+                : achievements[0] || null;
+              return { data: found || null, error: null };
             }
             return { data: null, error: null };
           },
@@ -558,6 +643,13 @@ export const mockSupabase = {
                 : projects[0] || null;
               if (!found) return { data: null, error: { message: "Project not found", code: "PGRST116" } };
               return { data: found, error: null };
+            } else if (table === "achievements") {
+              const achievements = getStored<any[]>(STORAGE_ACHIEVEMENTS_KEY, DEFAULT_ACHIEVEMENTS);
+              const found = queryFilter.field
+                ? achievements.find((a) => a[queryFilter.field!] === queryFilter.value)
+                : achievements[0] || null;
+              if (!found) return { data: null, error: { message: "Achievement not found", code: "PGRST116" } };
+              return { data: found, error: null };
             }
             return { data: null, error: null };
           },
@@ -582,6 +674,19 @@ export const mockSupabase = {
               let list = queryFilter.field
                 ? projects.filter((p) => p[queryFilter.field!] === queryFilter.value)
                 : projects;
+              // Sort by is_featured DESC, order_index ASC
+              list.sort((a, b) => {
+                if (a.is_featured !== b.is_featured) {
+                  return a.is_featured ? -1 : 1;
+                }
+                return (a.order_index ?? 0) - (b.order_index ?? 0);
+              });
+              resolve({ data: list, error: null });
+            } else if (table === "achievements") {
+              const achievements = getStored<any[]>(STORAGE_ACHIEVEMENTS_KEY, DEFAULT_ACHIEVEMENTS);
+              let list = queryFilter.field
+                ? achievements.filter((a) => a[queryFilter.field!] === queryFilter.value)
+                : achievements;
               // Sort by is_featured DESC, order_index ASC
               list.sort((a, b) => {
                 if (a.is_featured !== b.is_featured) {
@@ -689,6 +794,33 @@ export const mockSupabase = {
           return { data: list, error: null };
         }
 
+        if (table === "achievements") {
+          const achievements = getStored<any[]>(STORAGE_ACHIEVEMENTS_KEY, DEFAULT_ACHIEVEMENTS);
+          list.forEach((item) => {
+            const existingIdx = achievements.findIndex((a) => a.id && a.id === item.id);
+            if (existingIdx > -1) {
+              achievements[existingIdx] = {
+                ...achievements[existingIdx],
+                ...item,
+                updated_at: new Date().toISOString(),
+              };
+            } else {
+              achievements.push({
+                id: item.id || "ach_" + Math.random().toString(36).substring(2, 9),
+                type: item.type || "other",
+                is_featured: item.is_featured ?? false,
+                is_enabled: item.is_enabled ?? true,
+                order_index: item.order_index ?? achievements.length,
+                ...item,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+              });
+            }
+          });
+          setStored(STORAGE_ACHIEVEMENTS_KEY, achievements);
+          return { data: list, error: null };
+        }
+
         return { data: list, error: null };
       },
 
@@ -732,6 +864,16 @@ export const mockSupabase = {
                   } else {
                     resolve({ data: null, error: { message: "Project not found to update" } });
                   }
+                } else if (table === "achievements") {
+                  const achievements = getStored<any[]>(STORAGE_ACHIEVEMENTS_KEY, DEFAULT_ACHIEVEMENTS);
+                  const idx = achievements.findIndex((a) => a[field] === value);
+                  if (idx > -1) {
+                    achievements[idx] = { ...achievements[idx], ...updates, updated_at: new Date().toISOString() };
+                    setStored(STORAGE_ACHIEVEMENTS_KEY, achievements);
+                    resolve({ data: achievements[idx], error: null });
+                  } else {
+                    resolve({ data: null, error: { message: "Achievement not found to update" } });
+                  }
                 } else {
                   resolve({ data: null, error: null });
                 }
@@ -758,6 +900,10 @@ export const mockSupabase = {
                   const projects = getStored<any[]>(STORAGE_PROJECTS_KEY, DEFAULT_PROJECTS);
                   const remaining = projects.filter((p) => p[field] !== value);
                   setStored(STORAGE_PROJECTS_KEY, remaining);
+                } else if (table === "achievements") {
+                  const achievements = getStored<any[]>(STORAGE_ACHIEVEMENTS_KEY, DEFAULT_ACHIEVEMENTS);
+                  const remaining = achievements.filter((a) => a[field] !== value);
+                  setStored(STORAGE_ACHIEVEMENTS_KEY, remaining);
                 }
                 resolve({ error: null });
               },

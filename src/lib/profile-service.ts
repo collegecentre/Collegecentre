@@ -1,12 +1,13 @@
 import { supabase } from "@/lib/supabase";
 import { normalizeUsername } from "@/lib/username";
-import type { Profile, SocialLink, StudentLink, Project } from "@/types";
+import type { Profile, SocialLink, StudentLink, Project, Achievement } from "@/types";
 
 export interface StudentProfileData {
   profile: Profile;
   socialLinks: SocialLink[];
   studentLinks: StudentLink[];
   projects: Project[];
+  achievements: Achievement[];
 }
 
 /**
@@ -68,11 +69,27 @@ export async function getStudentProfileByUsername(
         return (a.order_index ?? 0) - (b.order_index ?? 0);
       });
 
+    // 5. Fetch verified student achievements
+    const { data: achievementsData } = await supabase
+      .from("achievements")
+      .select("*")
+      .eq("profile_id", profile.id);
+
+    const achievements = ((achievementsData || []) as Achievement[])
+      .filter((a) => a.is_enabled !== false)
+      .sort((a, b) => {
+        if (a.is_featured !== b.is_featured) {
+          return a.is_featured ? -1 : 1;
+        }
+        return (a.order_index ?? 0) - (b.order_index ?? 0);
+      });
+
     return {
       profile,
       socialLinks,
       studentLinks,
       projects,
+      achievements,
     };
   } catch (err) {
     console.error("Failed to load student profile:", err);
