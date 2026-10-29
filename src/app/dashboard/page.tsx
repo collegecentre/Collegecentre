@@ -22,6 +22,7 @@ import { useTheme } from "@/components/theme-provider";
 import { DashboardNav } from "@/components/dashboard/DashboardNav";
 import { OverviewTab } from "@/components/dashboard/OverviewTab";
 import { ProfileEditTab } from "@/components/dashboard/ProfileEditTab";
+import { LinksManagerTab } from "@/components/dashboard/LinksManagerTab";
 import { PlaceholderTab } from "@/components/dashboard/PlaceholderTab";
 import type { DashboardTab } from "@/components/dashboard/dashboard-types";
 import { supabase } from "@/lib/supabase";
@@ -228,7 +229,14 @@ function DashboardContent() {
           />
         )}
 
-        {activeTab !== "overview" && activeTab !== "profile" && (
+        {activeTab === "links" && profile && (
+          <LinksManagerTab
+            profile={profile}
+            socialLinks={socialLinks}
+          />
+        )}
+
+        {activeTab !== "overview" && activeTab !== "profile" && activeTab !== "links" && (
           <PlaceholderTab tab={activeTab} onNavigateTab={setActiveTab} />
         )}
       </main>

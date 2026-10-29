@@ -1,5 +1,5 @@
 import * as React from "react";
-import { School, BookOpen, Calendar, ShieldCheck } from "lucide-react";
+import { School, BookOpen, Calendar } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import type { Profile } from "@/types";

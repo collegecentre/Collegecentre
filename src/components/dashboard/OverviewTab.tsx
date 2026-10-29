@@ -6,7 +6,6 @@ import {
   Check,
   Share2,
   Sparkles,
-  ShieldCheck,
   ArrowRight,
   Eye,
   MousePointerClick,
@@ -14,6 +13,7 @@ import {
   Lock,
   Globe,
   Edit3,
+  Link2,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -360,15 +360,15 @@ export function OverviewTab({
           </button>
 
           <button
-            onClick={() => onNavigateTab("profile")}
+            onClick={() => onNavigateTab("links")}
             className="p-4 rounded-xl border border-border bg-card hover:border-foreground/30 hover:shadow-subtle transition-all text-left space-y-2 group"
           >
             <div className="h-8 w-8 rounded-lg bg-brand/10 text-brand flex items-center justify-center group-hover:scale-105 transition-transform">
-              <Share2 className="h-4 w-4" />
+              <Link2 className="h-4 w-4" />
             </div>
             <div>
-              <span className="text-xs font-bold text-foreground block">Add Social Links</span>
-              <span className="text-[11px] text-muted-foreground">GitHub, LinkedIn, X, Website</span>
+              <span className="text-xs font-bold text-foreground block">Showcase Links</span>
+              <span className="text-[11px] text-muted-foreground">Manage, reorder &amp; curate links</span>
             </div>
           </button>
 

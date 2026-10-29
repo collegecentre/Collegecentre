@@ -84,15 +84,32 @@ export interface SocialLink {
   order_index: number;
 }
 
+export type LinkCategory =
+  | "engineering"
+  | "research"
+  | "writing"
+  | "portfolio"
+  | "social"
+  | "other";
+
 export interface StudentLink {
   id: string;
   profile_id: string;
   title: string;
   url: string;
-  description?: string;
-  icon?: string;
+  description?: string | null;
+  icon?: string | null;
+  thumbnail_url?: string | null;
+  category?: string | null;
+  is_enabled: boolean;
   order_index: number;
+  clicks_count?: number;
+  last_clicked_at?: string | null;
+  created_at?: string;
+  updated_at?: string;
 }
+
+export type LinkItem = StudentLink;
 
 export interface OnboardingState {
   username: string;

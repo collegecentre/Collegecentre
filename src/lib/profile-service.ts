@@ -48,7 +48,9 @@ export async function getStudentProfileByUsername(
       .eq("profile_id", profile.id)
       .order("order_index", { ascending: true });
 
-    const studentLinks = (linksData || []) as StudentLink[];
+    const studentLinks = ((linksData || []) as StudentLink[])
+      .filter((l) => l.is_enabled !== false)
+      .sort((a, b) => (a.order_index ?? 0) - (b.order_index ?? 0));
 
     return {
       profile,

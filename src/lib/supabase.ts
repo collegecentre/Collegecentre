@@ -149,7 +149,10 @@ export const DEFAULT_STUDENT_LINKS: any[] = [
     title: "CollegeCentre 2.0 Engineering Architecture RFC",
     url: "https://github.com/collegecentre/rfc",
     description: "Deep dive into the distributed architecture, SSR profile engine, and Next.js design tokens.",
+    category: "engineering",
+    is_enabled: true,
     order_index: 0,
+    clicks_count: 34,
   },
   {
     id: "link_2",
@@ -157,7 +160,10 @@ export const DEFAULT_STUDENT_LINKS: any[] = [
     title: "Technical Writing & Engineering Preprints",
     url: "https://sreehari.dev/writing",
     description: "Articles on TypeScript compiler internals and low-latency database connection pooling.",
+    category: "writing",
+    is_enabled: true,
     order_index: 1,
+    clicks_count: 12,
   },
   {
     id: "link_3",
@@ -165,7 +171,10 @@ export const DEFAULT_STUDENT_LINKS: any[] = [
     title: "Resume & Academic Transcripts",
     url: "https://sreehari.dev/resume.pdf",
     description: "Updated CV with academic coursework, research papers, and technical project stack.",
+    category: "portfolio",
+    is_enabled: true,
     order_index: 2,
+    clicks_count: 48,
   },
   {
     id: "link_4",
@@ -173,7 +182,10 @@ export const DEFAULT_STUDENT_LINKS: any[] = [
     title: "Real-Time Visual SLAM Quadrotor Demo",
     url: "https://github.com/arivera/vslam-drone",
     description: "Open-source trajectory estimator running at 90fps on onboard Jetson Orin.",
+    category: "engineering",
+    is_enabled: true,
     order_index: 0,
+    clicks_count: 29,
   },
   {
     id: "link_5",
@@ -181,7 +193,10 @@ export const DEFAULT_STUDENT_LINKS: any[] = [
     title: "Berkeley EECS Capstone Research Paper",
     url: "https://arxiv.org",
     description: "Multi-agent coordination under intermittent wireless mesh conditions.",
+    category: "research",
+    is_enabled: true,
     order_index: 1,
+    clicks_count: 17,
   },
   {
     id: "link_6",
@@ -189,7 +204,10 @@ export const DEFAULT_STUDENT_LINKS: any[] = [
     title: "Interactive Latency & Reasoning Benchmarks",
     url: "https://github.com/priyasharma/latency-bench",
     description: "Benchmarking user friction and cognitive perception during token-streamed agent reasoning.",
+    category: "research",
+    is_enabled: true,
     order_index: 0,
+    clicks_count: 45,
   },
   {
     id: "link_7",
@@ -197,7 +215,10 @@ export const DEFAULT_STUDENT_LINKS: any[] = [
     title: "Substack: The Human-AI Interface",
     url: "https://substack.com/@priyasharma",
     description: "Bi-weekly essays on cognitive ergonomies and direct manipulation interfaces.",
+    category: "writing",
+    is_enabled: true,
     order_index: 1,
+    clicks_count: 22,
   },
   {
     id: "link_8",
@@ -205,7 +226,10 @@ export const DEFAULT_STUDENT_LINKS: any[] = [
     title: "Zero-Copy eBPF Packet Filter in Rust",
     url: "https://github.com/kavyapatel/ebpf-router",
     description: "Kernel bypass routing module processing 10Gbps at sub-microsecond latency.",
+    category: "engineering",
+    is_enabled: true,
     order_index: 0,
+    clicks_count: 31,
   },
 ];
 
@@ -451,12 +475,14 @@ export const mockSupabase = {
                 ? links.filter((l) => l[queryFilter.field!] === queryFilter.value)
                 : links;
               resolve({ data: filtered, error: null });
-            } else if (table === "student_links") {
+            } else if (table === "student_links" || table === "links") {
               const links = getStored<any[]>(STORAGE_STUDENT_LINKS_KEY, DEFAULT_STUDENT_LINKS);
-              const filtered = queryFilter.field
+              let list = queryFilter.field
                 ? links.filter((l) => l[queryFilter.field!] === queryFilter.value)
                 : links;
-              resolve({ data: filtered, error: null });
+              // Sort by order_index
+              list.sort((a, b) => (a.order_index ?? 0) - (b.order_index ?? 0));
+              resolve({ data: list, error: null });
             } else if (table === "profiles") {
               const profiles = getStored<any[]>(STORAGE_PROFILES_KEY, DEFAULT_PROFILES);
               resolve({ data: profiles, error: null });
@@ -503,14 +529,27 @@ export const mockSupabase = {
           return { data: list, error: null };
         }
 
-        if (table === "student_links") {
+        if (table === "student_links" || table === "links") {
           const links = getStored<any[]>(STORAGE_STUDENT_LINKS_KEY, DEFAULT_STUDENT_LINKS);
           list.forEach((item) => {
-            links.push({
-              id: item.id || "slink_" + Math.random().toString(36).substring(2, 9),
-              ...item,
-              created_at: new Date().toISOString(),
-            });
+            const existingIdx = links.findIndex((l) => l.id && l.id === item.id);
+            if (existingIdx > -1) {
+              links[existingIdx] = {
+                ...links[existingIdx],
+                ...item,
+                updated_at: new Date().toISOString(),
+              };
+            } else {
+              links.push({
+                id: item.id || "slink_" + Math.random().toString(36).substring(2, 9),
+                is_enabled: item.is_enabled ?? true,
+                order_index: item.order_index ?? links.length,
+                clicks_count: item.clicks_count ?? 0,
+                ...item,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+              });
+            }
           });
           setStored(STORAGE_STUDENT_LINKS_KEY, links);
           return { data: list, error: null };
@@ -528,9 +567,9 @@ export const mockSupabase = {
           eq(field: string, value: any) {
             return {
               async then(resolve: any) {
-                await new Promise((r) => setTimeout(r, 200));
+                await new Promise((r) => setTimeout(r, 100));
                 if (table === "profiles") {
-                  const profiles = getStored<any[]>(STORAGE_PROFILES_KEY, []);
+                  const profiles = getStored<any[]>(STORAGE_PROFILES_KEY, DEFAULT_PROFILES);
                   const idx = profiles.findIndex((p) => p[field] === value);
                   if (idx > -1) {
                     profiles[idx] = { ...profiles[idx], ...updates, updated_at: new Date().toISOString() };
@@ -538,6 +577,16 @@ export const mockSupabase = {
                     resolve({ data: profiles[idx], error: null });
                   } else {
                     resolve({ data: null, error: { message: "Profile not found to update" } });
+                  }
+                } else if (table === "student_links" || table === "links") {
+                  const links = getStored<any[]>(STORAGE_STUDENT_LINKS_KEY, DEFAULT_STUDENT_LINKS);
+                  const idx = links.findIndex((l) => l[field] === value);
+                  if (idx > -1) {
+                    links[idx] = { ...links[idx], ...updates, updated_at: new Date().toISOString() };
+                    setStored(STORAGE_STUDENT_LINKS_KEY, links);
+                    resolve({ data: links[idx], error: null });
+                  } else {
+                    resolve({ data: null, error: { message: "Link not found to update" } });
                   }
                 } else {
                   resolve({ data: null, error: null });
@@ -557,6 +606,10 @@ export const mockSupabase = {
                   const links = getStored<any[]>(STORAGE_SOCIAL_KEY, []);
                   const remaining = links.filter((l) => l[field] !== value);
                   setStored(STORAGE_SOCIAL_KEY, remaining);
+                } else if (table === "student_links" || table === "links") {
+                  const links = getStored<any[]>(STORAGE_STUDENT_LINKS_KEY, DEFAULT_STUDENT_LINKS);
+                  const remaining = links.filter((l) => l[field] !== value);
+                  setStored(STORAGE_STUDENT_LINKS_KEY, remaining);
                 }
                 resolve({ error: null });
               },

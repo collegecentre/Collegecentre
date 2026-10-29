@@ -28,7 +28,7 @@ const NAV_ITEMS: Array<{
 }> = [
   { id: "overview", label: "Overview", icon: Compass },
   { id: "profile", label: "Profile", icon: User },
-  { id: "links", label: "Links", icon: Link2, isPlaceholder: true },
+  { id: "links", label: "Links", icon: Link2 },
   { id: "projects", label: "Projects", icon: GitBranch, isPlaceholder: true },
   { id: "achievements", label: "Achievements", icon: Award, isPlaceholder: true },
   { id: "certificates", label: "Certificates", icon: FileCheck2, isPlaceholder: true },
