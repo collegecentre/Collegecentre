@@ -1,4 +1,4 @@
-import { supabase } from "./supabase";
+import { supabase } from "./supabase.ts";
 import type {
   AnalyticsEvent,
   AnalyticsEventType,
@@ -9,7 +9,7 @@ import type {
   AnalyticsTopContentItem,
   AnalyticsReferrerItem,
   AnalyticsDeviceBreakdown,
-} from "@/types";
+} from "../types/index.ts";
 
 /**
  * Privacy-Conscious Device Detector
