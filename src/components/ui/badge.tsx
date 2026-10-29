@@ -1,49 +1,78 @@
-import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
-import { cn } from "@/lib/utils"
+import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "@/lib/utils";
 
 const badgeVariants = cva(
-  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  "inline-flex items-center gap-1.5 rounded-full border font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 select-none",
   {
     variants: {
       variant: {
         default:
-          "border-transparent bg-primary/10 text-primary hover:bg-primary/20",
+          "border-transparent bg-primary text-primary-foreground hover:bg-primary/90",
         secondary:
           "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        destructive:
-          "border-transparent bg-destructive/10 text-destructive hover:bg-destructive/20",
-        outline: "text-foreground",
+        outline:
+          "border-border text-foreground hover:bg-muted/50",
+        brand:
+          "border-brand/30 bg-brand/10 text-brand dark:text-brand font-semibold hover:bg-brand/15",
         success:
-          "border-transparent bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-medium",
+          "border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-medium",
         warning:
-          "border-transparent bg-amber-500/10 text-amber-700 dark:text-amber-400 font-medium",
-        matchHigh:
-          "border-emerald-200 bg-emerald-50 text-emerald-700 font-bold shadow-xs dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800",
-        matchMid:
-          "border-indigo-200 bg-indigo-50 text-indigo-700 font-bold shadow-xs dark:bg-indigo-950/40 dark:text-indigo-300 dark:border-indigo-800",
-        matchNormal:
-          "border-slate-200 bg-slate-100 text-slate-700 font-medium dark:bg-slate-800 dark:text-slate-300",
-        passActive:
-          "border-emerald-300 bg-emerald-50 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-200",
-        passExpired:
-          "border-rose-300 bg-rose-50 text-rose-800 dark:bg-rose-950/50 dark:text-rose-200",
+          "border-amber-500/20 bg-amber-500/10 text-amber-700 dark:text-amber-400 font-medium",
+        destructive:
+          "border-destructive/20 bg-destructive/10 text-destructive font-medium",
+      },
+      size: {
+        sm: "px-2 py-0.5 text-[11px] leading-tight",
+        default: "px-2.5 py-0.5 text-xs leading-normal",
+        lg: "px-3 py-1 text-xs font-semibold leading-normal",
       },
     },
     defaultVariants: {
       variant: "default",
+      size: "default",
     },
   }
-)
+);
 
 export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof badgeVariants> {}
-
-function Badge({ className, variant, ...props }: BadgeProps) {
-  return (
-    <div className={cn(badgeVariants({ variant }), className)} {...props} />
-  )
+    VariantProps<typeof badgeVariants> {
+  dot?: boolean;
+  dotColor?: string;
 }
 
-export { Badge, badgeVariants }
+function Badge({
+  className,
+  variant,
+  size,
+  dot = false,
+  dotColor,
+  children,
+  ...props
+}: BadgeProps) {
+  return (
+    <div className={cn(badgeVariants({ variant, size }), className)} {...props}>
+      {dot && (
+        <span
+          className={cn(
+            "h-1.5 w-1.5 rounded-full shrink-0",
+            dotColor ||
+              (variant === "success"
+                ? "bg-emerald-500"
+                : variant === "warning"
+                ? "bg-amber-500"
+                : variant === "brand"
+                ? "bg-brand"
+                : variant === "destructive"
+                ? "bg-destructive"
+                : "bg-current")
+          )}
+        />
+      )}
+      {children}
+    </div>
+  );
+}
+
+export { Badge, badgeVariants };
