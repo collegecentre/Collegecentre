@@ -1,0 +1,130 @@
+import * as React from "react";
+import Link from "next/link";
+import { Copy, Check, ExternalLink, ShieldCheck } from "lucide-react";
+import { ProfileHeader } from "@/components/profile/ProfileHeader";
+import { SocialLinksRow } from "@/components/profile/SocialLinksRow";
+import { FeaturedProjectsPlaceholder } from "@/components/profile/FeaturedProjectsPlaceholder";
+import { StudentLinksList } from "@/components/profile/StudentLinksList";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/toast";
+import { getProfileTheme } from "@/lib/themes";
+import type { Profile, SocialLink, StudentLink } from "@/types";
+import { cn } from "@/lib/utils";
+
+interface LiveProfileCardProps {
+  profile: Profile;
+  socialLinks: SocialLink[];
+  studentLinks?: StudentLink[];
+  className?: string;
+}
+
+export function LiveProfileCard({
+  profile,
+  socialLinks,
+  studentLinks = [],
+  className,
+}: LiveProfileCardProps) {
+  const { toast } = useToast();
+  const [copied, setCopied] = React.useState(false);
+  const themeConfig = getProfileTheme(profile.theme);
+
+  const username = profile.username || "student";
+  const profileUrl = typeof window !== "undefined"
+    ? `${window.location.origin}/${username}`
+    : `https://collegecentre.in/${username}`;
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(profileUrl);
+    setCopied(true);
+    toast({
+      title: "URL Copied",
+      description: `${profileUrl} copied to clipboard.`,
+      variant: "default",
+    });
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className={cn("space-y-3", className)}>
+      <div className="flex items-center justify-between px-1">
+        <div className="flex items-center gap-1.5">
+          <span className="text-xs font-mono font-medium text-muted-foreground uppercase tracking-wider">
+            Live Showcase Preview
+          </span>
+          <Badge variant="outline" size="sm" className="font-mono text-[10px]">
+            Real-Time
+          </Badge>
+        </div>
+
+        <Link href={`/${username}`} target="_blank">
+          <Button
+            variant="ghost"
+            size="xs"
+            className="text-[11px] text-primary h-7 gap-1"
+          >
+            <span>Open in Tab</span>
+            <ExternalLink className="h-3 w-3" />
+          </Button>
+        </Link>
+      </div>
+
+      {/* Device Frame Window */}
+      <div className="rounded-2xl border border-border bg-card shadow-modal overflow-hidden transition-all duration-200">
+        {/* Top Browser / Window Header */}
+        <div className="flex items-center justify-between px-3.5 py-2.5 border-b border-border/80 bg-muted/40">
+          <div className="flex items-center gap-1.5">
+            <div className="h-2.5 w-2.5 rounded-full bg-border" />
+            <div className="h-2.5 w-2.5 rounded-full bg-border" />
+            <div className="h-2.5 w-2.5 rounded-full bg-border" />
+          </div>
+
+          <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-background border border-border/70 text-[11px] font-mono text-muted-foreground max-w-[220px] w-full justify-between">
+            <span className="truncate">collegecentre.in/{username}</span>
+            <button
+              onClick={handleCopyLink}
+              className="text-muted-foreground hover:text-foreground p-0.5"
+              aria-label="Copy preview link"
+            >
+              {copied ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
+            </button>
+          </div>
+
+          <div className="flex items-center gap-1 text-[10px] font-mono text-muted-foreground">
+            <ShieldCheck className="h-3 w-3 text-brand" />
+            <span className="hidden sm:inline">Verified</span>
+          </div>
+        </div>
+
+        {/* Scaled Profile Container Inside */}
+        <div className={cn("p-5 sm:p-6 transition-colors duration-200 max-h-[720px] overflow-y-auto", themeConfig.pageBackground)}>
+          <div className={cn("rounded-xl border p-5 sm:p-6 space-y-6 shadow-sm", themeConfig.containerClass)}>
+            {/* Header */}
+            <ProfileHeader profile={profile} themeConfig={themeConfig} />
+
+            {/* Social Links */}
+            <SocialLinksRow socialLinks={socialLinks} themeConfig={themeConfig} />
+
+            {/* Configured Links */}
+            {studentLinks.length > 0 && (
+              <StudentLinksList links={studentLinks} themeConfig={themeConfig} />
+            )}
+
+            {/* Featured Section Placeholder */}
+            <FeaturedProjectsPlaceholder themeConfig={themeConfig} studentName={profile.full_name} />
+
+            {/* Minimal Card Footer Branding */}
+            <div className="pt-4 border-t border-border/40 text-center space-y-1">
+              <span className="text-[10px] font-semibold text-foreground/80 block">
+                CollegeCentre • Verified Student Identity
+              </span>
+              <p className="text-[9px] text-muted-foreground">
+                One link for everything you&apos;ve built, achieved, and are.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
