@@ -55,6 +55,12 @@ export const DEFAULT_PROFILES: any[] = [
     graduation_year: 2026,
     theme: "obsidian",
     is_public: true,
+    is_discoverable: true,
+    location: "Bengaluru, India",
+    category: "engineering",
+    skills: ["Next.js", "TypeScript", "Tailwind CSS", "Rust", "PostgreSQL"],
+    is_featured: true,
+    views_count: 189,
     onboarding_completed: true,
     onboarding_step: 7,
     created_at: "2026-09-01T00:00:00Z",
@@ -71,6 +77,12 @@ export const DEFAULT_PROFILES: any[] = [
     graduation_year: 2026,
     theme: "cobalt",
     is_public: true,
+    is_discoverable: true,
+    location: "Berkeley, CA",
+    category: "engineering",
+    skills: ["C++20", "ROS2", "CUDA", "OpenCV", "Jetson Orin"],
+    is_featured: true,
+    views_count: 142,
     onboarding_completed: true,
     onboarding_step: 7,
     created_at: "2026-09-01T00:00:00Z",
@@ -87,6 +99,12 @@ export const DEFAULT_PROFILES: any[] = [
     graduation_year: 2025,
     theme: "academic",
     is_public: true,
+    is_discoverable: true,
+    location: "Stanford, CA",
+    category: "research",
+    skills: ["PyTorch", "HuggingFace", "FastAPI", "React", "KaTeX"],
+    is_featured: true,
+    views_count: 165,
     onboarding_completed: true,
     onboarding_step: 7,
     created_at: "2026-09-01T00:00:00Z",
@@ -103,9 +121,103 @@ export const DEFAULT_PROFILES: any[] = [
     graduation_year: 2027,
     theme: "terminal",
     is_public: true,
+    is_discoverable: true,
+    location: "Atlanta, GA",
+    category: "engineering",
+    skills: ["Rust", "eBPF", "Linux Kernel", "XDP", "Tokio"],
+    is_featured: false,
+    views_count: 98,
     onboarding_completed: true,
     onboarding_step: 7,
     created_at: "2026-09-01T00:00:00Z",
+    updated_at: "2026-10-29T00:00:00Z",
+  },
+  {
+    id: "usr_elena",
+    username: "elenarostova",
+    full_name: "Elena Rostova",
+    avatar_url: "",
+    bio: "Designing accessible spatial interfaces and micro-interactions. Winner Apple Design Award 2025.",
+    college: "Carnegie Mellon University",
+    course: "M.Des Human-Computer Interaction",
+    graduation_year: 2025,
+    theme: "creative",
+    is_public: true,
+    is_discoverable: true,
+    location: "Pittsburgh, PA",
+    category: "design",
+    skills: ["Figma", "Design Systems", "Three.js", "Tailwind CSS", "React"],
+    is_featured: true,
+    views_count: 210,
+    onboarding_completed: true,
+    onboarding_step: 7,
+    created_at: "2026-09-10T00:00:00Z",
+    updated_at: "2026-10-29T00:00:00Z",
+  },
+  {
+    id: "usr_marcus",
+    username: "marcuschen",
+    full_name: "Marcus Chen",
+    avatar_url: "",
+    bio: "Building high-throughput telemetry pipelines and database storage engines in Zig and Go.",
+    college: "University of Waterloo",
+    course: "B.S. Software Engineering",
+    graduation_year: 2026,
+    theme: "developer",
+    is_public: true,
+    is_discoverable: true,
+    location: "Waterloo, Canada",
+    category: "engineering",
+    skills: ["Zig", "Go", "PostgreSQL", "Kafka", "Distributed Systems"],
+    is_featured: false,
+    views_count: 115,
+    onboarding_completed: true,
+    onboarding_step: 7,
+    created_at: "2026-09-15T00:00:00Z",
+    updated_at: "2026-10-29T00:00:00Z",
+  },
+  {
+    id: "usr_ananya",
+    username: "ananyarao",
+    full_name: "Ananya Rao",
+    avatar_url: "",
+    bio: "Simulating hypersonic boundary layer turbulence with GPU clusters and OpenFOAM.",
+    college: "IIT Madras",
+    course: "B.Tech Aerospace Engineering",
+    graduation_year: 2025,
+    theme: "academic",
+    is_public: true,
+    is_discoverable: true,
+    location: "Chennai, India",
+    category: "research",
+    skills: ["Python", "CUDA", "C++", "OpenFOAM", "Fluid Dynamics"],
+    is_featured: false,
+    views_count: 125,
+    onboarding_completed: true,
+    onboarding_step: 7,
+    created_at: "2026-09-20T00:00:00Z",
+    updated_at: "2026-10-29T00:00:00Z",
+  },
+  {
+    id: "usr_hidden",
+    username: "devinhidden",
+    full_name: "Devin Hidden",
+    avatar_url: "",
+    bio: "Systems programmer at Harvard. Prefers unlisted portfolio.",
+    college: "Harvard University",
+    course: "A.B. Computer Science",
+    graduation_year: 2026,
+    theme: "minimal",
+    is_public: true,
+    is_discoverable: false,
+    location: "Cambridge, MA",
+    category: "engineering",
+    skills: ["C", "Assembly", "Operating Systems"],
+    is_featured: false,
+    views_count: 40,
+    onboarding_completed: true,
+    onboarding_step: 7,
+    created_at: "2026-10-01T00:00:00Z",
     updated_at: "2026-10-29T00:00:00Z",
   },
   {
@@ -119,6 +231,12 @@ export const DEFAULT_PROFILES: any[] = [
     graduation_year: 2026,
     theme: "obsidian",
     is_public: false,
+    is_discoverable: false,
+    location: "Boston, MA",
+    category: "research",
+    skills: ["Python", "Qiskit", "Physics"],
+    is_featured: false,
+    views_count: 12,
     onboarding_completed: true,
     onboarding_step: 7,
     created_at: "2026-09-01T00:00:00Z",
@@ -313,6 +431,52 @@ export const DEFAULT_PROJECTS: any[] = [
     start_date: "2026-02",
     end_date: "2026-07",
     is_featured: true,
+    is_enabled: true,
+    order_index: 0,
+  },
+  {
+    id: "proj_6",
+    profile_id: "usr_elena",
+    title: "Aura Spatial Design Tokens",
+    description: "Design token engine for glassmorphic and accessible spatial computing interfaces with automatic WCAG AAA contrast compensation.",
+    cover_image_url: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=800&q=80",
+    technologies: ["Figma", "Design Systems", "Three.js", "Tailwind CSS"],
+    github_url: "https://github.com/elenarostova/aura-tokens",
+    demo_url: "https://aura-design.cmu.edu",
+    video_url: "https://youtube.com/watch?v=aura-demo",
+    start_date: "2025-11",
+    end_date: "2026-05",
+    is_featured: true,
+    is_enabled: true,
+    order_index: 0,
+  },
+  {
+    id: "proj_7",
+    profile_id: "usr_marcus",
+    title: "Chronos Log-Structured Storage",
+    description: "High-throughput append-only storage engine written in Zig with SIMD-accelerated index lookups and zero-copy compaction.",
+    cover_image_url: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&q=80",
+    technologies: ["Zig", "SIMD", "Storage Engines", "Distributed Systems"],
+    github_url: "https://github.com/marcuschen/chronos-engine",
+    demo_url: "https://chronos.waterloo.dev",
+    start_date: "2026-01",
+    end_date: "2026-06",
+    is_featured: true,
+    is_enabled: true,
+    order_index: 0,
+  },
+  {
+    id: "proj_8",
+    profile_id: "usr_ananya",
+    title: "TurbGPU Hypersonic Boundary Simulation",
+    description: "GPU-parallelized finite volume solver for 3D compressible Navier-Stokes equations under Mach 6 atmospheric re-entry conditions.",
+    cover_image_url: "https://images.unsplash.com/photo-1517976487588-34863013890f?w=800&q=80",
+    technologies: ["CUDA", "C++", "OpenFOAM", "Python", "Fluid Dynamics"],
+    github_url: "https://github.com/ananyarao/turb-gpu",
+    demo_url: "https://aerolab.iitm.ac.in/turbgpu",
+    start_date: "2025-08",
+    end_date: "2026-04",
+    is_featured: false,
     is_enabled: true,
     order_index: 0,
   },
@@ -1013,9 +1177,20 @@ export const mockSupabase = {
               resolve({ data: list, error: null });
             } else if (table === "projects") {
               const projects = getStored<any[]>(STORAGE_PROJECTS_KEY, DEFAULT_PROJECTS);
-              let list = queryFilter.field
-                ? projects.filter((p) => p[queryFilter.field!] === queryFilter.value)
-                : projects;
+              let list = projects.filter((p) => {
+                if (queryFilters.length > 0) {
+                  for (const f of queryFilters) {
+                    if (f.op === "eq" && p[f.field] !== f.value) return false;
+                    if (f.op === "gte" && p[f.field] < f.value) return false;
+                    if (f.op === "lte" && p[f.field] > f.value) return false;
+                  }
+                  return true;
+                }
+                if (queryFilter.field) {
+                  return p[queryFilter.field] === queryFilter.value;
+                }
+                return true;
+              });
               // Sort by is_featured DESC, order_index ASC
               list.sort((a, b) => {
                 if (a.is_featured !== b.is_featured) {
@@ -1075,7 +1250,29 @@ export const mockSupabase = {
               resolve({ data: list, error: null });
             } else if (table === "profiles") {
               const profiles = getStored<any[]>(STORAGE_PROFILES_KEY, DEFAULT_PROFILES);
-              resolve({ data: profiles, error: null });
+              let list = profiles.filter((p) => {
+                if (queryFilters.length > 0) {
+                  for (const f of queryFilters) {
+                    if (f.op === "eq") {
+                      if (p[f.field] !== f.value) return false;
+                    } else if (f.op === "gte") {
+                      if (p[f.field] < f.value) return false;
+                    } else if (f.op === "lte") {
+                      if (p[f.field] > f.value) return false;
+                    }
+                  }
+                  return true;
+                }
+                if (queryFilter.field) {
+                  const val = p[queryFilter.field];
+                  if (typeof val === "string" && typeof queryFilter.value === "string") {
+                    return val.toLowerCase() === queryFilter.value.toLowerCase();
+                  }
+                  return val === queryFilter.value;
+                }
+                return true;
+              });
+              resolve({ data: list, error: null });
             } else {
               resolve({ data: [], error: null });
             }

@@ -7,6 +7,7 @@ import {
   LogOut,
   ExternalLink,
   ShieldCheck,
+  Compass,
   Moon,
   Sun,
   Laptop,
@@ -155,6 +156,17 @@ function DashboardContent() {
 
           {/* Right Header Utilities: Live Showcase link, Theme toggle, User badge, Sign Out */}
           <div className="flex items-center gap-2">
+            <Link href="/explore" className="hidden md:inline-block">
+              <Button
+                variant="ghost"
+                size="xs"
+                className="text-xs h-8 gap-1.5 text-muted-foreground hover:text-foreground"
+                leftIcon={<Compass className="h-3.5 w-3.5" />}
+              >
+                <span>Explore Network</span>
+              </Button>
+            </Link>
+
             <Link href={`/${username}`} target="_blank" className="hidden sm:inline-block">
               <Button
                 variant="outline"

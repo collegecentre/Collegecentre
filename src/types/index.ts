@@ -85,6 +85,12 @@ export interface Profile {
   theme_button?: ThemeButtonStyle | null;
   theme_background?: ThemeBackgroundStyle | null;
   is_public: boolean;
+  is_discoverable?: boolean;
+  location?: string | null;
+  category?: string | null;
+  skills?: string[];
+  is_featured?: boolean;
+  views_count?: number;
   onboarding_completed: boolean;
   onboarding_step: number;
   created_at: string;
@@ -327,4 +333,83 @@ export interface UsernameValidationResult {
   valid: boolean;
   available: boolean;
   error?: string;
+}
+
+// -------------------------------------------------------------
+// Phase 13: Student Network Explore & Discovery
+// -------------------------------------------------------------
+
+export type ExploreCategory =
+  | "all"
+  | "engineering"
+  | "research"
+  | "design"
+  | "product"
+  | "writing"
+  | "other";
+
+export type ExploreSection = "all" | "featured" | "popular" | "recent" | "projects";
+
+export interface ExploreFilters {
+  query?: string;
+  college?: string;
+  course?: string;
+  graduationYear?: number | string;
+  skill?: string;
+  category?: string;
+  location?: string;
+  section?: ExploreSection;
+  view?: "all" | "students" | "projects";
+}
+
+export interface ExploreStudentCardData {
+  id: string;
+  username: string;
+  full_name: string | null;
+  avatar_url: string | null;
+  bio: string | null;
+  college: string | null;
+  course: string | null;
+  graduation_year: number | null;
+  location?: string | null;
+  category?: string | null;
+  skills: string[];
+  theme: ProfileTheme;
+  is_featured: boolean;
+  views_count: number;
+  projects_count: number;
+  achievements_count: number;
+  top_project?: {
+    id: string;
+    title: string;
+    description: string;
+    technologies: string[];
+    github_url?: string | null;
+    demo_url?: string | null;
+    cover_image_url?: string | null;
+  } | null;
+  created_at: string;
+}
+
+export interface ExploreProject extends Project {
+  author?: {
+    username: string;
+    full_name: string | null;
+    avatar_url: string | null;
+    college: string | null;
+  } | null;
+}
+
+export interface ExploreResponse {
+  students: ExploreStudentCardData[];
+  projects: ExploreProject[];
+  totalStudents: number;
+  totalProjects: number;
+  page: number;
+  limit: number;
+  hasMore: boolean;
+  availableColleges: string[];
+  availableSkills: string[];
+  availableYears: number[];
+  availableCategories: string[];
 }

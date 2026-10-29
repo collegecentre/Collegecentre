@@ -11,6 +11,7 @@ import {
   TrendingUp,
   Lock,
   Globe,
+  Compass,
   Edit3,
   Link2,
   GitBranch,
@@ -48,6 +49,7 @@ export function OverviewTab({
   const { toast } = useToast();
   const [copied, setCopied] = React.useState(false);
   const [isUpdatingPrivacy, setIsUpdatingPrivacy] = React.useState(false);
+  const [isUpdatingDiscoverability, setIsUpdatingDiscoverability] = React.useState(false);
   const [shareModalOpen, setShareModalOpen] = React.useState(false);
   const [analyticsMetrics, setAnalyticsMetrics] = React.useState<AnalyticsOverviewMetrics | null>(null);
 
@@ -122,6 +124,39 @@ export function OverviewTab({
       console.error(err);
     } finally {
       setIsUpdatingPrivacy(false);
+    }
+  };
+
+  const handleToggleDiscoverability = async (checked: boolean) => {
+    if (!profile) return;
+    setIsUpdatingDiscoverability(true);
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ is_discoverable: checked })
+        .eq("id", profile.id);
+
+      if (error) {
+        toast({
+          title: "Update Failed",
+          description: "Could not update discoverability setting.",
+          variant: "error",
+        });
+      } else {
+        const updated = { ...profile, is_discoverable: checked };
+        if (onProfileUpdated) onProfileUpdated(updated);
+        toast({
+          title: checked ? "Listed in Explore" : "Unlisted from Explore",
+          description: checked
+            ? "Your showcase is now discoverable in the CollegeCentre student network."
+            : "Your showcase is unlisted from Explore (direct link still works).",
+          variant: checked ? "success" : "info",
+        });
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsUpdatingDiscoverability(false);
     }
   };
 
@@ -234,6 +269,40 @@ export function OverviewTab({
             />
             <span className="text-xs font-mono text-muted-foreground">
               {profile?.is_public ? "Public" : "Private"}
+            </span>
+          </div>
+        </div>
+
+        {/* Discoverability in Explore Network Toggle Row */}
+        <div className="mt-3 pt-3 border-t border-border/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <Compass className={cn("h-4 w-4", (profile?.is_discoverable ?? true) ? "text-brand" : "text-muted-foreground")} />
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold text-foreground">
+                  Explore Directory Discoverability
+                </span>
+                {!(profile?.is_public ?? true) && (
+                  <Badge variant="outline" size="sm" className="text-[9px] font-mono text-amber-500 border-amber-500/30">
+                    Disabled (Profile Private)
+                  </Badge>
+                )}
+              </div>
+              <p className="text-[11px] text-muted-foreground">
+                Allow other students and engineering teams to discover your profile and projects in the Explore directory.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Switch
+              checked={(profile?.is_discoverable ?? true) && (profile?.is_public ?? true)}
+              onCheckedChange={handleToggleDiscoverability}
+              disabled={isUpdatingDiscoverability || !(profile?.is_public ?? true)}
+              aria-label="Toggle explore directory discoverability"
+            />
+            <span className="text-xs font-mono text-muted-foreground">
+              {(profile?.is_discoverable ?? true) && (profile?.is_public ?? true) ? "Discoverable" : "Unlisted"}
             </span>
           </div>
         </div>

@@ -43,12 +43,12 @@ export function Header({ onOpenClaim, onOpenLogin, onOpenExplore }: HeaderProps)
 
           {/* Desktop Nav Items */}
           <nav className="hidden md:flex items-center gap-1 text-xs font-medium">
-            <button
-              onClick={onOpenExplore}
+            <Link
+              href="/explore"
               className="px-3 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
             >
               Explore
-            </button>
+            </Link>
             <a
               href="#why-collegecentre"
               className="px-3 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
@@ -186,15 +186,13 @@ export function Header({ onOpenClaim, onOpenLogin, onOpenExplore }: HeaderProps)
       {mobileMenuOpen && (
         <div className="md:hidden border-b border-border bg-background/95 backdrop-blur-md px-4 py-4 space-y-3 animate-in slide-in-from-top-2 duration-150">
           <nav className="flex flex-col space-y-1">
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onOpenExplore();
-              }}
+            <Link
+              href="/explore"
+              onClick={() => setMobileMenuOpen(false)}
               className="text-left px-3 py-2 text-sm font-medium rounded-md hover:bg-muted text-foreground transition-colors"
             >
               Explore Showcases
-            </button>
+            </Link>
             <a
               href="#why-collegecentre"
               onClick={() => setMobileMenuOpen(false)}
