@@ -42,6 +42,8 @@ const STORAGE_ACHIEVEMENTS_KEY = "cc_mock_achievements";
 const STORAGE_CERTIFICATES_KEY = "cc_mock_certificates";
 const STORAGE_RESUMES_KEY = "cc_mock_resumes";
 const STORAGE_ANALYTICS_KEY = "cc_mock_analytics";
+const STORAGE_COLLEGES_KEY = "cc_mock_colleges_v14";
+const STORAGE_COLLEGE_MEMBERS_KEY = "cc_mock_college_members_v14";
 
 export const DEFAULT_PROFILES: any[] = [
   {
@@ -50,7 +52,11 @@ export const DEFAULT_PROFILES: any[] = [
     full_name: "Sreehari Nair",
     avatar_url: "",
     bio: "Building CollegeCentre 2.0. Distributed systems, web platform architecture, and developer productivity tools.",
-    college: "National Institute of Technology",
+    college: "National Institute of Technology Calicut",
+    college_id: "col_nit",
+    college_slug: "nit-calicut",
+    show_college_on_profile: true,
+    show_in_college_directory: true,
     course: "Computer Science & Engineering",
     graduation_year: 2026,
     theme: "obsidian",
@@ -72,7 +78,11 @@ export const DEFAULT_PROFILES: any[] = [
     full_name: "Alex Rivera",
     avatar_url: "",
     bio: "Building visual SLAM kernels for autonomous aerial drones and low-latency ROS2 nodes. ACM SIGGRAPH & HackMIT finalist.",
-    college: "UC Berkeley",
+    college: "University of California, Berkeley",
+    college_id: "col_berkeley",
+    college_slug: "uc-berkeley",
+    show_college_on_profile: true,
+    show_in_college_directory: true,
     course: "B.S. EECS & Robotics",
     graduation_year: 2026,
     theme: "cobalt",
@@ -95,6 +105,10 @@ export const DEFAULT_PROFILES: any[] = [
     avatar_url: "",
     bio: "Researching multimodal foundation models and interactive latency constraints. NeurIPS 2025 Workshop Author.",
     college: "Stanford University",
+    college_id: "col_stanford",
+    college_slug: "stanford-university",
+    show_college_on_profile: true,
+    show_in_college_directory: true,
     course: "M.S. Artificial Intelligence & HCI",
     graduation_year: 2025,
     theme: "academic",
@@ -139,6 +153,10 @@ export const DEFAULT_PROFILES: any[] = [
     avatar_url: "",
     bio: "Designing accessible spatial interfaces and micro-interactions. Winner Apple Design Award 2025.",
     college: "Carnegie Mellon University",
+    college_id: "col_cmu",
+    college_slug: "cmu",
+    show_college_on_profile: true,
+    show_in_college_directory: true,
     course: "M.Des Human-Computer Interaction",
     graduation_year: 2025,
     theme: "creative",
@@ -242,7 +260,263 @@ export const DEFAULT_PROFILES: any[] = [
     created_at: "2026-09-01T00:00:00Z",
     updated_at: "2026-10-29T00:00:00Z",
   },
+  {
+    id: "usr_hidden_dir",
+    username: "secretbuilder",
+    full_name: "Secret Builder",
+    avatar_url: "",
+    bio: "Stealth compiler optimization research. Low profile.",
+    college: "National Institute of Technology Calicut",
+    college_id: "col_nit",
+    college_slug: "nit-calicut",
+    course: "B.Tech Computer Science",
+    graduation_year: 2026,
+    theme: "minimal",
+    is_public: true,
+    is_discoverable: true,
+    show_college_on_profile: false,
+    show_in_college_directory: false,
+    location: "Kozhikode, India",
+    category: "engineering",
+    skills: ["LLVM", "C++", "Compilers"],
+    is_featured: false,
+    views_count: 50,
+    onboarding_completed: true,
+    onboarding_step: 7,
+    created_at: "2026-09-01T00:00:00Z",
+    updated_at: "2026-10-29T00:00:00Z",
+  },
 ];
+
+export const DEFAULT_COLLEGES: any[] = [
+  {
+    id: "col_nit",
+    slug: "nit-calicut",
+    name: "National Institute of Technology Calicut",
+    short_name: "NIT Calicut",
+    logo_url: "https://images.unsplash.com/photo-1562774053-701939374585?w=200&h=200&fit=crop",
+    banner_url: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=1200&h=400&fit=crop",
+    description: "An Institute of National Importance fostering engineering excellence, research, and open-source systems innovation.",
+    location: "Kozhikode, Kerala, India",
+    website: "https://www.nitc.ac.in",
+    verification_status: "verified",
+    verified_at: "2026-01-15T00:00:00Z",
+    verified_domain: "nitc.ac.in",
+    created_at: "2026-01-01T00:00:00Z",
+    updated_at: "2026-10-29T00:00:00Z",
+  },
+  {
+    id: "col_berkeley",
+    slug: "uc-berkeley",
+    name: "University of California, Berkeley",
+    short_name: "UC Berkeley",
+    logo_url: "https://images.unsplash.com/photo-1592280771190-3e2e4d571952?w=200&h=200&fit=crop",
+    banner_url: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1200&h=400&fit=crop",
+    description: "World-renowned public research university leading breakthroughs in computing, robotics, and scientific discovery.",
+    location: "Berkeley, CA, USA",
+    website: "https://berkeley.edu",
+    verification_status: "verified",
+    verified_at: "2026-02-01T00:00:00Z",
+    verified_domain: "berkeley.edu",
+    created_at: "2026-01-01T00:00:00Z",
+    updated_at: "2026-10-29T00:00:00Z",
+  },
+  {
+    id: "col_stanford",
+    slug: "stanford-university",
+    name: "Stanford University",
+    short_name: "Stanford",
+    logo_url: "https://images.unsplash.com/photo-1541829070764-84a7d30dd3f3?w=200&h=200&fit=crop",
+    banner_url: "https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?w=1200&h=400&fit=crop",
+    description: "Pioneering institution at the intersection of technology, human-centered computing, and entrepreneurial impact.",
+    location: "Stanford, CA, USA",
+    website: "https://stanford.edu",
+    verification_status: "verified",
+    verified_at: "2026-02-10T00:00:00Z",
+    verified_domain: "stanford.edu",
+    created_at: "2026-01-01T00:00:00Z",
+    updated_at: "2026-10-29T00:00:00Z",
+  },
+  {
+    id: "col_cmu",
+    slug: "cmu",
+    name: "Carnegie Mellon University",
+    short_name: "CMU",
+    logo_url: "https://images.unsplash.com/photo-1562774053-701939374585?w=200&h=200&fit=crop",
+    banner_url: "https://images.unsplash.com/photo-1519452635265-7b1fbfd1e4e0?w=1200&h=400&fit=crop",
+    description: "Global leader in computer science, robotics, and human-computer interaction design.",
+    location: "Pittsburgh, PA, USA",
+    website: "https://www.cmu.edu",
+    verification_status: "verified",
+    verified_at: "2026-03-01T00:00:00Z",
+    verified_domain: "cmu.edu",
+    created_at: "2026-01-01T00:00:00Z",
+    updated_at: "2026-10-29T00:00:00Z",
+  },
+  {
+    id: "col_community",
+    slug: "community-tech-collective",
+    name: "Community Tech Collective",
+    short_name: "CTC",
+    logo_url: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=200&h=200&fit=crop",
+    banner_url: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1200&h=400&fit=crop",
+    description: "Student-initiated open tech cohort and builder incubator.",
+    location: "Austin, TX, USA",
+    website: "https://communitytech.dev",
+    verification_status: "unverified",
+    verified_at: null,
+    verified_domain: null,
+    created_at: "2026-09-01T00:00:00Z",
+    updated_at: "2026-10-29T00:00:00Z",
+  },
+];
+
+export const DEFAULT_COLLEGE_MEMBERS: any[] = [
+  {
+    id: "mem_1",
+    college_id: "col_nit",
+    profile_id: "usr_sreehari",
+    role: "owner",
+    status: "active",
+    show_in_directory: true,
+    joined_at: "2026-01-01T00:00:00Z",
+  },
+  {
+    id: "mem_2",
+    college_id: "col_berkeley",
+    profile_id: "usr_alex",
+    role: "admin",
+    status: "active",
+    show_in_directory: true,
+    joined_at: "2026-01-10T00:00:00Z",
+  },
+  {
+    id: "mem_3",
+    college_id: "col_stanford",
+    profile_id: "usr_priya",
+    role: "student",
+    status: "active",
+    show_in_directory: true,
+    joined_at: "2026-01-15T00:00:00Z",
+  },
+  {
+    id: "mem_4",
+    college_id: "col_cmu",
+    profile_id: "usr_elena",
+    role: "student",
+    status: "active",
+    show_in_directory: true,
+    joined_at: "2026-02-01T00:00:00Z",
+  },
+  {
+    id: "mem_hidden",
+    college_id: "col_nit",
+    profile_id: "usr_hidden_dir",
+    role: "student",
+    status: "active",
+    show_in_directory: false,
+    joined_at: "2026-03-01T00:00:00Z",
+  },
+];
+
+export const DEFAULT_COLLEGE_EVENTS: Record<string, any[]> = {
+  col_nit: [
+    {
+      id: "evt_1",
+      title: "Ragam Hack 2026: Systems & AI Invitational",
+      date: "Nov 14-16, 2026",
+      time: "09:00 AM IST",
+      location: "Main Auditorium & Computing Center",
+      category: "hackathon",
+      description: "Annual 36-hour flagship hackathon bringing together 400+ student engineers across distributed infrastructure and applied ML.",
+      rsvp_count: 248,
+    },
+    {
+      id: "evt_2",
+      title: "Open Source Demo Day & Research Showcase",
+      date: "Dec 05, 2026",
+      time: "02:00 PM IST",
+      location: "East Campus Innovation Hub",
+      category: "demo_day",
+      description: "Student builders demo open-source frameworks, low-level compilers, and production applications built this semester.",
+      rsvp_count: 134,
+    },
+  ],
+  col_berkeley: [
+    {
+      id: "evt_3",
+      title: "CalHacks 13.0: Frontier Autonomous Systems",
+      date: "Nov 20-22, 2026",
+      time: "10:00 AM PST",
+      location: "Pauley Ballroom, ASUC",
+      category: "hackathon",
+      description: "The world's largest collegiate hackathon hosted by UC Berkeley students.",
+      rsvp_count: 512,
+    },
+  ],
+  col_stanford: [
+    {
+      id: "evt_4",
+      title: "Stanford AI & Reasoning Symposium 2026",
+      date: "Dec 01, 2026",
+      time: "01:30 PM PST",
+      location: "Gates Computer Science Building",
+      category: "symposium",
+      description: "Undergraduate and graduate researchers present findings on cognitive benchmarks and foundation model interpretability.",
+      rsvp_count: 310,
+    },
+  ],
+};
+
+export const DEFAULT_COLLEGE_CLUBS: Record<string, any[]> = {
+  col_nit: [
+    {
+      id: "clb_1",
+      name: "Tinkerer's Lab & Systems Guild",
+      category: "engineering",
+      member_count: 140,
+      description: "Student-run innovation lab building hardware, operating systems, and kernel modules.",
+      lead: "Aditya Menon",
+    },
+    {
+      id: "clb_2",
+      name: "FOSS Cell Calicut",
+      category: "open_source",
+      member_count: 280,
+      description: "Promoting free and open-source software culture, Linux kernel contributions, and open-web standards.",
+      lead: "Sneha Nair",
+    },
+    {
+      id: "clb_3",
+      name: "Association of Computing Machinery (ACM)",
+      category: "research",
+      member_count: 195,
+      description: "Organizing algorithmic problem solving, competitive programming, and research reading groups.",
+      lead: "Karthik R.",
+    },
+  ],
+  col_berkeley: [
+    {
+      id: "clb_4",
+      name: "Cal Robotics & Drone Lab",
+      category: "engineering",
+      member_count: 220,
+      description: "Autonomous quadrotors, visual SLAM development, and collegiate robotics competition team.",
+      lead: "Alex Rivera",
+    },
+  ],
+  col_stanford: [
+    {
+      id: "clb_5",
+      name: "Stanford Cognitive AI Collective",
+      category: "research",
+      member_count: 180,
+      description: "Interdisciplinary research community working on neuro-symbolic reasoning and model benchmarks.",
+      lead: "Priya Sharma",
+    },
+  ],
+};
+
 
 export const DEFAULT_SOCIAL_LINKS: any[] = [
   { id: "sl_1", profile_id: "usr_sreehari", platform: "github", url: "https://github.com/sreehari", order_index: 0 },
@@ -1072,92 +1346,61 @@ export const mockSupabase = {
           order(_field: string, _options?: { ascending?: boolean }) {
             return this;
           },
+          _matchItem(item: any) {
+            if (queryFilters.length > 0) {
+              for (const f of queryFilters) {
+                const val = item[f.field];
+                if (f.op === "eq") {
+                  if (typeof val === "string" && typeof f.value === "string") {
+                    if (val.toLowerCase() !== f.value.toLowerCase()) return false;
+                  } else if (val !== f.value) {
+                    return false;
+                  }
+                } else if (f.op === "gte") {
+                  if (val < f.value) return false;
+                } else if (f.op === "lte") {
+                  if (val > f.value) return false;
+                }
+              }
+              return true;
+            }
+            if (queryFilter.field) {
+              const val = item[queryFilter.field];
+              if (typeof val === "string" && typeof queryFilter.value === "string") {
+                return val.toLowerCase() === queryFilter.value.toLowerCase();
+              }
+              return val === queryFilter.value;
+            }
+            return true;
+          },
+
+          _getTableRows() {
+            if (table === "profiles") return getStored<any[]>(STORAGE_PROFILES_KEY, DEFAULT_PROFILES);
+            if (table === "projects") return getStored<any[]>(STORAGE_PROJECTS_KEY, DEFAULT_PROJECTS);
+            if (table === "achievements") return getStored<any[]>(STORAGE_ACHIEVEMENTS_KEY, DEFAULT_ACHIEVEMENTS);
+            if (table === "certificates") return getStored<any[]>(STORAGE_CERTIFICATES_KEY, DEFAULT_CERTIFICATES);
+            if (table === "resumes") return getStored<any[]>(STORAGE_RESUMES_KEY, DEFAULT_RESUMES);
+            if (table === "colleges") return getStored<any[]>(STORAGE_COLLEGES_KEY, DEFAULT_COLLEGES);
+            if (table === "college_members") return getStored<any[]>(STORAGE_COLLEGE_MEMBERS_KEY, DEFAULT_COLLEGE_MEMBERS);
+            if (table === "basic_social_links") return getStored<any[]>(STORAGE_SOCIAL_KEY, DEFAULT_SOCIAL_LINKS);
+            if (table === "student_links" || table === "links") return getStored<any[]>(STORAGE_STUDENT_LINKS_KEY, DEFAULT_STUDENT_LINKS);
+            if (table === "analytics_events") return getStored<any[]>(STORAGE_ANALYTICS_KEY, DEFAULT_ANALYTICS_EVENTS);
+            return [];
+          },
+
           async maybeSingle() {
             await new Promise((r) => setTimeout(r, 60));
-            if (table === "profiles") {
-              const profiles = getStored<any[]>(STORAGE_PROFILES_KEY, DEFAULT_PROFILES);
-              const found = queryFilter.field
-                ? profiles.find((p) => {
-                    const val = p[queryFilter.field!];
-                    if (typeof val === "string" && typeof queryFilter.value === "string") {
-                      return val.toLowerCase() === queryFilter.value.toLowerCase();
-                    }
-                    return val === queryFilter.value;
-                  })
-                : profiles[0] || null;
-              return { data: found || null, error: null };
-            } else if (table === "projects") {
-              const projects = getStored<any[]>(STORAGE_PROJECTS_KEY, DEFAULT_PROJECTS);
-              const found = queryFilter.field
-                ? projects.find((p) => p[queryFilter.field!] === queryFilter.value)
-                : projects[0] || null;
-              return { data: found || null, error: null };
-            } else if (table === "achievements") {
-              const achievements = getStored<any[]>(STORAGE_ACHIEVEMENTS_KEY, DEFAULT_ACHIEVEMENTS);
-              const found = queryFilter.field
-                ? achievements.find((a) => a[queryFilter.field!] === queryFilter.value)
-                : achievements[0] || null;
-              return { data: found || null, error: null };
-            } else if (table === "certificates") {
-              const certificates = getStored<any[]>(STORAGE_CERTIFICATES_KEY, DEFAULT_CERTIFICATES);
-              const found = queryFilter.field
-                ? certificates.find((c) => c[queryFilter.field!] === queryFilter.value)
-                : certificates[0] || null;
-              return { data: found || null, error: null };
-            } else if (table === "resumes") {
-              const resumes = getStored<any[]>(STORAGE_RESUMES_KEY, DEFAULT_RESUMES);
-              const found = queryFilter.field
-                ? resumes.find((r) => r[queryFilter.field!] === queryFilter.value)
-                : resumes[0] || null;
-              return { data: found || null, error: null };
-            }
-            return { data: null, error: null };
+            const list = this._getTableRows();
+            const found = list.find((item) => this._matchItem(item));
+            return { data: found || null, error: null };
           },
+
           async single() {
             await new Promise((r) => setTimeout(r, 60));
-            if (table === "profiles") {
-              const profiles = getStored<any[]>(STORAGE_PROFILES_KEY, DEFAULT_PROFILES);
-              const found = queryFilter.field
-                ? profiles.find((p) => {
-                    const val = p[queryFilter.field!];
-                    if (typeof val === "string" && typeof queryFilter.value === "string") {
-                      return val.toLowerCase() === queryFilter.value.toLowerCase();
-                    }
-                    return val === queryFilter.value;
-                  })
-                : profiles[0] || null;
-              if (!found) return { data: null, error: { message: "Row not found", code: "PGRST116" } };
-              return { data: found, error: null };
-            } else if (table === "projects") {
-              const projects = getStored<any[]>(STORAGE_PROJECTS_KEY, DEFAULT_PROJECTS);
-              const found = queryFilter.field
-                ? projects.find((p) => p[queryFilter.field!] === queryFilter.value)
-                : projects[0] || null;
-              if (!found) return { data: null, error: { message: "Project not found", code: "PGRST116" } };
-              return { data: found, error: null };
-            } else if (table === "achievements") {
-              const achievements = getStored<any[]>(STORAGE_ACHIEVEMENTS_KEY, DEFAULT_ACHIEVEMENTS);
-              const found = queryFilter.field
-                ? achievements.find((a) => a[queryFilter.field!] === queryFilter.value)
-                : achievements[0] || null;
-              if (!found) return { data: null, error: { message: "Achievement not found", code: "PGRST116" } };
-              return { data: found, error: null };
-            } else if (table === "certificates") {
-              const certificates = getStored<any[]>(STORAGE_CERTIFICATES_KEY, DEFAULT_CERTIFICATES);
-              const found = queryFilter.field
-                ? certificates.find((c) => c[queryFilter.field!] === queryFilter.value)
-                : certificates[0] || null;
-              if (!found) return { data: null, error: { message: "Certificate not found", code: "PGRST116" } };
-              return { data: found, error: null };
-            } else if (table === "resumes") {
-              const resumes = getStored<any[]>(STORAGE_RESUMES_KEY, DEFAULT_RESUMES);
-              const found = queryFilter.field
-                ? resumes.find((r) => r[queryFilter.field!] === queryFilter.value)
-                : resumes[0] || null;
-              if (!found) return { data: null, error: { message: "Resume not found", code: "PGRST116" } };
-              return { data: found, error: null };
-            }
-            return { data: null, error: null };
+            const list = this._getTableRows();
+            const found = list.find((item) => this._matchItem(item));
+            if (!found) return { data: null, error: { message: "Row not found", code: "PGRST116" } };
+            return { data: found, error: null };
           },
           async then(resolve: any) {
             await new Promise((r) => setTimeout(r, 60));
@@ -1269,6 +1512,40 @@ export const mockSupabase = {
                     return val.toLowerCase() === queryFilter.value.toLowerCase();
                   }
                   return val === queryFilter.value;
+                }
+                return true;
+              });
+              resolve({ data: list, error: null });
+            } else if (table === "colleges") {
+              const colleges = getStored<any[]>(STORAGE_COLLEGES_KEY, DEFAULT_COLLEGES);
+              let list = colleges.filter((c) => {
+                if (queryFilters.length > 0) {
+                  for (const f of queryFilters) {
+                    if (f.op === "eq" && c[f.field] !== f.value) return false;
+                  }
+                  return true;
+                }
+                if (queryFilter.field) {
+                  const val = c[queryFilter.field];
+                  if (typeof val === "string" && typeof queryFilter.value === "string") {
+                    return val.toLowerCase() === queryFilter.value.toLowerCase();
+                  }
+                  return val === queryFilter.value;
+                }
+                return true;
+              });
+              resolve({ data: list, error: null });
+            } else if (table === "college_members") {
+              const members = getStored<any[]>(STORAGE_COLLEGE_MEMBERS_KEY, DEFAULT_COLLEGE_MEMBERS);
+              let list = members.filter((m) => {
+                if (queryFilters.length > 0) {
+                  for (const f of queryFilters) {
+                    if (f.op === "eq" && m[f.field] !== f.value) return false;
+                  }
+                  return true;
+                }
+                if (queryFilter.field) {
+                  return m[queryFilter.field] === queryFilter.value;
                 }
                 return true;
               });
@@ -1473,6 +1750,62 @@ export const mockSupabase = {
           return { data: list, error: null };
         }
 
+        if (table === "colleges") {
+          const colleges = getStored<any[]>(STORAGE_COLLEGES_KEY, DEFAULT_COLLEGES);
+          list.forEach((item) => {
+            const existingIdx = colleges.findIndex((c) => c.id === item.id || c.slug === item.slug);
+            if (existingIdx > -1) {
+              colleges[existingIdx] = {
+                ...colleges[existingIdx],
+                ...item,
+                updated_at: new Date().toISOString(),
+              };
+              item.id = colleges[existingIdx].id;
+            } else {
+              const newCol = {
+                id: item.id || "col_" + Math.random().toString(36).substring(2, 9),
+                verification_status: item.verification_status || "unverified",
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+                ...item,
+              };
+              item.id = newCol.id;
+              colleges.push(newCol);
+            }
+          });
+          setStored(STORAGE_COLLEGES_KEY, colleges);
+          return { data: list, error: null };
+        }
+
+        if (table === "college_members") {
+          const members = getStored<any[]>(STORAGE_COLLEGE_MEMBERS_KEY, DEFAULT_COLLEGE_MEMBERS);
+          list.forEach((item) => {
+            const existingIdx = members.findIndex(
+              (m) => m.id === item.id || (m.college_id === item.college_id && m.profile_id === item.profile_id)
+            );
+            if (existingIdx > -1) {
+              members[existingIdx] = {
+                ...members[existingIdx],
+                ...item,
+              };
+              item.id = members[existingIdx].id;
+            } else {
+              const newMem = {
+                id: item.id || "mem_" + Math.random().toString(36).substring(2, 9),
+                role: item.role || "student",
+                status: item.status || "active",
+                show_in_directory: item.show_in_directory ?? true,
+                joined_at: new Date().toISOString(),
+                ...item,
+              };
+              item.id = newMem.id;
+              members.push(newMem);
+            }
+          });
+          setStored(STORAGE_COLLEGE_MEMBERS_KEY, members);
+          return { data: list, error: null };
+        }
+
         return { data: list, error: null };
       },
 
@@ -1546,6 +1879,26 @@ export const mockSupabase = {
                   } else {
                     resolve({ data: null, error: { message: "Resume not found to update" } });
                   }
+                } else if (table === "colleges") {
+                  const colleges = getStored<any[]>(STORAGE_COLLEGES_KEY, DEFAULT_COLLEGES);
+                  const idx = colleges.findIndex((c) => c[field] === value);
+                  if (idx > -1) {
+                    colleges[idx] = { ...colleges[idx], ...updates, updated_at: new Date().toISOString() };
+                    setStored(STORAGE_COLLEGES_KEY, colleges);
+                    resolve({ data: colleges[idx], error: null });
+                  } else {
+                    resolve({ data: null, error: { message: "College not found to update" } });
+                  }
+                } else if (table === "college_members") {
+                  const members = getStored<any[]>(STORAGE_COLLEGE_MEMBERS_KEY, DEFAULT_COLLEGE_MEMBERS);
+                  const idx = members.findIndex((m) => m[field] === value);
+                  if (idx > -1) {
+                    members[idx] = { ...members[idx], ...updates };
+                    setStored(STORAGE_COLLEGE_MEMBERS_KEY, members);
+                    resolve({ data: members[idx], error: null });
+                  } else {
+                    resolve({ data: null, error: { message: "College member not found to update" } });
+                  }
                 } else {
                   resolve({ data: null, error: null });
                 }
@@ -1588,6 +1941,14 @@ export const mockSupabase = {
                   const events = getStored<any[]>(STORAGE_ANALYTICS_KEY, DEFAULT_ANALYTICS_EVENTS);
                   const remaining = events.filter((e) => e[field] !== value);
                   setStored(STORAGE_ANALYTICS_KEY, remaining);
+                } else if (table === "colleges") {
+                  const colleges = getStored<any[]>(STORAGE_COLLEGES_KEY, DEFAULT_COLLEGES);
+                  const remaining = colleges.filter((c) => c[field] !== value);
+                  setStored(STORAGE_COLLEGES_KEY, remaining);
+                } else if (table === "college_members") {
+                  const members = getStored<any[]>(STORAGE_COLLEGE_MEMBERS_KEY, DEFAULT_COLLEGE_MEMBERS);
+                  const remaining = members.filter((m) => m[field] !== value);
+                  setStored(STORAGE_COLLEGE_MEMBERS_KEY, remaining);
                 }
                 resolve({ error: null });
               },

@@ -77,6 +77,10 @@ export interface Profile {
   avatar_url: string | null;
   bio: string | null;
   college: string | null;
+  college_id?: string | null;
+  college_slug?: string | null;
+  show_college_on_profile?: boolean;
+  show_in_college_directory?: boolean;
   course: string | null;
   graduation_year: number | null;
   theme: ProfileTheme;
@@ -369,6 +373,10 @@ export interface ExploreStudentCardData {
   avatar_url: string | null;
   bio: string | null;
   college: string | null;
+  college_id?: string | null;
+  college_slug?: string | null;
+  show_college_on_profile?: boolean;
+  show_in_college_directory?: boolean;
   course: string | null;
   graduation_year: number | null;
   location?: string | null;
@@ -413,3 +421,86 @@ export interface ExploreResponse {
   availableYears: number[];
   availableCategories: string[];
 }
+
+// -------------------------------------------------------------
+// Phase 14: College Profiles, Campus Directories & RBAC
+// -------------------------------------------------------------
+
+export type CollegeVerificationStatus = "unverified" | "pending" | "verified" | "rejected";
+
+export type CollegeRole = "owner" | "admin" | "moderator" | "student";
+
+export interface College {
+  id: string;
+  slug: string;
+  name: string;
+  short_name?: string | null;
+  logo_url?: string | null;
+  banner_url?: string | null;
+  description?: string | null;
+  location?: string | null;
+  website?: string | null;
+  verification_status: CollegeVerificationStatus;
+  verified_at?: string | null;
+  verified_domain?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CollegeMember {
+  id: string;
+  college_id: string;
+  profile_id: string;
+  role: CollegeRole;
+  status: "active" | "pending" | "declined";
+  show_in_directory: boolean;
+  joined_at: string;
+}
+
+export interface CollegeDirectoryFilters {
+  query?: string;
+  course?: string;
+  graduationYear?: number | string;
+  skill?: string;
+}
+
+export interface CollegeEventPlaceholder {
+  id: string;
+  title: string;
+  date: string;
+  time: string;
+  location: string;
+  category: "hackathon" | "symposium" | "demo_day" | "workshop" | "talk";
+  description: string;
+  rsvp_count: number;
+}
+
+export interface CollegeClubPlaceholder {
+  id: string;
+  name: string;
+  category: "engineering" | "design" | "research" | "open_source" | "entrepreneurship";
+  member_count: number;
+  description: string;
+  lead: string;
+  logo_url?: string;
+}
+
+export interface CollegeProfileData {
+  college: College;
+  stats: {
+    totalStudents: number;
+    totalProjects: number;
+    totalAchievements: number;
+    verifiedStudents: number;
+  };
+  students: ExploreStudentCardData[];
+  projects: ExploreProject[];
+  achievements: Achievement[];
+  events: CollegeEventPlaceholder[];
+  clubs: CollegeClubPlaceholder[];
+  currentUserMembership?: CollegeMember | null;
+  availableCourses: string[];
+  availableYears: number[];
+  availableSkills: string[];
+}
+

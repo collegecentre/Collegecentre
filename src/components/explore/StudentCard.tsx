@@ -88,10 +88,19 @@ export function StudentCard({ student }: StudentCardProps) {
 
         {/* Academic Context & Location */}
         <div className="flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
-          {student.college && (
-            <span className="inline-flex items-center gap-1 font-medium text-foreground/90 truncate max-w-[200px]">
+          {student.show_college_on_profile !== false && student.college && (
+            <span className="inline-flex items-center gap-1 font-medium text-foreground/90 truncate max-w-[220px]">
               <GraduationCap className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-              <span className="truncate">{student.college}</span>
+              {student.college_slug ? (
+                <Link
+                  href={`/college/${student.college_slug}`}
+                  className="truncate hover:text-primary hover:underline transition-colors"
+                >
+                  {student.college}
+                </Link>
+              ) : (
+                <span className="truncate">{student.college}</span>
+              )}
               {student.graduation_year && (
                 <span className="font-mono text-muted-foreground">
                   &apos;{String(student.graduation_year).slice(-2)}

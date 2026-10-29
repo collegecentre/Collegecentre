@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/components/ui/toast";
 import { LiveProfileCard } from "./LiveProfileCard";
@@ -73,6 +74,12 @@ export function ProfileEditTab({
   const [course, setCourse] = React.useState(initialProfile.course || "");
   const [graduationYear, setGraduationYear] = React.useState<number | string>(
     initialProfile.graduation_year || 2026
+  );
+  const [showCollegeOnProfile, setShowCollegeOnProfile] = React.useState<boolean>(
+    initialProfile.show_college_on_profile ?? true
+  );
+  const [showInCollegeDirectory, setShowInCollegeDirectory] = React.useState<boolean>(
+    initialProfile.show_in_college_directory ?? true
   );
   const [socialLinks, setSocialLinks] = React.useState<SocialLink[]>(initialSocialLinks);
 
@@ -202,6 +209,8 @@ export function ProfileEditTab({
     setCollege(initialProfile.college || "");
     setCourse(initialProfile.course || "");
     setGraduationYear(initialProfile.graduation_year || 2026);
+    setShowCollegeOnProfile(initialProfile.show_college_on_profile ?? true);
+    setShowInCollegeDirectory(initialProfile.show_in_college_directory ?? true);
     setSocialLinks(initialSocialLinks);
     setIsDirty(false);
     toast({
@@ -240,6 +249,8 @@ export function ProfileEditTab({
           college: college.trim() || null,
           course: course.trim() || null,
           graduation_year: gradYearNum,
+          show_college_on_profile: showCollegeOnProfile,
+          show_in_college_directory: showInCollegeDirectory,
         })
         .eq("id", initialProfile.id);
 
@@ -620,6 +631,47 @@ export function ProfileEditTab({
                         setGraduationYear(e.target.value);
                         markDirty();
                       }}
+                    />
+                  </div>
+                </div>
+
+                {/* College Privacy & Directory Listing Toggles */}
+                <div className="pt-3 border-t border-border/50 space-y-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="space-y-0.5">
+                      <span className="text-xs font-semibold text-foreground">
+                        Show College On Profile
+                      </span>
+                      <p className="text-[11px] text-muted-foreground">
+                        Display your institution name and link on your public profile showcase.
+                      </p>
+                    </div>
+                    <Switch
+                      checked={showCollegeOnProfile}
+                      onCheckedChange={(checked) => {
+                        setShowCollegeOnProfile(checked);
+                        markDirty();
+                      }}
+                      aria-label="Toggle college visibility on profile"
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="space-y-0.5">
+                      <span className="text-xs font-semibold text-foreground">
+                        List in Campus Directory
+                      </span>
+                      <p className="text-[11px] text-muted-foreground">
+                        Allow peers from your college to find your profile on your campus hub page.
+                      </p>
+                    </div>
+                    <Switch
+                      checked={showInCollegeDirectory}
+                      onCheckedChange={(checked) => {
+                        setShowInCollegeDirectory(checked);
+                        markDirty();
+                      }}
+                      aria-label="Toggle campus directory listing"
                     />
                   </div>
                 </div>

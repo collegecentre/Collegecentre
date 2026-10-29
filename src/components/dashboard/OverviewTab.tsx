@@ -19,6 +19,8 @@ import {
   FileCheck2,
   FileText,
   QrCode,
+  Building2,
+  School,
 } from "lucide-react";
 import { ProfileShareModal } from "@/components/profile/ProfileShareModal";
 import { Card } from "@/components/ui/card";
@@ -50,6 +52,7 @@ export function OverviewTab({
   const [copied, setCopied] = React.useState(false);
   const [isUpdatingPrivacy, setIsUpdatingPrivacy] = React.useState(false);
   const [isUpdatingDiscoverability, setIsUpdatingDiscoverability] = React.useState(false);
+  const [isUpdatingCollegePrivacy, setIsUpdatingCollegePrivacy] = React.useState(false);
   const [shareModalOpen, setShareModalOpen] = React.useState(false);
   const [analyticsMetrics, setAnalyticsMetrics] = React.useState<AnalyticsOverviewMetrics | null>(null);
 
@@ -157,6 +160,72 @@ export function OverviewTab({
       console.error(err);
     } finally {
       setIsUpdatingDiscoverability(false);
+    }
+  };
+
+  const handleToggleShowCollege = async (checked: boolean) => {
+    if (!profile) return;
+    setIsUpdatingCollegePrivacy(true);
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ show_college_on_profile: checked })
+        .eq("id", profile.id);
+
+      if (error) {
+        toast({
+          title: "Update Failed",
+          description: "Could not update college visibility.",
+          variant: "error",
+        });
+      } else {
+        const updated = { ...profile, show_college_on_profile: checked };
+        if (onProfileUpdated) onProfileUpdated(updated);
+        toast({
+          title: checked ? "College Shown on Profile" : "College Hidden from Profile",
+          description: checked
+            ? "Your college name is displayed on your public showcase."
+            : "Your college name is now hidden from your public showcase.",
+          variant: "success",
+        });
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsUpdatingCollegePrivacy(false);
+    }
+  };
+
+  const handleToggleShowInDirectory = async (checked: boolean) => {
+    if (!profile) return;
+    setIsUpdatingCollegePrivacy(true);
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ show_in_college_directory: checked })
+        .eq("id", profile.id);
+
+      if (error) {
+        toast({
+          title: "Update Failed",
+          description: "Could not update campus directory preference.",
+          variant: "error",
+        });
+      } else {
+        const updated = { ...profile, show_in_college_directory: checked };
+        if (onProfileUpdated) onProfileUpdated(updated);
+        toast({
+          title: checked ? "Listed in Campus Directory" : "Hidden from Campus Directory",
+          description: checked
+            ? "Your profile is listed in your college's public student directory."
+            : "Your profile is hidden from your college's student directory.",
+          variant: "success",
+        });
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsUpdatingCollegePrivacy(false);
     }
   };
 
@@ -306,6 +375,60 @@ export function OverviewTab({
             </span>
           </div>
         </div>
+
+        {/* Show College on Profile Toggle Row */}
+        <div className="mt-3 pt-3 border-t border-border/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <School className={cn("h-4 w-4", (profile?.show_college_on_profile ?? true) ? "text-primary" : "text-muted-foreground")} />
+            <div>
+              <span className="text-xs font-semibold text-foreground">
+                Show College On Public Profile
+              </span>
+              <p className="text-[11px] text-muted-foreground">
+                Display your college name and campus link in your showcase header ({profile?.college || "No college linked"}).
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Switch
+              checked={profile?.show_college_on_profile ?? true}
+              onCheckedChange={handleToggleShowCollege}
+              disabled={isUpdatingCollegePrivacy}
+              aria-label="Toggle college on profile"
+            />
+            <span className="text-xs font-mono text-muted-foreground">
+              {(profile?.show_college_on_profile ?? true) ? "Visible" : "Hidden"}
+            </span>
+          </div>
+        </div>
+
+        {/* Show in Campus Directory Toggle Row */}
+        <div className="mt-3 pt-3 border-t border-border/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <Building2 className={cn("h-4 w-4", (profile?.show_in_college_directory ?? true) ? "text-brand" : "text-muted-foreground")} />
+            <div>
+              <span className="text-xs font-semibold text-foreground">
+                List in College Campus Directory
+              </span>
+              <p className="text-[11px] text-muted-foreground">
+                Allow peers and campus visitors to discover your profile on your college's public directory page.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Switch
+              checked={profile?.show_in_college_directory ?? true}
+              onCheckedChange={handleToggleShowInDirectory}
+              disabled={isUpdatingCollegePrivacy}
+              aria-label="Toggle college directory listing"
+            />
+            <span className="text-xs font-mono text-muted-foreground">
+              {(profile?.show_in_college_directory ?? true) ? "Listed" : "Hidden"}
+            </span>
+          </div>
+        </div>
       </Card>
 
       {/* 2. Profile Completion Card */}
@@ -371,6 +494,55 @@ export function OverviewTab({
             </Button>
           </div>
         )}
+      </Card>
+
+      {/* 2.5 Campus Hub Association Card */}
+      <Card className="p-6 border-border shadow-subtle space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0 text-primary">
+              <School className="h-5 w-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-bold text-foreground">
+                  {profile?.college || "Associate with your Campus"}
+                </h3>
+                {profile?.college_slug && (
+                  <Badge variant="outline" size="sm" className="font-mono text-[10px]">
+                    Connected Hub
+                  </Badge>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {profile?.college
+                  ? `You are connected to ${profile.college}. Your work is discoverable by campus peers.`
+                  : "Link your institution to appear in your university's student directory and project showcase."}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            {profile?.college_slug ? (
+              <Button asChild size="sm" variant="outline" className="font-mono text-xs gap-1.5 h-8">
+                <Link href={`/college/${profile.college_slug}`} target="_blank">
+                  <span>View Campus Hub</span>
+                  <ExternalLink className="h-3 w-3" />
+                </Link>
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => onNavigateTab("profile")}
+                className="font-mono text-xs gap-1.5 h-8"
+              >
+                <span>Connect Campus</span>
+                <ArrowRight className="h-3 w-3" />
+              </Button>
+            )}
+          </div>
+        </div>
       </Card>
 
       {/* 3. Showcase Analytics Snapshot */}

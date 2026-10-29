@@ -1,4 +1,5 @@
 import * as React from "react";
+import Link from "next/link";
 import { School, BookOpen, Calendar } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -77,12 +78,21 @@ export function ProfileHeader({ profile, themeConfig }: ProfileHeaderProps) {
         </div>
 
         {/* Academic Identity Bar */}
-        {(profile.college || profile.course || gradYear) && (
+        {((profile.show_college_on_profile !== false && profile.college) || profile.course || gradYear) && (
           <div className="flex flex-wrap items-center justify-center gap-2 text-xs sm:text-sm text-muted-foreground font-medium pt-0.5">
-            {profile.college && (
+            {profile.show_college_on_profile !== false && profile.college && (
               <span className="inline-flex items-center gap-1.5">
                 <School className="h-3.5 w-3.5 opacity-70 shrink-0" />
-                <span>{profile.college}</span>
+                {profile.college_slug ? (
+                  <Link
+                    href={`/college/${profile.college_slug}`}
+                    className="hover:text-foreground hover:underline transition-colors font-semibold"
+                  >
+                    {profile.college}
+                  </Link>
+                ) : (
+                  <span>{profile.college}</span>
+                )}
               </span>
             )}
             {profile.course && (

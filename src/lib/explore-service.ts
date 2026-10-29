@@ -80,7 +80,11 @@ export async function getExploreData(
       full_name: p.full_name,
       avatar_url: p.avatar_url,
       bio: p.bio,
-      college: p.college,
+      college: p.show_college_on_profile !== false ? p.college : null,
+      college_id: p.college_id || null,
+      college_slug: p.college_slug || null,
+      show_college_on_profile: p.show_college_on_profile !== false,
+      show_in_college_directory: p.show_in_college_directory !== false,
       course: p.course,
       graduation_year: p.graduation_year,
       location: p.location || null,
@@ -119,7 +123,7 @@ export async function getExploreData(
               username: author.username,
               full_name: author.full_name,
               avatar_url: author.avatar_url,
-              college: author.college,
+              college: author.show_college_on_profile !== false ? author.college : null,
             }
           : null,
       };
@@ -176,11 +180,14 @@ export async function getExploreData(
 
   // 8. Apply Dropdown Filters
   if (college) {
+    const colLower = college.toLowerCase();
     students = students.filter(
-      (s) => s.college?.toLowerCase() === college.toLowerCase()
+      (s) =>
+        s.college?.toLowerCase().includes(colLower) ||
+        (s.college_slug && s.college_slug.toLowerCase() === colLower)
     );
     projects = projects.filter(
-      (p) => p.author?.college?.toLowerCase() === college.toLowerCase()
+      (p) => p.author?.college?.toLowerCase().includes(colLower)
     );
   }
 

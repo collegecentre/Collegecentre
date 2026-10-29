@@ -8,6 +8,8 @@ export const RESERVED_USERNAMES = new Set([
   "auth",
   "callback",
   "claim",
+  "college",
+  "colleges",
   "collegecentre",
   "dashboard",
   "design-system",

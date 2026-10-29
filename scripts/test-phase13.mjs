@@ -50,7 +50,7 @@ async function runPhase13Tests() {
   // 1. Filter by College
   const nitFilter = await getExploreData({ college: "National Institute of Technology" });
   assert(nitFilter.students.length >= 1, "Filters students by college 'NIT'");
-  assert(nitFilter.students.every((s) => s.college === "National Institute of Technology"), "All returned students belong to NIT");
+  assert(nitFilter.students.every((s) => s.college?.includes("National Institute of Technology")), "All returned students belong to NIT");
 
   // 2. Filter by Discipline Category
   const designFilter = await getExploreData({ category: "design" });

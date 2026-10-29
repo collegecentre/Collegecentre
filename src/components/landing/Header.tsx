@@ -9,12 +9,22 @@ import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
 export interface HeaderProps {
-  onOpenClaim: () => void;
-  onOpenLogin: () => void;
-  onOpenExplore: () => void;
+  onOpenClaim?: () => void;
+  onOpenLogin?: () => void;
+  onOpenExplore?: () => void;
 }
 
-export function Header({ onOpenClaim, onOpenLogin, onOpenExplore }: HeaderProps) {
+export function Header({
+  onOpenClaim = () => {
+    if (typeof window !== "undefined") window.location.href = "/signup";
+  },
+  onOpenLogin = () => {
+    if (typeof window !== "undefined") window.location.href = "/login";
+  },
+  onOpenExplore = () => {
+    if (typeof window !== "undefined") window.location.href = "/explore";
+  },
+}: HeaderProps = {}) {
   const { theme, setTheme, resolvedTheme } = useTheme();
   const { user, profile } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
@@ -48,6 +58,12 @@ export function Header({ onOpenClaim, onOpenLogin, onOpenExplore }: HeaderProps)
               className="px-3 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
             >
               Explore
+            </Link>
+            <Link
+              href="/college"
+              className="px-3 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+            >
+              Campuses
             </Link>
             <a
               href="#why-collegecentre"
@@ -192,6 +208,13 @@ export function Header({ onOpenClaim, onOpenLogin, onOpenExplore }: HeaderProps)
               className="text-left px-3 py-2 text-sm font-medium rounded-md hover:bg-muted text-foreground transition-colors"
             >
               Explore Showcases
+            </Link>
+            <Link
+              href="/college"
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-left px-3 py-2 text-sm font-medium rounded-md hover:bg-muted text-foreground transition-colors"
+            >
+              Campus Directories
             </Link>
             <a
               href="#why-collegecentre"
