@@ -5,13 +5,14 @@ import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { SocialLinksRow } from "@/components/profile/SocialLinksRow";
 import { ProjectsShowcase } from "@/components/profile/ProjectsShowcase";
 import { AchievementsShowcase } from "@/components/profile/AchievementsShowcase";
+import { CertificatesShowcase } from "@/components/profile/CertificatesShowcase";
 import { StudentLinksList } from "@/components/profile/StudentLinksList";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
 import { getProfileTheme } from "@/lib/themes";
 import { supabase } from "@/lib/supabase";
-import type { Profile, SocialLink, StudentLink, Project, Achievement } from "@/types";
+import type { Profile, SocialLink, StudentLink, Project, Achievement, Certificate } from "@/types";
 import { cn } from "@/lib/utils";
 
 interface LiveProfileCardProps {
@@ -20,6 +21,7 @@ interface LiveProfileCardProps {
   studentLinks?: StudentLink[];
   projects?: Project[];
   achievements?: Achievement[];
+  certificates?: Certificate[];
   className?: string;
 }
 
@@ -29,12 +31,14 @@ export function LiveProfileCard({
   studentLinks = [],
   projects,
   achievements,
+  certificates,
   className,
 }: LiveProfileCardProps) {
   const { toast } = useToast();
   const [copied, setCopied] = React.useState(false);
   const [internalProjects, setInternalProjects] = React.useState<Project[]>([]);
   const [internalAchievements, setInternalAchievements] = React.useState<Achievement[]>([]);
+  const [internalCertificates, setInternalCertificates] = React.useState<Certificate[]>([]);
   const themeConfig = getProfileTheme(profile.theme);
 
   React.useEffect(() => {
@@ -64,6 +68,20 @@ export function LiveProfileCard({
         });
     }
   }, [achievements, profile?.id]);
+
+  React.useEffect(() => {
+    if (certificates !== undefined) {
+      setInternalCertificates(certificates);
+    } else if (profile?.id) {
+      supabase
+        .from("certificates")
+        .select("*")
+        .eq("profile_id", profile.id)
+        .then((res: { data: any }) => {
+          if (res.data) setInternalCertificates(res.data as Certificate[]);
+        });
+    }
+  }, [certificates, profile?.id]);
 
   const username = profile.username || "student";
   const profileUrl = typeof window !== "undefined"
@@ -156,6 +174,13 @@ export function LiveProfileCard({
             {/* Achievements Showcase */}
             <AchievementsShowcase
               achievements={achievements !== undefined ? achievements : internalAchievements}
+              themeConfig={themeConfig}
+              studentName={profile.full_name}
+            />
+
+            {/* Certificates Showcase */}
+            <CertificatesShowcase
+              certificates={certificates !== undefined ? certificates : internalCertificates}
               themeConfig={themeConfig}
               studentName={profile.full_name}
             />

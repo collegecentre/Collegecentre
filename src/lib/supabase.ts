@@ -39,6 +39,7 @@ const STORAGE_SOCIAL_KEY = "cc_mock_social_links";
 const STORAGE_STUDENT_LINKS_KEY = "cc_mock_student_links";
 const STORAGE_PROJECTS_KEY = "cc_mock_projects";
 const STORAGE_ACHIEVEMENTS_KEY = "cc_mock_achievements";
+const STORAGE_CERTIFICATES_KEY = "cc_mock_certificates";
 
 export const DEFAULT_PROFILES: any[] = [
   {
@@ -393,6 +394,89 @@ export const DEFAULT_ACHIEVEMENTS: any[] = [
   },
 ];
 
+export const DEFAULT_CERTIFICATES: any[] = [
+  {
+    id: "cert_1",
+    profile_id: "usr_sreehari",
+    name: "AWS Certified Solutions Architect - Associate",
+    issuer: "Amazon Web Services",
+    issue_date: "May 2025",
+    expiration_date: "May 2028",
+    credential_id: "AWS-SAA-839210",
+    credential_url: "https://aws.amazon.com/verification/AWS-SAA-839210",
+    image_url: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&q=80",
+    pdf_url: "https://example.com/certificates/aws-saa-sreehari.pdf",
+    description: "Demonstrated architecture of resilient, fault-tolerant, and decoupled distributed cloud services on AWS.",
+    is_featured: true,
+    is_enabled: true,
+    order_index: 0,
+  },
+  {
+    id: "cert_2",
+    profile_id: "usr_sreehari",
+    name: "Deep Learning Specialization",
+    issuer: "DeepLearning.AI & Coursera",
+    issue_date: "Feb 2025",
+    expiration_date: null,
+    credential_id: "COURSERA-DL-9941",
+    credential_url: "https://coursera.org/verify/specialization/COURSERA-DL-9941",
+    image_url: null,
+    pdf_url: null,
+    description: "Mastered neural networks, backpropagation optimization, CNN architectures, sequence models, and transformer mechanisms.",
+    is_featured: false,
+    is_enabled: true,
+    order_index: 1,
+  },
+  {
+    id: "cert_3",
+    profile_id: "usr_alex",
+    name: "NVIDIA Certified Associate: Applied Deep Learning",
+    issuer: "NVIDIA Deep Learning Institute",
+    issue_date: "Apr 2025",
+    expiration_date: "Apr 2027",
+    credential_id: "NV-ADL-2025-412",
+    credential_url: "https://nvidia.com/dli/verify/NV-ADL-2025-412",
+    image_url: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=400&q=80",
+    pdf_url: null,
+    description: "CUDA accelerated tensor operations and vision model optimization for real-time edge embedded systems.",
+    is_featured: true,
+    is_enabled: true,
+    order_index: 0,
+  },
+  {
+    id: "cert_4",
+    profile_id: "usr_priya",
+    name: "Human-Centered AI & Safety Certification",
+    issuer: "Stanford Center for Professional Development",
+    issue_date: "Mar 2025",
+    expiration_date: null,
+    credential_id: "SCPD-HCAI-772",
+    credential_url: "https://scpd.stanford.edu/verify/SCPD-HCAI-772",
+    image_url: "https://images.unsplash.com/photo-1532619675605-1ede6c2ed2b0?w=400&q=80",
+    pdf_url: null,
+    description: "Formal methods for evaluating alignment, interactive latency constraints, and transparent model safety.",
+    is_featured: true,
+    is_enabled: true,
+    order_index: 0,
+  },
+  {
+    id: "cert_5",
+    profile_id: "usr_kavya",
+    name: "Linux Foundation Certified System Administrator (LFCS)",
+    issuer: "The Linux Foundation",
+    issue_date: "Jan 2025",
+    expiration_date: "Jan 2028",
+    credential_id: "LFCS-2025-0914",
+    credential_url: "https://training.linuxfoundation.org/verify/LFCS-2025-0914",
+    image_url: null,
+    pdf_url: null,
+    description: "Kernel module configuration, eBPF routing, storage management, and advanced Linux system diagnostics.",
+    is_featured: true,
+    is_enabled: true,
+    order_index: 0,
+  },
+];
+
 const inMemoryStore = new Map<string, string>();
 
 function getStored<T>(key: string, defaultValue: T): T {
@@ -618,6 +702,12 @@ export const mockSupabase = {
                 ? achievements.find((a) => a[queryFilter.field!] === queryFilter.value)
                 : achievements[0] || null;
               return { data: found || null, error: null };
+            } else if (table === "certificates") {
+              const certificates = getStored<any[]>(STORAGE_CERTIFICATES_KEY, DEFAULT_CERTIFICATES);
+              const found = queryFilter.field
+                ? certificates.find((c) => c[queryFilter.field!] === queryFilter.value)
+                : certificates[0] || null;
+              return { data: found || null, error: null };
             }
             return { data: null, error: null };
           },
@@ -649,6 +739,13 @@ export const mockSupabase = {
                 ? achievements.find((a) => a[queryFilter.field!] === queryFilter.value)
                 : achievements[0] || null;
               if (!found) return { data: null, error: { message: "Achievement not found", code: "PGRST116" } };
+              return { data: found, error: null };
+            } else if (table === "certificates") {
+              const certificates = getStored<any[]>(STORAGE_CERTIFICATES_KEY, DEFAULT_CERTIFICATES);
+              const found = queryFilter.field
+                ? certificates.find((c) => c[queryFilter.field!] === queryFilter.value)
+                : certificates[0] || null;
+              if (!found) return { data: null, error: { message: "Certificate not found", code: "PGRST116" } };
               return { data: found, error: null };
             }
             return { data: null, error: null };
@@ -687,6 +784,19 @@ export const mockSupabase = {
               let list = queryFilter.field
                 ? achievements.filter((a) => a[queryFilter.field!] === queryFilter.value)
                 : achievements;
+              // Sort by is_featured DESC, order_index ASC
+              list.sort((a, b) => {
+                if (a.is_featured !== b.is_featured) {
+                  return a.is_featured ? -1 : 1;
+                }
+                return (a.order_index ?? 0) - (b.order_index ?? 0);
+              });
+              resolve({ data: list, error: null });
+            } else if (table === "certificates") {
+              const certificates = getStored<any[]>(STORAGE_CERTIFICATES_KEY, DEFAULT_CERTIFICATES);
+              let list = queryFilter.field
+                ? certificates.filter((c) => c[queryFilter.field!] === queryFilter.value)
+                : certificates;
               // Sort by is_featured DESC, order_index ASC
               list.sort((a, b) => {
                 if (a.is_featured !== b.is_featured) {
@@ -821,6 +931,32 @@ export const mockSupabase = {
           return { data: list, error: null };
         }
 
+        if (table === "certificates") {
+          const certificates = getStored<any[]>(STORAGE_CERTIFICATES_KEY, DEFAULT_CERTIFICATES);
+          list.forEach((item) => {
+            const existingIdx = certificates.findIndex((c) => c.id && c.id === item.id);
+            if (existingIdx > -1) {
+              certificates[existingIdx] = {
+                ...certificates[existingIdx],
+                ...item,
+                updated_at: new Date().toISOString(),
+              };
+            } else {
+              certificates.push({
+                id: item.id || "cert_" + Math.random().toString(36).substring(2, 9),
+                is_featured: item.is_featured ?? false,
+                is_enabled: item.is_enabled ?? true,
+                order_index: item.order_index ?? certificates.length,
+                ...item,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+              });
+            }
+          });
+          setStored(STORAGE_CERTIFICATES_KEY, certificates);
+          return { data: list, error: null };
+        }
+
         return { data: list, error: null };
       },
 
@@ -874,6 +1010,16 @@ export const mockSupabase = {
                   } else {
                     resolve({ data: null, error: { message: "Achievement not found to update" } });
                   }
+                } else if (table === "certificates") {
+                  const certificates = getStored<any[]>(STORAGE_CERTIFICATES_KEY, DEFAULT_CERTIFICATES);
+                  const idx = certificates.findIndex((c) => c[field] === value);
+                  if (idx > -1) {
+                    certificates[idx] = { ...certificates[idx], ...updates, updated_at: new Date().toISOString() };
+                    setStored(STORAGE_CERTIFICATES_KEY, certificates);
+                    resolve({ data: certificates[idx], error: null });
+                  } else {
+                    resolve({ data: null, error: { message: "Certificate not found to update" } });
+                  }
                 } else {
                   resolve({ data: null, error: null });
                 }
@@ -904,6 +1050,10 @@ export const mockSupabase = {
                   const achievements = getStored<any[]>(STORAGE_ACHIEVEMENTS_KEY, DEFAULT_ACHIEVEMENTS);
                   const remaining = achievements.filter((a) => a[field] !== value);
                   setStored(STORAGE_ACHIEVEMENTS_KEY, remaining);
+                } else if (table === "certificates") {
+                  const certificates = getStored<any[]>(STORAGE_CERTIFICATES_KEY, DEFAULT_CERTIFICATES);
+                  const remaining = certificates.filter((c) => c[field] !== value);
+                  setStored(STORAGE_CERTIFICATES_KEY, remaining);
                 }
                 resolve({ error: null });
               },

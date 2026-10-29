@@ -162,6 +162,29 @@ export interface Achievement {
   updated_at?: string;
 }
 
+// -------------------------------------------------------------
+// Phase 8: Verified Professional & Academic Certificates
+// -------------------------------------------------------------
+
+export interface Certificate {
+  id: string;
+  profile_id: string;
+  name: string;
+  issuer: string;
+  issue_date: string;
+  expiration_date?: string | null;
+  credential_id?: string | null;
+  credential_url?: string | null;
+  image_url?: string | null;
+  pdf_url?: string | null;
+  description?: string | null;
+  is_featured: boolean;
+  is_enabled: boolean;
+  order_index: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export interface OnboardingState {
   username: string;
   fullName: string;

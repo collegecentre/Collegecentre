@@ -16,6 +16,7 @@ import {
   Link2,
   GitBranch,
   Award,
+  FileCheck2,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -397,6 +398,19 @@ export function OverviewTab({
             <div>
               <span className="text-xs font-bold text-foreground block">Honors &amp; Awards</span>
               <span className="text-[11px] text-muted-foreground">Hackathons, preprints &amp; prizes</span>
+            </div>
+          </button>
+
+          <button
+            onClick={() => onNavigateTab("certificates")}
+            className="p-4 rounded-xl border border-border bg-card hover:border-foreground/30 hover:shadow-subtle transition-all text-left space-y-2 group"
+          >
+            <div className="h-8 w-8 rounded-lg bg-indigo-500/10 text-indigo-500 flex items-center justify-center group-hover:scale-105 transition-transform">
+              <FileCheck2 className="h-4 w-4" />
+            </div>
+            <div>
+              <span className="text-xs font-bold text-foreground block">Certificates &amp; Licenses</span>
+              <span className="text-[11px] text-muted-foreground">Cloud, vendor &amp; course credentials</span>
             </div>
           </button>
 

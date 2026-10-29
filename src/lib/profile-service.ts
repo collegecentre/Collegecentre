@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { normalizeUsername } from "@/lib/username";
-import type { Profile, SocialLink, StudentLink, Project, Achievement } from "@/types";
+import type { Profile, SocialLink, StudentLink, Project, Achievement, Certificate } from "@/types";
 
 export interface StudentProfileData {
   profile: Profile;
@@ -8,6 +8,7 @@ export interface StudentProfileData {
   studentLinks: StudentLink[];
   projects: Project[];
   achievements: Achievement[];
+  certificates: Certificate[];
 }
 
 /**
@@ -84,12 +85,28 @@ export async function getStudentProfileByUsername(
         return (a.order_index ?? 0) - (b.order_index ?? 0);
       });
 
+    // 6. Fetch verified student certificates
+    const { data: certificatesData } = await supabase
+      .from("certificates")
+      .select("*")
+      .eq("profile_id", profile.id);
+
+    const certificates = ((certificatesData || []) as Certificate[])
+      .filter((c) => c.is_enabled !== false)
+      .sort((a, b) => {
+        if (a.is_featured !== b.is_featured) {
+          return a.is_featured ? -1 : 1;
+        }
+        return (a.order_index ?? 0) - (b.order_index ?? 0);
+      });
+
     return {
       profile,
       socialLinks,
       studentLinks,
       projects,
       achievements,
+      certificates,
     };
   } catch (err) {
     console.error("Failed to load student profile:", err);
