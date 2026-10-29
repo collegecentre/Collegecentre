@@ -17,6 +17,7 @@ import {
   GitBranch,
   Award,
   FileCheck2,
+  FileText,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -411,6 +412,19 @@ export function OverviewTab({
             <div>
               <span className="text-xs font-bold text-foreground block">Certificates &amp; Licenses</span>
               <span className="text-[11px] text-muted-foreground">Cloud, vendor &amp; course credentials</span>
+            </div>
+          </button>
+
+          <button
+            onClick={() => onNavigateTab("resume")}
+            className="p-4 rounded-xl border border-border bg-card hover:border-foreground/30 hover:shadow-subtle transition-all text-left space-y-2 group"
+          >
+            <div className="h-8 w-8 rounded-lg bg-red-500/10 text-red-500 flex items-center justify-center group-hover:scale-105 transition-transform">
+              <FileText className="h-4 w-4" />
+            </div>
+            <div>
+              <span className="text-xs font-bold text-foreground block">Resume &amp; CV</span>
+              <span className="text-[11px] text-muted-foreground">Verified PDF showcase &amp; download</span>
             </div>
           </button>
 

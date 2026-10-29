@@ -40,6 +40,7 @@ const STORAGE_STUDENT_LINKS_KEY = "cc_mock_student_links";
 const STORAGE_PROJECTS_KEY = "cc_mock_projects";
 const STORAGE_ACHIEVEMENTS_KEY = "cc_mock_achievements";
 const STORAGE_CERTIFICATES_KEY = "cc_mock_certificates";
+const STORAGE_RESUMES_KEY = "cc_mock_resumes";
 
 export const DEFAULT_PROFILES: any[] = [
   {
@@ -477,6 +478,45 @@ export const DEFAULT_CERTIFICATES: any[] = [
   },
 ];
 
+export const DEFAULT_RESUMES: any[] = [
+  {
+    id: "res_sreehari",
+    profile_id: "usr_sreehari",
+    file_path: "usr_sreehari/sreehari_nair_resume_2026.pdf",
+    file_url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+    file_name: "Sreehari_Nair_Systems_Engineer.pdf",
+    file_size: 284160,
+    title: "Software Engineer & Distributed Systems CV",
+    is_visible: true,
+    uploaded_at: "2026-03-15T10:00:00Z",
+    updated_at: "2026-03-15T10:00:00Z",
+  },
+  {
+    id: "res_alex",
+    profile_id: "usr_alex",
+    file_path: "usr_alex/alex_rivera_robotics_cv.pdf",
+    file_url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+    file_name: "Alex_Rivera_EECS_Robotics.pdf",
+    file_size: 345088,
+    title: "Robotics & Embedded Systems Resume",
+    is_visible: true,
+    uploaded_at: "2026-02-18T14:30:00Z",
+    updated_at: "2026-02-18T14:30:00Z",
+  },
+  {
+    id: "res_priya",
+    profile_id: "usr_priya",
+    file_path: "usr_priya/priya_sharma_ai_resume.pdf",
+    file_url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+    file_name: "Priya_Sharma_AI_Research.pdf",
+    file_size: 298120,
+    title: "AI Research & NLP Engineer Resume",
+    is_visible: true,
+    uploaded_at: "2026-01-20T09:15:00Z",
+    updated_at: "2026-01-20T09:15:00Z",
+  },
+];
+
 const inMemoryStore = new Map<string, string>();
 
 function getStored<T>(key: string, defaultValue: T): T {
@@ -708,6 +748,12 @@ export const mockSupabase = {
                 ? certificates.find((c) => c[queryFilter.field!] === queryFilter.value)
                 : certificates[0] || null;
               return { data: found || null, error: null };
+            } else if (table === "resumes") {
+              const resumes = getStored<any[]>(STORAGE_RESUMES_KEY, DEFAULT_RESUMES);
+              const found = queryFilter.field
+                ? resumes.find((r) => r[queryFilter.field!] === queryFilter.value)
+                : resumes[0] || null;
+              return { data: found || null, error: null };
             }
             return { data: null, error: null };
           },
@@ -746,6 +792,13 @@ export const mockSupabase = {
                 ? certificates.find((c) => c[queryFilter.field!] === queryFilter.value)
                 : certificates[0] || null;
               if (!found) return { data: null, error: { message: "Certificate not found", code: "PGRST116" } };
+              return { data: found, error: null };
+            } else if (table === "resumes") {
+              const resumes = getStored<any[]>(STORAGE_RESUMES_KEY, DEFAULT_RESUMES);
+              const found = queryFilter.field
+                ? resumes.find((r) => r[queryFilter.field!] === queryFilter.value)
+                : resumes[0] || null;
+              if (!found) return { data: null, error: { message: "Resume not found", code: "PGRST116" } };
               return { data: found, error: null };
             }
             return { data: null, error: null };
@@ -804,6 +857,12 @@ export const mockSupabase = {
                 }
                 return (a.order_index ?? 0) - (b.order_index ?? 0);
               });
+              resolve({ data: list, error: null });
+            } else if (table === "resumes") {
+              const resumes = getStored<any[]>(STORAGE_RESUMES_KEY, DEFAULT_RESUMES);
+              let list = queryFilter.field
+                ? resumes.filter((r) => r[queryFilter.field!] === queryFilter.value)
+                : resumes;
               resolve({ data: list, error: null });
             } else if (table === "profiles") {
               const profiles = getStored<any[]>(STORAGE_PROFILES_KEY, DEFAULT_PROFILES);
@@ -957,6 +1016,33 @@ export const mockSupabase = {
           return { data: list, error: null };
         }
 
+        if (table === "resumes") {
+          const resumes = getStored<any[]>(STORAGE_RESUMES_KEY, DEFAULT_RESUMES);
+          list.forEach((item) => {
+            const existingIdx = resumes.findIndex(
+              (r) => (r.id && r.id === item.id) || (item.profile_id && r.profile_id === item.profile_id)
+            );
+            if (existingIdx > -1) {
+              resumes[existingIdx] = {
+                ...resumes[existingIdx],
+                ...item,
+                updated_at: new Date().toISOString(),
+              };
+            } else {
+              resumes.push({
+                id: item.id || "res_" + Math.random().toString(36).substring(2, 9),
+                is_visible: item.is_visible ?? true,
+                file_size: item.file_size || 0,
+                ...item,
+                uploaded_at: item.uploaded_at || new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+              });
+            }
+          });
+          setStored(STORAGE_RESUMES_KEY, resumes);
+          return { data: list, error: null };
+        }
+
         return { data: list, error: null };
       },
 
@@ -1020,6 +1106,16 @@ export const mockSupabase = {
                   } else {
                     resolve({ data: null, error: { message: "Certificate not found to update" } });
                   }
+                } else if (table === "resumes") {
+                  const resumes = getStored<any[]>(STORAGE_RESUMES_KEY, DEFAULT_RESUMES);
+                  const idx = resumes.findIndex((r) => r[field] === value);
+                  if (idx > -1) {
+                    resumes[idx] = { ...resumes[idx], ...updates, updated_at: new Date().toISOString() };
+                    setStored(STORAGE_RESUMES_KEY, resumes);
+                    resolve({ data: resumes[idx], error: null });
+                  } else {
+                    resolve({ data: null, error: { message: "Resume not found to update" } });
+                  }
                 } else {
                   resolve({ data: null, error: null });
                 }
@@ -1054,6 +1150,10 @@ export const mockSupabase = {
                   const certificates = getStored<any[]>(STORAGE_CERTIFICATES_KEY, DEFAULT_CERTIFICATES);
                   const remaining = certificates.filter((c) => c[field] !== value);
                   setStored(STORAGE_CERTIFICATES_KEY, remaining);
+                } else if (table === "resumes") {
+                  const resumes = getStored<any[]>(STORAGE_RESUMES_KEY, DEFAULT_RESUMES);
+                  const remaining = resumes.filter((r) => r[field] !== value);
+                  setStored(STORAGE_RESUMES_KEY, remaining);
                 }
                 resolve({ error: null });
               },
@@ -1069,7 +1169,10 @@ export const mockSupabase = {
       return {
         async upload(filePath: string, file: any, _options?: any) {
           await new Promise((r) => setTimeout(r, 120));
-          let publicUrl = "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80";
+          let publicUrl =
+            bucket === "resumes" || filePath.endsWith(".pdf")
+              ? "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
+              : "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80";
           if (typeof window !== "undefined" && file instanceof Blob) {
             publicUrl = URL.createObjectURL(file);
           }

@@ -9,6 +9,7 @@ import { StudentLinksList } from "@/components/profile/StudentLinksList";
 import { ProjectsShowcase } from "@/components/profile/ProjectsShowcase";
 import { AchievementsShowcase } from "@/components/profile/AchievementsShowcase";
 import { CertificatesShowcase } from "@/components/profile/CertificatesShowcase";
+import { ResumeShowcase } from "@/components/profile/ResumeShowcase";
 import { ProfileFooter } from "@/components/profile/ProfileFooter";
 import { PrivateProfileView } from "@/components/profile/PrivateProfileView";
 import { Badge } from "@/components/ui/badge";
@@ -80,7 +81,7 @@ export default async function ProfilePage({ params }: PageProps) {
     notFound();
   }
 
-  const { profile, socialLinks, studentLinks, projects, achievements, certificates } = data;
+  const { profile, socialLinks, studentLinks, projects, achievements, certificates, resume } = data;
 
   // 2. Private profile state
   if (profile.is_public === false) {
@@ -152,7 +153,14 @@ export default async function ProfilePage({ params }: PageProps) {
           studentName={profile.full_name}
         />
 
-        {/* 7. Profile Footer & Share Action */}
+        {/* 7. Verified Resume & Curriculum Vitae */}
+        <ResumeShowcase
+          resume={resume}
+          themeConfig={themeConfig}
+          studentName={profile.full_name}
+        />
+
+        {/* 8. Profile Footer & Share Action */}
         <ProfileFooter profile={profile} themeConfig={themeConfig} />
       </main>
     </div>

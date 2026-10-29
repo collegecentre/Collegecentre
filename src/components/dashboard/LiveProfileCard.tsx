@@ -6,13 +6,14 @@ import { SocialLinksRow } from "@/components/profile/SocialLinksRow";
 import { ProjectsShowcase } from "@/components/profile/ProjectsShowcase";
 import { AchievementsShowcase } from "@/components/profile/AchievementsShowcase";
 import { CertificatesShowcase } from "@/components/profile/CertificatesShowcase";
+import { ResumeShowcase } from "@/components/profile/ResumeShowcase";
 import { StudentLinksList } from "@/components/profile/StudentLinksList";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
 import { getProfileTheme } from "@/lib/themes";
 import { supabase } from "@/lib/supabase";
-import type { Profile, SocialLink, StudentLink, Project, Achievement, Certificate } from "@/types";
+import type { Profile, SocialLink, StudentLink, Project, Achievement, Certificate, Resume } from "@/types";
 import { cn } from "@/lib/utils";
 
 interface LiveProfileCardProps {
@@ -22,6 +23,7 @@ interface LiveProfileCardProps {
   projects?: Project[];
   achievements?: Achievement[];
   certificates?: Certificate[];
+  resume?: Resume | null;
   className?: string;
 }
 
@@ -32,6 +34,7 @@ export function LiveProfileCard({
   projects,
   achievements,
   certificates,
+  resume,
   className,
 }: LiveProfileCardProps) {
   const { toast } = useToast();
@@ -39,6 +42,7 @@ export function LiveProfileCard({
   const [internalProjects, setInternalProjects] = React.useState<Project[]>([]);
   const [internalAchievements, setInternalAchievements] = React.useState<Achievement[]>([]);
   const [internalCertificates, setInternalCertificates] = React.useState<Certificate[]>([]);
+  const [internalResume, setInternalResume] = React.useState<Resume | null>(null);
   const themeConfig = getProfileTheme(profile.theme);
 
   React.useEffect(() => {
@@ -82,6 +86,21 @@ export function LiveProfileCard({
         });
     }
   }, [certificates, profile?.id]);
+
+  React.useEffect(() => {
+    if (resume !== undefined) {
+      setInternalResume(resume);
+    } else if (profile?.id) {
+      supabase
+        .from("resumes")
+        .select("*")
+        .eq("profile_id", profile.id)
+        .maybeSingle()
+        .then((res: { data: any }) => {
+          if (res.data) setInternalResume(res.data as Resume);
+        });
+    }
+  }, [resume, profile?.id]);
 
   const username = profile.username || "student";
   const profileUrl = typeof window !== "undefined"
@@ -181,6 +200,13 @@ export function LiveProfileCard({
             {/* Certificates Showcase */}
             <CertificatesShowcase
               certificates={certificates !== undefined ? certificates : internalCertificates}
+              themeConfig={themeConfig}
+              studentName={profile.full_name}
+            />
+
+            {/* Resume Showcase */}
+            <ResumeShowcase
+              resume={resume !== undefined ? resume : internalResume}
               themeConfig={themeConfig}
               studentName={profile.full_name}
             />

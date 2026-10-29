@@ -185,6 +185,23 @@ export interface Certificate {
   updated_at?: string;
 }
 
+// -------------------------------------------------------------
+// Phase 9: Student Resume & Professional Documents
+// -------------------------------------------------------------
+
+export interface Resume {
+  id: string;
+  profile_id: string;
+  file_url: string;
+  file_path: string;
+  file_name: string;
+  file_size: number; // in bytes
+  title?: string | null;
+  is_visible: boolean;
+  uploaded_at: string;
+  updated_at?: string;
+}
+
 export interface OnboardingState {
   username: string;
   fullName: string;

@@ -32,7 +32,7 @@ const NAV_ITEMS: Array<{
   { id: "projects", label: "Projects", icon: GitBranch },
   { id: "achievements", label: "Achievements", icon: Award },
   { id: "certificates", label: "Certificates", icon: FileCheck2 },
-  { id: "resume", label: "Resume", icon: FileText, isPlaceholder: true },
+  { id: "resume", label: "Resume", icon: FileText },
   { id: "appearance", label: "Appearance", icon: Palette, isPlaceholder: true },
   { id: "analytics", label: "Analytics", icon: BarChart3, isPlaceholder: true },
   { id: "settings", label: "Settings", icon: Settings, isPlaceholder: true },
