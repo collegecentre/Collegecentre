@@ -16,9 +16,9 @@ export function HowItWorks({ onOpenClaim }: HowItWorksProps) {
       title: "Create & Claim",
       subtitle: "30 seconds setup",
       description:
-        "Reserve your custom vanity handle (e.g. collegecentre.id/alex) and connect your university email or GitHub profile.",
+        "Reserve your custom vanity handle (e.g. collegecentre.in/alex) and connect your email or GitHub profile.",
       icon: <UserCheck className="h-5 w-5 text-brand" />,
-      features: ["Custom vanity URL", ".edu institutional verification", "Instant student onboarding"],
+      features: ["Custom vanity URL", "Instant student verification", "Seamless onboarding"],
     },
     {
       step: "02",

@@ -51,7 +51,7 @@ export function FinalCTA({ onOpenClaim }: FinalCTAProps) {
           className="max-w-md mx-auto flex flex-col sm:flex-row items-center gap-2 rounded-lg border border-border bg-background p-1.5 shadow-subtle focus-within:ring-2 focus-within:ring-ring transition-all"
         >
           <div className="flex items-center px-3 py-2 w-full font-mono text-xs sm:text-sm text-foreground">
-            <span className="text-muted-foreground select-none">collegecentre.id/</span>
+            <span className="text-muted-foreground select-none">collegecentre.in/</span>
             <input
               type="text"
               value={handle}

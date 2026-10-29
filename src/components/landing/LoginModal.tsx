@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { GitBranch, School, ArrowRight } from "lucide-react";
+import { Mail, GitBranch, ArrowRight } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -56,10 +56,10 @@ export function LoginModal({ open, onOpenChange, onOpenClaim }: LoginModalProps)
             variant="outline"
             className="w-full justify-start text-sm h-10"
             disabled={isLoading}
-            onClick={() => handleSimulateLogin("University SSO")}
-            leftIcon={<School className="h-4 w-4 text-brand" />}
+            onClick={() => handleSimulateLogin("Email Magic Link")}
+            leftIcon={<Mail className="h-4 w-4 text-brand" />}
           >
-            Continue with University Email
+            Continue with Email
           </Button>
 
           <Button

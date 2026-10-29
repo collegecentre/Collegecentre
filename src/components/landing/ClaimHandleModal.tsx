@@ -26,18 +26,19 @@ export function ClaimHandleModal({
   onOpenChange,
   initialHandle = "",
 }: ClaimHandleModalProps) {
-  const [handle, setHandle] = React.useState(initialHandle || "yourname");
+  const [handle, setHandle] = React.useState(() => initialHandle || "yourname");
   const [college, setCollege] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
   const [isReserved, setIsReserved] = React.useState(false);
   const { toast } = useToast();
 
-  const prevInitialRef = React.useRef(initialHandle);
-  if (prevInitialRef.current !== initialHandle && initialHandle) {
-    prevInitialRef.current = initialHandle;
-    setHandle(initialHandle.toLowerCase().replace(/[^a-z0-9_-]/g, ""));
-  }
+  // Reset handle when modal opens with a new initial handle
+  React.useEffect(() => {
+    if (open && initialHandle) {
+      setHandle(initialHandle.toLowerCase().replace(/[^a-z0-9_-]/g, ""));
+    }
+  }, [open, initialHandle]);
 
   const cleanHandle = handle.toLowerCase().replace(/[^a-z0-9_-]/g, "");
 
@@ -52,7 +53,7 @@ export function ClaimHandleModal({
 
     toast({
       title: "Handle Reserved!",
-      description: `collegecentre.id/${cleanHandle} is reserved for your student onboarding.`,
+      description: `collegecentre.in/${cleanHandle} is reserved for your student onboarding.`,
       variant: "success",
     });
   };
@@ -88,7 +89,7 @@ export function ClaimHandleModal({
                 </span>
               </div>
               <div className="flex items-center rounded-md border border-input bg-background px-3 py-2 text-sm font-mono text-foreground focus-within:ring-2 focus-within:ring-ring">
-                <span className="text-muted-foreground select-none">collegecentre.id/</span>
+                <span className="text-muted-foreground select-none">collegecentre.in/</span>
                 <input
                   type="text"
                   value={cleanHandle}
@@ -111,13 +112,13 @@ export function ClaimHandleModal({
               />
 
               <Input
-                label="Student Email (.edu or institutional)"
+                label="Email"
                 type="email"
-                placeholder="you@university.edu"
+                placeholder="you@email.com"
                 prefixElement={<User className="h-4 w-4 text-muted-foreground" />}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                helperText="Used to grant verified student badge."
+                helperText="Used to set up your account and verify your profile."
               />
             </div>
 
@@ -145,7 +146,7 @@ export function ClaimHandleModal({
               <DialogTitle className="text-xl">Handle reserved!</DialogTitle>
               <DialogDescription className="text-sm">
                 <span className="font-mono font-semibold text-foreground">
-                  collegecentre.id/{cleanHandle}
+                  collegecentre.in/{cleanHandle}
                 </span>{" "}
                 is locked for you. When Phase 2 authentication opens, you&apos;ll be first in line to publish your showcase.
               </DialogDescription>

@@ -52,7 +52,7 @@ export function Hero({ onOpenClaim, onOpenExplore }: HeroProps) {
           className="flex flex-col sm:flex-row items-center gap-2 rounded-lg border border-border/80 bg-card p-1.5 shadow-card focus-within:border-primary/80 focus-within:ring-2 focus-within:ring-ring transition-all"
         >
           <div className="flex items-center px-3 py-2 w-full font-mono text-xs sm:text-sm text-foreground">
-            <span className="text-muted-foreground select-none">collegecentre.id/</span>
+            <span className="text-muted-foreground select-none">collegecentre.in/</span>
             <input
               type="text"
               value={handleInput}

@@ -31,7 +31,7 @@ export function ProfilePreview() {
     setCopied(true);
     toast({
       title: "URL Copied",
-      description: "collegecentre.id/alexrivera copied to clipboard.",
+      description: "collegecentre.in/alexrivera copied to clipboard.",
       variant: "default",
     });
     setTimeout(() => setCopied(false), 2000);
@@ -122,7 +122,7 @@ export function ProfilePreview() {
           </div>
 
           <div className="flex items-center gap-1.5 px-3 py-1 rounded-md bg-background border border-border/70 text-xs font-mono text-muted-foreground max-w-xs w-full justify-between">
-            <span className="truncate">collegecentre.id/alexrivera</span>
+            <span className="truncate">collegecentre.in/alexrivera</span>
             <button
               onClick={handleCopyLink}
               className="text-muted-foreground hover:text-foreground p-0.5"

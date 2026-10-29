@@ -257,7 +257,7 @@ export default function DesignSystemShowcase() {
               <div className="space-y-1">
                 <span className="text-[10px] font-mono uppercase text-muted-foreground">Monospace / Code</span>
                 <p>
-                  <Typography variant="code">collegecentre.id/alex-rivera</Typography>
+                  <Typography variant="code">collegecentre.in/alex-rivera</Typography>
                 </p>
                 <Typography variant="bodySm">
                   Deterministic vanity links for student portfolios.
@@ -378,7 +378,7 @@ export default function DesignSystemShowcase() {
             <div className="space-y-4">
               <Input
                 label="Student Handle"
-                prefixElement={<span className="text-xs font-mono text-muted-foreground">collegecentre.id/</span>}
+                prefixElement={<span className="text-xs font-mono text-muted-foreground">collegecentre.in/</span>}
                 placeholder="sreehari"
                 helperText="This will be your universal student showcase URL."
               />
@@ -392,7 +392,7 @@ export default function DesignSystemShowcase() {
                 type="email"
                 prefixElement={<Mail className="h-4 w-4 text-muted-foreground" />}
                 defaultValue="invalid-email-address"
-                error="Please enter a verified student institutional email."
+                error="Please enter a valid email address."
               />
             </div>
 
@@ -664,7 +664,7 @@ export default function DesignSystemShowcase() {
               onClick={() =>
                 toast({
                   title: "Profile link active",
-                  description: "collegecentre.id/alex-rivera is now live.",
+                  description: "collegecentre.in/alex-rivera is now live.",
                   variant: "success",
                 })
               }
@@ -789,7 +789,7 @@ export default function DesignSystemShowcase() {
           {/* Error Banner & Error State */}
           <div className="space-y-4">
             <ErrorBanner
-              message="Failed to connect to university identity provider. Verification is pending."
+              message="Failed to connect to student verification service. Verification is pending."
               onDismiss={() => toast({ title: "Error banner dismissed", variant: "default" })}
             />
 

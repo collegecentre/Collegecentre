@@ -15,7 +15,7 @@ export function WhyCollegeCentre() {
     {
       feature: "Academic Identity",
       generic: "No university, degree, graduation year, or GPA fields",
-      collegecentre: "Structured student bio, verified institutional badge, and graduation timeline",
+      collegecentre: "Structured student bio, verified student badge, and graduation timeline",
     },
     {
       feature: "Hackathon & Honors Showcase",
@@ -118,10 +118,10 @@ export function WhyCollegeCentre() {
             <ShieldCheck className="h-4 w-4" />
           </div>
           <Typography variant="h4" className="text-sm font-semibold">
-            Institutional Verification
+            Verified Student Identity
           </Typography>
           <Typography variant="caption" className="text-xs text-muted-foreground leading-relaxed block">
-            Verify via institutional email to stand out to recruiters, labs, and fellowship committees.
+            Verify your profile to stand out to recruiters, labs, and fellowship committees.
           </Typography>
         </Card>
 
