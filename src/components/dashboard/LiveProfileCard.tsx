@@ -3,19 +3,21 @@ import Link from "next/link";
 import { Copy, Check, ExternalLink, ShieldCheck } from "lucide-react";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { SocialLinksRow } from "@/components/profile/SocialLinksRow";
-import { FeaturedProjectsPlaceholder } from "@/components/profile/FeaturedProjectsPlaceholder";
+import { ProjectsShowcase } from "@/components/profile/ProjectsShowcase";
 import { StudentLinksList } from "@/components/profile/StudentLinksList";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
 import { getProfileTheme } from "@/lib/themes";
-import type { Profile, SocialLink, StudentLink } from "@/types";
+import { supabase } from "@/lib/supabase";
+import type { Profile, SocialLink, StudentLink, Project } from "@/types";
 import { cn } from "@/lib/utils";
 
 interface LiveProfileCardProps {
   profile: Profile;
   socialLinks: SocialLink[];
   studentLinks?: StudentLink[];
+  projects?: Project[];
   className?: string;
 }
 
@@ -23,11 +25,27 @@ export function LiveProfileCard({
   profile,
   socialLinks,
   studentLinks = [],
+  projects,
   className,
 }: LiveProfileCardProps) {
   const { toast } = useToast();
   const [copied, setCopied] = React.useState(false);
+  const [internalProjects, setInternalProjects] = React.useState<Project[]>([]);
   const themeConfig = getProfileTheme(profile.theme);
+
+  React.useEffect(() => {
+    if (projects !== undefined) {
+      setInternalProjects(projects);
+    } else if (profile?.id) {
+      supabase
+        .from("projects")
+        .select("*")
+        .eq("profile_id", profile.id)
+        .then((res: { data: any }) => {
+          if (res.data) setInternalProjects(res.data as Project[]);
+        });
+    }
+  }, [projects, profile?.id]);
 
   const username = profile.username || "student";
   const profileUrl = typeof window !== "undefined"
@@ -110,8 +128,12 @@ export function LiveProfileCard({
               <StudentLinksList links={studentLinks} themeConfig={themeConfig} />
             )}
 
-            {/* Featured Section Placeholder */}
-            <FeaturedProjectsPlaceholder themeConfig={themeConfig} studentName={profile.full_name} />
+            {/* Projects Showcase */}
+            <ProjectsShowcase
+              projects={projects !== undefined ? projects : internalProjects}
+              themeConfig={themeConfig}
+              studentName={profile.full_name}
+            />
 
             {/* Minimal Card Footer Branding */}
             <div className="pt-4 border-t border-border/40 text-center space-y-1">

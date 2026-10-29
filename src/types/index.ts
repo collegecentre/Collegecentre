@@ -111,6 +111,25 @@ export interface StudentLink {
 
 export type LinkItem = StudentLink;
 
+export interface Project {
+  id: string;
+  profile_id: string;
+  title: string;
+  description: string;
+  cover_image_url?: string | null;
+  technologies: string[];
+  github_url?: string | null;
+  demo_url?: string | null;
+  video_url?: string | null;
+  start_date?: string | null;
+  end_date?: string | null;
+  is_featured: boolean;
+  is_enabled: boolean;
+  order_index: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export interface OnboardingState {
   username: string;
   fullName: string;

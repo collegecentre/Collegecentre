@@ -37,6 +37,7 @@ const STORAGE_SESSION_KEY = "cc_mock_session";
 const STORAGE_PROFILES_KEY = "cc_mock_profiles";
 const STORAGE_SOCIAL_KEY = "cc_mock_social_links";
 const STORAGE_STUDENT_LINKS_KEY = "cc_mock_student_links";
+const STORAGE_PROJECTS_KEY = "cc_mock_projects";
 
 export const DEFAULT_PROFILES: any[] = [
   {
@@ -230,6 +231,86 @@ export const DEFAULT_STUDENT_LINKS: any[] = [
     is_enabled: true,
     order_index: 0,
     clicks_count: 31,
+  },
+];
+
+export const DEFAULT_PROJECTS: any[] = [
+  {
+    id: "proj_1",
+    profile_id: "usr_sreehari",
+    title: "CollegeCentre 2.0 Core Platform",
+    description: "High-performance student identity and showcase platform. Features full SSR profile rendering, sub-100ms hydration, customizable design tokens, and distributed Postgres RLS security policies.",
+    cover_image_url: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80",
+    technologies: ["Next.js", "TypeScript", "Tailwind CSS", "Supabase", "PostgreSQL"],
+    github_url: "https://github.com/collegecentre/platform",
+    demo_url: "https://collegecentre.in",
+    video_url: "https://youtube.com/watch?v=demo",
+    start_date: "2026-08",
+    end_date: "2026-10",
+    is_featured: true,
+    is_enabled: true,
+    order_index: 0,
+  },
+  {
+    id: "proj_2",
+    profile_id: "usr_sreehari",
+    title: "Distributed Raft Key-Value Store",
+    description: "Fault-tolerant log-structured merge key-value engine written in modern Rust. Features multi-raft group sharding, lease reads, and p99 read latency under 0.8ms.",
+    cover_image_url: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80",
+    technologies: ["Rust", "Tokio", "gRPC", "RocksDB", "Raft"],
+    github_url: "https://github.com/sreehari/raft-kv",
+    demo_url: "https://sreehari.dev/projects/raft-kv",
+    start_date: "2026-01",
+    end_date: "2026-06",
+    is_featured: false,
+    is_enabled: true,
+    order_index: 1,
+  },
+  {
+    id: "proj_3",
+    profile_id: "usr_alex",
+    title: "Real-Time Visual SLAM Quadrotor",
+    description: "Autonomous aerial trajectory estimation running onboard Jetson Orin at 90fps. Overcomes GPS-denied indoor obstacle fields with GPU-accelerated optical flow.",
+    cover_image_url: "https://images.unsplash.com/photo-1508614589041-895b88991e3e?w=800&q=80",
+    technologies: ["C++20", "ROS2", "CUDA", "OpenCV", "Jetson Orin"],
+    github_url: "https://github.com/arivera/vslam-drone",
+    demo_url: "https://alexrivera.me/vslam",
+    video_url: "https://youtube.com/watch?v=drone-demo",
+    start_date: "2025-09",
+    end_date: "2026-04",
+    is_featured: true,
+    is_enabled: true,
+    order_index: 0,
+  },
+  {
+    id: "proj_4",
+    profile_id: "usr_priya",
+    title: "Interactive Cognitive Latency Benchmark",
+    description: "Human-computer interaction research platform measuring cognitive perception threshold and agent trust during token streaming and tool calls.",
+    cover_image_url: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&q=80",
+    technologies: ["PyTorch", "HuggingFace", "FastAPI", "React", "KaTeX"],
+    github_url: "https://github.com/priyasharma/latency-bench",
+    demo_url: "https://priyasharma.ai/latency",
+    start_date: "2025-10",
+    end_date: "2026-03",
+    is_featured: true,
+    is_enabled: true,
+    order_index: 0,
+  },
+  {
+    id: "proj_5",
+    profile_id: "usr_kavya",
+    title: "Zero-Copy eBPF Packet Filter",
+    description: "Linux kernel bypass routing module processing 10Gbps line-rate ingress with custom eBPF XDP maps and atomic ring buffers in Rust.",
+    cover_image_url: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80",
+    technologies: ["Rust", "eBPF", "Linux Kernel", "XDP", "BCC"],
+    github_url: "https://github.com/kavyapatel/ebpf-router",
+    demo_url: "https://kavyasystems.org/ebpf",
+    start_date: "2026-02",
+    end_date: "2026-07",
+    is_featured: true,
+    is_enabled: true,
+    order_index: 0,
   },
 ];
 
@@ -446,6 +527,12 @@ export const mockSupabase = {
                   })
                 : profiles[0] || null;
               return { data: found || null, error: null };
+            } else if (table === "projects") {
+              const projects = getStored<any[]>(STORAGE_PROJECTS_KEY, DEFAULT_PROJECTS);
+              const found = queryFilter.field
+                ? projects.find((p) => p[queryFilter.field!] === queryFilter.value)
+                : projects[0] || null;
+              return { data: found || null, error: null };
             }
             return { data: null, error: null };
           },
@@ -463,6 +550,13 @@ export const mockSupabase = {
                   })
                 : profiles[0] || null;
               if (!found) return { data: null, error: { message: "Row not found", code: "PGRST116" } };
+              return { data: found, error: null };
+            } else if (table === "projects") {
+              const projects = getStored<any[]>(STORAGE_PROJECTS_KEY, DEFAULT_PROJECTS);
+              const found = queryFilter.field
+                ? projects.find((p) => p[queryFilter.field!] === queryFilter.value)
+                : projects[0] || null;
+              if (!found) return { data: null, error: { message: "Project not found", code: "PGRST116" } };
               return { data: found, error: null };
             }
             return { data: null, error: null };
@@ -482,6 +576,19 @@ export const mockSupabase = {
                 : links;
               // Sort by order_index
               list.sort((a, b) => (a.order_index ?? 0) - (b.order_index ?? 0));
+              resolve({ data: list, error: null });
+            } else if (table === "projects") {
+              const projects = getStored<any[]>(STORAGE_PROJECTS_KEY, DEFAULT_PROJECTS);
+              let list = queryFilter.field
+                ? projects.filter((p) => p[queryFilter.field!] === queryFilter.value)
+                : projects;
+              // Sort by is_featured DESC, order_index ASC
+              list.sort((a, b) => {
+                if (a.is_featured !== b.is_featured) {
+                  return a.is_featured ? -1 : 1;
+                }
+                return (a.order_index ?? 0) - (b.order_index ?? 0);
+              });
               resolve({ data: list, error: null });
             } else if (table === "profiles") {
               const profiles = getStored<any[]>(STORAGE_PROFILES_KEY, DEFAULT_PROFILES);
@@ -555,6 +662,33 @@ export const mockSupabase = {
           return { data: list, error: null };
         }
 
+        if (table === "projects") {
+          const projects = getStored<any[]>(STORAGE_PROJECTS_KEY, DEFAULT_PROJECTS);
+          list.forEach((item) => {
+            const existingIdx = projects.findIndex((p) => p.id && p.id === item.id);
+            if (existingIdx > -1) {
+              projects[existingIdx] = {
+                ...projects[existingIdx],
+                ...item,
+                updated_at: new Date().toISOString(),
+              };
+            } else {
+              projects.push({
+                id: item.id || "proj_" + Math.random().toString(36).substring(2, 9),
+                technologies: item.technologies || [],
+                is_featured: item.is_featured ?? false,
+                is_enabled: item.is_enabled ?? true,
+                order_index: item.order_index ?? projects.length,
+                ...item,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+              });
+            }
+          });
+          setStored(STORAGE_PROJECTS_KEY, projects);
+          return { data: list, error: null };
+        }
+
         return { data: list, error: null };
       },
 
@@ -588,6 +722,16 @@ export const mockSupabase = {
                   } else {
                     resolve({ data: null, error: { message: "Link not found to update" } });
                   }
+                } else if (table === "projects") {
+                  const projects = getStored<any[]>(STORAGE_PROJECTS_KEY, DEFAULT_PROJECTS);
+                  const idx = projects.findIndex((p) => p[field] === value);
+                  if (idx > -1) {
+                    projects[idx] = { ...projects[idx], ...updates, updated_at: new Date().toISOString() };
+                    setStored(STORAGE_PROJECTS_KEY, projects);
+                    resolve({ data: projects[idx], error: null });
+                  } else {
+                    resolve({ data: null, error: { message: "Project not found to update" } });
+                  }
                 } else {
                   resolve({ data: null, error: null });
                 }
@@ -610,6 +754,10 @@ export const mockSupabase = {
                   const links = getStored<any[]>(STORAGE_STUDENT_LINKS_KEY, DEFAULT_STUDENT_LINKS);
                   const remaining = links.filter((l) => l[field] !== value);
                   setStored(STORAGE_STUDENT_LINKS_KEY, remaining);
+                } else if (table === "projects") {
+                  const projects = getStored<any[]>(STORAGE_PROJECTS_KEY, DEFAULT_PROJECTS);
+                  const remaining = projects.filter((p) => p[field] !== value);
+                  setStored(STORAGE_PROJECTS_KEY, remaining);
                 }
                 resolve({ error: null });
               },
@@ -618,6 +766,37 @@ export const mockSupabase = {
         };
       },
     };
+  },
+
+  storage: {
+    from(bucket: string) {
+      return {
+        async upload(filePath: string, file: any, _options?: any) {
+          await new Promise((r) => setTimeout(r, 120));
+          let publicUrl = "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80";
+          if (typeof window !== "undefined" && file instanceof Blob) {
+            publicUrl = URL.createObjectURL(file);
+          }
+          return {
+            data: { path: filePath, fullPath: `${bucket}/${filePath}`, publicUrl },
+            error: null,
+          };
+        },
+        getPublicUrl(filePath: string) {
+          return {
+            data: {
+              publicUrl:
+                filePath.startsWith("http") || filePath.startsWith("blob:") || filePath.startsWith("data:")
+                  ? filePath
+                  : `https://placeholder.supabase.co/storage/v1/object/public/${bucket}/${filePath}`,
+            },
+          };
+        },
+        async remove(_filePaths: string[]) {
+          return { data: null, error: null };
+        },
+      };
+    },
   },
 };
 

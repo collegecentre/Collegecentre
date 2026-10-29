@@ -1,11 +1,12 @@
 import { supabase } from "@/lib/supabase";
 import { normalizeUsername } from "@/lib/username";
-import type { Profile, SocialLink, StudentLink } from "@/types";
+import type { Profile, SocialLink, StudentLink, Project } from "@/types";
 
 export interface StudentProfileData {
   profile: Profile;
   socialLinks: SocialLink[];
   studentLinks: StudentLink[];
+  projects: Project[];
 }
 
 /**
@@ -52,10 +53,26 @@ export async function getStudentProfileByUsername(
       .filter((l) => l.is_enabled !== false)
       .sort((a, b) => (a.order_index ?? 0) - (b.order_index ?? 0));
 
+    // 4. Fetch student showcase projects
+    const { data: projectsData } = await supabase
+      .from("projects")
+      .select("*")
+      .eq("profile_id", profile.id);
+
+    const projects = ((projectsData || []) as Project[])
+      .filter((p) => p.is_enabled !== false)
+      .sort((a, b) => {
+        if (a.is_featured !== b.is_featured) {
+          return a.is_featured ? -1 : 1;
+        }
+        return (a.order_index ?? 0) - (b.order_index ?? 0);
+      });
+
     return {
       profile,
       socialLinks,
       studentLinks,
+      projects,
     };
   } catch (err) {
     console.error("Failed to load student profile:", err);
