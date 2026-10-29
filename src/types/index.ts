@@ -229,6 +229,88 @@ export interface Resume {
   updated_at?: string;
 }
 
+// -------------------------------------------------------------
+// Phase 12: Privacy-Conscious Student Analytics & Insights
+// -------------------------------------------------------------
+
+export type AnalyticsEventType =
+  | "profile_view"
+  | "link_click"
+  | "project_view"
+  | "project_click"
+  | "resume_view"
+  | "resume_download"
+  | "share_event";
+
+export type AnalyticsDeviceType = "desktop" | "mobile" | "tablet" | "other";
+
+export interface AnalyticsEvent {
+  id: string;
+  profile_id: string;
+  event_type: AnalyticsEventType;
+  resource_id?: string | null;
+  resource_title?: string | null;
+  referrer_host?: string | null;
+  device_type?: AnalyticsDeviceType | null;
+  created_at: string;
+}
+
+export type AnalyticsTimeFilter = "7d" | "30d" | "90d" | "all";
+
+export interface AnalyticsOverviewMetrics {
+  totalProfileViews: number;
+  totalLinkClicks: number;
+  totalProjectInteractions: number;
+  totalResumeInteractions: number;
+  totalShareEvents: number;
+  clickThroughRate: number; // percentage (clicks / views * 100)
+  viewsChangePercent?: number | null;
+  clicksChangePercent?: number | null;
+}
+
+export interface AnalyticsDailyPoint {
+  date: string; // YYYY-MM-DD
+  label: string; // "Oct 24"
+  profileViews: number;
+  linkClicks: number;
+  projectInteractions: number;
+  resumeInteractions: number;
+  totalEvents: number;
+}
+
+export interface AnalyticsTopContentItem {
+  id: string;
+  title: string;
+  subtitle?: string | null;
+  count: number;
+  percentage: number;
+  category?: string | null;
+}
+
+export interface AnalyticsReferrerItem {
+  host: string;
+  count: number;
+  percentage: number;
+}
+
+export interface AnalyticsDeviceBreakdown {
+  device: AnalyticsDeviceType;
+  label: string;
+  count: number;
+  percentage: number;
+}
+
+export interface AnalyticsSummary {
+  timeFilter: AnalyticsTimeFilter;
+  metrics: AnalyticsOverviewMetrics;
+  dailyPoints: AnalyticsDailyPoint[];
+  topLinks: AnalyticsTopContentItem[];
+  topProjects: AnalyticsTopContentItem[];
+  topReferrers: AnalyticsReferrerItem[];
+  deviceBreakdown: AnalyticsDeviceBreakdown[];
+  totalEventsCount: number;
+}
+
 export interface OnboardingState {
   username: string;
   fullName: string;

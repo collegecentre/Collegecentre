@@ -12,6 +12,7 @@ import { CertificatesShowcase } from "@/components/profile/CertificatesShowcase"
 import { ResumeShowcase } from "@/components/profile/ResumeShowcase";
 import { ProfileFooter } from "@/components/profile/ProfileFooter";
 import { PrivateProfileView } from "@/components/profile/PrivateProfileView";
+import { ProfileViewTracker } from "@/components/profile/ProfileViewTracker";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
@@ -146,13 +147,18 @@ export default async function ProfilePage({ params }: PageProps) {
         <SocialLinksRow socialLinks={socialLinks} themeConfig={themeConfig} />
 
         {/* 3. Configured Student Links */}
-        <StudentLinksList links={studentLinks} themeConfig={themeConfig} />
+        <StudentLinksList
+          links={studentLinks}
+          themeConfig={themeConfig}
+          profileId={profile.id}
+        />
 
         {/* 4. Projects Showcase */}
         <ProjectsShowcase
           projects={projects || []}
           themeConfig={themeConfig}
           studentName={profile.full_name}
+          profileId={profile.id}
         />
 
         {/* 5. Honors & Achievements Showcase */}
@@ -174,10 +180,14 @@ export default async function ProfilePage({ params }: PageProps) {
           resume={resume}
           themeConfig={themeConfig}
           studentName={profile.full_name}
+          profileId={profile.id}
         />
 
         {/* 8. Profile Footer & Share Action */}
         <ProfileFooter profile={profile} themeConfig={themeConfig} />
+
+        {/* 9. Silent, Privacy-Preserving Profile View Tracker */}
+        <ProfileViewTracker profileId={profile.id} />
       </main>
     </div>
   );

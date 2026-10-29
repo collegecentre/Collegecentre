@@ -2,11 +2,13 @@ import * as React from "react";
 import { ArrowUpRight, Globe, Link as LinkIcon } from "lucide-react";
 import type { StudentLink } from "@/types";
 import type { ProfileThemeConfig } from "@/lib/themes";
+import { trackAnalyticsEvent } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 
 interface StudentLinksListProps {
   links: StudentLink[];
   themeConfig: ProfileThemeConfig;
+  profileId?: string;
 }
 
 function extractDomain(rawUrl: string): string {
@@ -28,7 +30,7 @@ function ensureValidUrl(rawUrl: string): string {
   return `https://${clean}`;
 }
 
-export function StudentLinksList({ links, themeConfig }: StudentLinksListProps) {
+export function StudentLinksList({ links, themeConfig, profileId }: StudentLinksListProps) {
   const enabledLinks = (links || [])
     .filter((l) => l.is_enabled !== false)
     .sort((a, b) => (a.order_index ?? 0) - (b.order_index ?? 0));
@@ -36,6 +38,18 @@ export function StudentLinksList({ links, themeConfig }: StudentLinksListProps) 
   if (enabledLinks.length === 0) {
     return null;
   }
+
+  const handleLinkClick = (link: StudentLink) => {
+    const targetProfileId = profileId || link.profile_id;
+    if (targetProfileId) {
+      trackAnalyticsEvent({
+        profileId: targetProfileId,
+        eventType: "link_click",
+        resourceId: link.id,
+        resourceTitle: link.title,
+      });
+    }
+  };
 
   return (
     <section aria-labelledby="showcase-links-heading" className="space-y-3">
@@ -62,6 +76,7 @@ export function StudentLinksList({ links, themeConfig }: StudentLinksListProps) 
               href={href}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => handleLinkClick(link)}
               className={cn(
                 "group relative flex items-center justify-between p-3.5 sm:p-4 rounded-xl border transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
                 themeConfig.linkCard

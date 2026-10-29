@@ -4,7 +4,6 @@ import {
   ExternalLink,
   Copy,
   Check,
-  Share2,
   Sparkles,
   ArrowRight,
   Eye,
@@ -28,7 +27,8 @@ import { Switch } from "@/components/ui/switch";
 import { ProgressBar } from "@/components/ui/loading";
 import { useToast } from "@/components/ui/toast";
 import { supabase } from "@/lib/supabase";
-import type { Profile, SocialLink } from "@/types";
+import { getAnalyticsSummary } from "@/lib/analytics";
+import type { Profile, SocialLink, AnalyticsOverviewMetrics } from "@/types";
 import type { DashboardTab } from "./dashboard-types";
 import { cn } from "@/lib/utils";
 
@@ -49,6 +49,15 @@ export function OverviewTab({
   const [copied, setCopied] = React.useState(false);
   const [isUpdatingPrivacy, setIsUpdatingPrivacy] = React.useState(false);
   const [shareModalOpen, setShareModalOpen] = React.useState(false);
+  const [analyticsMetrics, setAnalyticsMetrics] = React.useState<AnalyticsOverviewMetrics | null>(null);
+
+  React.useEffect(() => {
+    if (profile?.id) {
+      getAnalyticsSummary(profile.id, "30d")
+        .then((res) => setAnalyticsMetrics(res.metrics))
+        .catch(() => {});
+    }
+  }, [profile?.id]);
 
   // Compute profile completion percentage and missing items
   const completionItems = React.useMemo(() => {
@@ -295,61 +304,98 @@ export function OverviewTab({
         )}
       </Card>
 
-      {/* 3. Basic Profile Statistics Placeholders */}
+      {/* 3. Showcase Analytics Snapshot */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-xs font-mono uppercase tracking-wider text-muted-foreground font-semibold">
-            Showcase Engagement (Phase 8 Analytics Placeholder)
-          </h2>
-          <Badge variant="outline" size="sm" className="font-mono text-[10px]">
-            Preview
-          </Badge>
+          <div className="flex items-center gap-2">
+            <h2 className="text-xs font-mono uppercase tracking-wider text-muted-foreground font-semibold">
+              Showcase Engagement (Past 30 Days)
+            </h2>
+            <Badge variant="outline" size="sm" className="font-mono text-[10px] text-emerald-500 border-emerald-500/30">
+              Live
+            </Badge>
+          </div>
+
+          <Button
+            variant="ghost"
+            size="xs"
+            onClick={() => onNavigateTab("analytics")}
+            className="text-xs font-medium gap-1 text-primary hover:underline h-7 px-2"
+          >
+            <span>View Full Analytics</span>
+            <ArrowRight className="h-3 w-3" />
+          </Button>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <Card className="p-4 border-border shadow-subtle space-y-2">
+          <Card
+            onClick={() => onNavigateTab("analytics")}
+            className="p-4 border-border shadow-subtle space-y-2 cursor-pointer hover:border-primary/40 transition-colors"
+          >
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground font-medium">Showcase Views</span>
-              <div className="h-7 w-7 rounded-md bg-muted flex items-center justify-center text-muted-foreground">
+              <div className="h-7 w-7 rounded-md bg-blue-500/10 text-blue-500 flex items-center justify-center">
                 <Eye className="h-3.5 w-3.5" />
               </div>
             </div>
             <div className="space-y-0.5">
-              <span className="text-2xl font-bold font-mono text-foreground">128</span>
-              <div className="flex items-center gap-1 text-[11px] font-mono text-emerald-500 font-medium">
-                <TrendingUp className="h-3 w-3" />
-                <span>+14% this week</span>
+              <span className="text-2xl font-bold font-mono text-foreground">
+                {analyticsMetrics ? analyticsMetrics.totalProfileViews.toLocaleString() : "—"}
+              </span>
+              <div className="flex items-center gap-1 text-[11px] font-mono text-muted-foreground">
+                {analyticsMetrics?.viewsChangePercent !== null && analyticsMetrics?.viewsChangePercent !== undefined ? (
+                  <span className={cn(
+                    "inline-flex items-center gap-0.5 font-medium",
+                    analyticsMetrics.viewsChangePercent >= 0 ? "text-emerald-500" : "text-amber-500"
+                  )}>
+                    {analyticsMetrics.viewsChangePercent >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingUp className="h-3 w-3 rotate-180" />}
+                    {analyticsMetrics.viewsChangePercent >= 0 ? `+${analyticsMetrics.viewsChangePercent}%` : `${analyticsMetrics.viewsChangePercent}%`} vs prev
+                  </span>
+                ) : (
+                  <span>Verified visitors</span>
+                )}
               </div>
             </div>
           </Card>
 
-          <Card className="p-4 border-border shadow-subtle space-y-2">
+          <Card
+            onClick={() => onNavigateTab("analytics")}
+            className="p-4 border-border shadow-subtle space-y-2 cursor-pointer hover:border-primary/40 transition-colors"
+          >
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground font-medium">Total Link Clicks</span>
-              <div className="h-7 w-7 rounded-md bg-muted flex items-center justify-center text-muted-foreground">
+              <div className="h-7 w-7 rounded-md bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
                 <MousePointerClick className="h-3.5 w-3.5" />
               </div>
             </div>
             <div className="space-y-0.5">
-              <span className="text-2xl font-bold font-mono text-foreground">46</span>
-              <div className="flex items-center gap-1 text-[11px] font-mono text-emerald-500 font-medium">
-                <TrendingUp className="h-3 w-3" />
-                <span>+8% this week</span>
+              <span className="text-2xl font-bold font-mono text-foreground">
+                {analyticsMetrics ? analyticsMetrics.totalLinkClicks.toLocaleString() : "—"}
+              </span>
+              <div className="flex items-center gap-1 text-[11px] font-mono text-muted-foreground">
+                {analyticsMetrics ? `${analyticsMetrics.clickThroughRate}% click-through rate` : "Outbound clicks"}
               </div>
             </div>
           </Card>
 
-          <Card className="p-4 border-border shadow-subtle space-y-2">
+          <Card
+            onClick={() => onNavigateTab("analytics")}
+            className="p-4 border-border shadow-subtle space-y-2 cursor-pointer hover:border-primary/40 transition-colors"
+          >
             <div className="flex items-center justify-between">
-              <span className="text-xs text-muted-foreground font-medium">Direct Shares</span>
-              <div className="h-7 w-7 rounded-md bg-muted flex items-center justify-center text-muted-foreground">
-                <Share2 className="h-3.5 w-3.5" />
+              <span className="text-xs text-muted-foreground font-medium">Project &amp; Resume Activity</span>
+              <div className="h-7 w-7 rounded-md bg-violet-500/10 text-violet-500 flex items-center justify-center">
+                <GitBranch className="h-3.5 w-3.5" />
               </div>
             </div>
             <div className="space-y-0.5">
-              <span className="text-2xl font-bold font-mono text-foreground">12</span>
+              <span className="text-2xl font-bold font-mono text-foreground">
+                {analyticsMetrics
+                  ? (analyticsMetrics.totalProjectInteractions + analyticsMetrics.totalResumeInteractions).toLocaleString()
+                  : "—"}
+              </span>
               <div className="flex items-center gap-1 text-[11px] font-mono text-muted-foreground">
-                <span>Social &amp; direct links</span>
+                <span>Code, demos &amp; CV downloads</span>
               </div>
             </div>
           </Card>

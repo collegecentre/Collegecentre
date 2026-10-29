@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { trackAnalyticsEvent } from "@/lib/analytics";
 import type { Resume } from "@/types";
 
 interface ResumeViewerModalProps {
@@ -26,6 +27,7 @@ interface ResumeViewerModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   studentName?: string | null;
+  profileId?: string;
 }
 
 function formatBytes(bytes: number): string {
@@ -53,6 +55,7 @@ export function ResumeViewerModal({
   open,
   onOpenChange,
   studentName,
+  profileId,
 }: ResumeViewerModalProps) {
   const [iframeError, setIframeError] = React.useState(false);
 
@@ -63,6 +66,30 @@ export function ResumeViewerModal({
   }, [open]);
 
   if (!resume) return null;
+
+  const targetPid = profileId || resume.profile_id;
+
+  const handleDownload = () => {
+    if (targetPid) {
+      trackAnalyticsEvent({
+        profileId: targetPid,
+        eventType: "resume_download",
+        resourceId: resume.id,
+        resourceTitle: resume.title || resume.file_name,
+      });
+    }
+  };
+
+  const handleOpenTab = () => {
+    if (targetPid) {
+      trackAnalyticsEvent({
+        profileId: targetPid,
+        eventType: "resume_view",
+        resourceId: resume.id,
+        resourceTitle: resume.title || resume.file_name,
+      });
+    }
+  };
 
   const displayTitle = resume.title || "Curriculum Vitae / Resume";
   const sizeText = formatBytes(resume.file_size);
@@ -113,6 +140,7 @@ export function ResumeViewerModal({
                   href={resume.file_url}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={handleOpenTab}
                   title="Open resume in full browser tab"
                 >
                   <ExternalLink className="h-3.5 w-3.5" />
@@ -123,6 +151,7 @@ export function ResumeViewerModal({
                 <a
                   href={resume.file_url}
                   download={resume.file_name || "Resume.pdf"}
+                  onClick={handleDownload}
                   title="Download resume PDF"
                 >
                   <Download className="h-3.5 w-3.5" />

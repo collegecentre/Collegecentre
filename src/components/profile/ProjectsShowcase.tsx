@@ -12,6 +12,7 @@ import { GitHubIcon } from "@/components/icons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ProjectDetailModal } from "./ProjectDetailModal";
+import { trackAnalyticsEvent } from "@/lib/analytics";
 import type { ProfileThemeConfig } from "@/lib/themes";
 import type { Project } from "@/types";
 import { cn } from "@/lib/utils";
@@ -20,6 +21,7 @@ interface ProjectsShowcaseProps {
   projects: Project[];
   themeConfig: ProfileThemeConfig;
   studentName?: string | null;
+  profileId?: string;
   className?: string;
 }
 
@@ -27,9 +29,35 @@ export function ProjectsShowcase({
   projects,
   themeConfig,
   studentName,
+  profileId,
   className,
 }: ProjectsShowcaseProps) {
   const [selectedProject, setSelectedProject] = React.useState<Project | null>(null);
+
+  const handleOpenDetails = (project: Project) => {
+    setSelectedProject(project);
+    const targetPid = profileId || project.profile_id;
+    if (targetPid) {
+      trackAnalyticsEvent({
+        profileId: targetPid,
+        eventType: "project_view",
+        resourceId: project.id,
+        resourceTitle: project.title,
+      });
+    }
+  };
+
+  const handleProjectLink = (project: Project, type: "code" | "demo") => {
+    const targetPid = profileId || project.profile_id;
+    if (targetPid) {
+      trackAnalyticsEvent({
+        profileId: targetPid,
+        eventType: "project_click",
+        resourceId: project.id,
+        resourceTitle: `${project.title} (${type === "code" ? "GitHub" : "Demo"})`,
+      });
+    }
+  };
 
   // Filter enabled projects just in case
   const visibleProjects = projects.filter((p) => p.is_enabled !== false);
@@ -157,7 +185,7 @@ export function ProjectsShowcase({
                       </Badge>
                     )}
                     <h3
-                      onClick={() => setSelectedProject(project)}
+                      onClick={() => handleOpenDetails(project)}
                       className="text-sm font-semibold text-foreground hover:text-primary transition-colors cursor-pointer"
                     >
                       {project.title}
@@ -173,7 +201,7 @@ export function ProjectsShowcase({
 
                 {/* Short Description */}
                 <p
-                  onClick={() => setSelectedProject(project)}
+                  onClick={() => handleOpenDetails(project)}
                   className="text-xs text-muted-foreground line-clamp-2 leading-relaxed cursor-pointer"
                 >
                   {project.description}
@@ -207,6 +235,7 @@ export function ProjectsShowcase({
                       href={project.github_url}
                       target="_blank"
                       rel="noopener noreferrer"
+                      onClick={() => handleProjectLink(project, "code")}
                       className="inline-flex items-center gap-1 text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors p-1 rounded hover:bg-muted/60"
                       aria-label={`View GitHub repository for ${project.title}`}
                     >
@@ -220,6 +249,7 @@ export function ProjectsShowcase({
                       href={project.demo_url}
                       target="_blank"
                       rel="noopener noreferrer"
+                      onClick={() => handleProjectLink(project, "demo")}
                       className="inline-flex items-center gap-1 text-[11px] font-medium text-brand hover:text-brand-hover transition-colors p-1 rounded hover:bg-muted/60"
                       aria-label={`Open live demo for ${project.title}`}
                     >
@@ -232,7 +262,7 @@ export function ProjectsShowcase({
                 <Button
                   variant="ghost"
                   size="xs"
-                  onClick={() => setSelectedProject(project)}
+                  onClick={() => handleOpenDetails(project)}
                   className="text-[11px] h-6 px-2 gap-1 text-muted-foreground hover:text-foreground"
                 >
                   <span>Details</span>

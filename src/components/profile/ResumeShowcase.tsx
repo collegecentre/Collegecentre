@@ -12,6 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ResumeViewerModal } from "./ResumeViewerModal";
+import { trackAnalyticsEvent } from "@/lib/analytics";
 import type { ProfileThemeConfig } from "@/lib/themes";
 import type { Resume } from "@/types";
 import { cn } from "@/lib/utils";
@@ -20,6 +21,7 @@ interface ResumeShowcaseProps {
   resume: Resume | null;
   themeConfig: ProfileThemeConfig;
   studentName?: string | null;
+  profileId?: string;
   className?: string;
 }
 
@@ -47,6 +49,7 @@ export function ResumeShowcase({
   resume,
   themeConfig,
   studentName,
+  profileId,
   className,
 }: ResumeShowcaseProps) {
   const [modalOpen, setModalOpen] = React.useState(false);
@@ -55,6 +58,31 @@ export function ResumeShowcase({
   if (!resume || resume.is_visible === false) {
     return null;
   }
+
+  const targetPid = profileId || resume.profile_id;
+
+  const handleViewResume = () => {
+    setModalOpen(true);
+    if (targetPid) {
+      trackAnalyticsEvent({
+        profileId: targetPid,
+        eventType: "resume_view",
+        resourceId: resume.id,
+        resourceTitle: resume.title || resume.file_name,
+      });
+    }
+  };
+
+  const handleDownloadResume = () => {
+    if (targetPid) {
+      trackAnalyticsEvent({
+        profileId: targetPid,
+        eventType: "resume_download",
+        resourceId: resume.id,
+        resourceTitle: resume.title || resume.file_name,
+      });
+    }
+  };
 
   const displayTitle = resume.title || "Curriculum Vitae / Resume";
   const formattedSize = formatBytes(resume.file_size);
@@ -143,7 +171,7 @@ export function ResumeShowcase({
               type="button"
               variant="outline"
               size="sm"
-              onClick={() => setModalOpen(true)}
+              onClick={handleViewResume}
               className="h-8 px-3 text-xs gap-1.5 font-medium transition-all"
             >
               <Eye className="h-3.5 w-3.5" />
@@ -158,6 +186,7 @@ export function ResumeShowcase({
               <a
                 href={resume.file_url}
                 download={resume.file_name || "Resume.pdf"}
+                onClick={handleDownloadResume}
                 title="Download resume PDF"
               >
                 <Download className="h-3.5 w-3.5" />
@@ -174,6 +203,7 @@ export function ResumeShowcase({
         open={modalOpen}
         onOpenChange={setModalOpen}
         studentName={studentName}
+        profileId={targetPid}
       />
     </>
   );

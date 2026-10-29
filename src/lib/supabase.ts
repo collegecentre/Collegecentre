@@ -41,6 +41,7 @@ const STORAGE_PROJECTS_KEY = "cc_mock_projects";
 const STORAGE_ACHIEVEMENTS_KEY = "cc_mock_achievements";
 const STORAGE_CERTIFICATES_KEY = "cc_mock_certificates";
 const STORAGE_RESUMES_KEY = "cc_mock_resumes";
+const STORAGE_ANALYTICS_KEY = "cc_mock_analytics";
 
 export const DEFAULT_PROFILES: any[] = [
   {
@@ -517,6 +518,187 @@ export const DEFAULT_RESUMES: any[] = [
   },
 ];
 
+function createSeedAnalyticsEvents(): any[] {
+  const events: any[] = [];
+  const now = Date.now();
+  const dayMs = 86400000;
+
+  const referrers = ["github.com", "linkedin.com", "x.com", "direct", "google.com", "news.ycombinator.com"];
+  const referrerWeights = [0.4, 0.3, 0.15, 0.1, 0.03, 0.02];
+  const devices = ["desktop", "mobile", "tablet"];
+  const deviceWeights = [0.65, 0.3, 0.05];
+
+  function pickWeighted(items: string[], weights: number[]): string {
+    const r = Math.random();
+    let sum = 0;
+    for (let i = 0; i < items.length; i++) {
+      sum += weights[i];
+      if (r <= sum) return items[i];
+    }
+    return items[0];
+  }
+
+  // 1. Profile Views for usr_sreehari (past 30 days)
+  for (let day = 29; day >= 0; day--) {
+    const dayTimestamp = now - day * dayMs;
+    const viewsCount = Math.floor(3 + ((30 - day) * 0.15) + (day % 4));
+    for (let v = 0; v < viewsCount; v++) {
+      const eventTime = new Date(dayTimestamp + Math.floor(Math.random() * 80000000)).toISOString();
+      events.push({
+        id: `evt_view_${day}_${v}`,
+        profile_id: "usr_sreehari",
+        event_type: "profile_view",
+        referrer_host: pickWeighted(referrers, referrerWeights),
+        device_type: pickWeighted(devices, deviceWeights),
+        created_at: eventTime,
+      });
+    }
+  }
+
+  // 2. Link Clicks for usr_sreehari
+  const linksData = [
+    { id: "link_1", title: "CollegeCentre 2.0 Engineering Architecture RFC", count: 34 },
+    { id: "link_3", title: "Resume & Academic Transcripts", count: 48 },
+    { id: "link_2", title: "Technical Writing & Engineering Preprints", count: 12 },
+  ];
+
+  linksData.forEach((ld) => {
+    for (let i = 0; i < ld.count; i++) {
+      const day = Math.floor(Math.random() * 28);
+      events.push({
+        id: `evt_lc_${ld.id}_${i}`,
+        profile_id: "usr_sreehari",
+        event_type: "link_click",
+        resource_id: ld.id,
+        resource_title: ld.title,
+        referrer_host: pickWeighted(referrers, referrerWeights),
+        device_type: pickWeighted(devices, deviceWeights),
+        created_at: new Date(now - day * dayMs - Math.floor(Math.random() * 50000000)).toISOString(),
+      });
+    }
+  });
+
+  // 3. Project Views and Clicks for usr_sreehari
+  for (let i = 0; i < 28; i++) {
+    const day = Math.floor(Math.random() * 28);
+    events.push({
+      id: `evt_pv_1_${i}`,
+      profile_id: "usr_sreehari",
+      event_type: "project_view",
+      resource_id: "proj_1",
+      resource_title: "CollegeCentre 2.0 Core Platform",
+      referrer_host: pickWeighted(referrers, referrerWeights),
+      device_type: pickWeighted(devices, deviceWeights),
+      created_at: new Date(now - day * dayMs - Math.floor(Math.random() * 50000000)).toISOString(),
+    });
+  }
+
+  for (let i = 0; i < 19; i++) {
+    const day = Math.floor(Math.random() * 28);
+    events.push({
+      id: `evt_pc_1_${i}`,
+      profile_id: "usr_sreehari",
+      event_type: "project_click",
+      resource_id: "proj_1",
+      resource_title: "CollegeCentre 2.0 Core Platform - Live Demo",
+      referrer_host: pickWeighted(referrers, referrerWeights),
+      device_type: pickWeighted(devices, deviceWeights),
+      created_at: new Date(now - day * dayMs - Math.floor(Math.random() * 50000000)).toISOString(),
+    });
+  }
+
+  for (let i = 0; i < 16; i++) {
+    const day = Math.floor(Math.random() * 28);
+    events.push({
+      id: `evt_pv_2_${i}`,
+      profile_id: "usr_sreehari",
+      event_type: "project_view",
+      resource_id: "proj_2",
+      resource_title: "Distributed Raft Key-Value Store",
+      referrer_host: pickWeighted(referrers, referrerWeights),
+      device_type: pickWeighted(devices, deviceWeights),
+      created_at: new Date(now - day * dayMs - Math.floor(Math.random() * 50000000)).toISOString(),
+    });
+  }
+
+  for (let i = 0; i < 9; i++) {
+    const day = Math.floor(Math.random() * 28);
+    events.push({
+      id: `evt_pc_2_${i}`,
+      profile_id: "usr_sreehari",
+      event_type: "project_click",
+      resource_id: "proj_2",
+      resource_title: "Distributed Raft Key-Value Store - GitHub Repo",
+      referrer_host: pickWeighted(referrers, referrerWeights),
+      device_type: pickWeighted(devices, deviceWeights),
+      created_at: new Date(now - day * dayMs - Math.floor(Math.random() * 50000000)).toISOString(),
+    });
+  }
+
+  // 4. Resume Interactions for usr_sreehari
+  for (let i = 0; i < 22; i++) {
+    const day = Math.floor(Math.random() * 28);
+    events.push({
+      id: `evt_rv_${i}`,
+      profile_id: "usr_sreehari",
+      event_type: "resume_view",
+      resource_id: "res_sreehari",
+      resource_title: "Software & Systems Architecture Resume",
+      referrer_host: pickWeighted(referrers, referrerWeights),
+      device_type: pickWeighted(devices, deviceWeights),
+      created_at: new Date(now - day * dayMs - Math.floor(Math.random() * 50000000)).toISOString(),
+    });
+  }
+
+  for (let i = 0; i < 16; i++) {
+    const day = Math.floor(Math.random() * 28);
+    events.push({
+      id: `evt_rd_${i}`,
+      profile_id: "usr_sreehari",
+      event_type: "resume_download",
+      resource_id: "res_sreehari",
+      resource_title: "Software & Systems Architecture Resume",
+      referrer_host: pickWeighted(referrers, referrerWeights),
+      device_type: pickWeighted(devices, deviceWeights),
+      created_at: new Date(now - day * dayMs - Math.floor(Math.random() * 50000000)).toISOString(),
+    });
+  }
+
+  // 5. Share events for usr_sreehari
+  const shareActions = ["qr_download", "copy_url", "web_share", "linkedin_share"];
+  for (let i = 0; i < 11; i++) {
+    const day = Math.floor(Math.random() * 28);
+    const action = shareActions[i % shareActions.length];
+    events.push({
+      id: `evt_sh_${i}`,
+      profile_id: "usr_sreehari",
+      event_type: "share_event",
+      resource_id: action,
+      resource_title: `Share Event (${action})`,
+      referrer_host: "direct",
+      device_type: pickWeighted(devices, deviceWeights),
+      created_at: new Date(now - day * dayMs - Math.floor(Math.random() * 50000000)).toISOString(),
+    });
+  }
+
+  // 6. Light seed data for usr_alex
+  for (let i = 0; i < 35; i++) {
+    const day = Math.floor(Math.random() * 28);
+    events.push({
+      id: `evt_alex_view_${i}`,
+      profile_id: "usr_alex",
+      event_type: "profile_view",
+      referrer_host: pickWeighted(referrers, referrerWeights),
+      device_type: pickWeighted(devices, deviceWeights),
+      created_at: new Date(now - day * dayMs - Math.floor(Math.random() * 50000000)).toISOString(),
+    });
+  }
+
+  return events;
+}
+
+export const DEFAULT_ANALYTICS_EVENTS: any[] = createSeedAnalyticsEvents();
+
 const inMemoryStore = new Map<string, string>();
 
 function getStored<T>(key: string, defaultValue: T): T {
@@ -705,12 +887,22 @@ export const mockSupabase = {
 
   from(table: string) {
     let queryFilter: { field?: string; value?: any } = {};
+    const queryFilters: Array<{ op: "eq" | "gte" | "lte"; field: string; value: any }> = [];
 
     return {
       select(_columns = "*") {
         const queryObj = {
           eq(field: string, value: any) {
             queryFilter = { field, value };
+            queryFilters.push({ op: "eq", field, value });
+            return this;
+          },
+          gte(field: string, value: any) {
+            queryFilters.push({ op: "gte", field, value });
+            return this;
+          },
+          lte(field: string, value: any) {
+            queryFilters.push({ op: "lte", field, value });
             return this;
           },
           order(_field: string, _options?: { ascending?: boolean }) {
@@ -863,6 +1055,23 @@ export const mockSupabase = {
               let list = queryFilter.field
                 ? resumes.filter((r) => r[queryFilter.field!] === queryFilter.value)
                 : resumes;
+              resolve({ data: list, error: null });
+            } else if (table === "analytics_events") {
+              const events = getStored<any[]>(STORAGE_ANALYTICS_KEY, DEFAULT_ANALYTICS_EVENTS);
+              let list = events.filter((e) => {
+                for (const f of queryFilters) {
+                  const val = e[f.field];
+                  if (f.op === "eq") {
+                    if (val !== f.value) return false;
+                  } else if (f.op === "gte") {
+                    if (val < f.value) return false;
+                  } else if (f.op === "lte") {
+                    if (val > f.value) return false;
+                  }
+                }
+                return true;
+              });
+              list.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
               resolve({ data: list, error: null });
             } else if (table === "profiles") {
               const profiles = getStored<any[]>(STORAGE_PROFILES_KEY, DEFAULT_PROFILES);
@@ -1043,6 +1252,30 @@ export const mockSupabase = {
           return { data: list, error: null };
         }
 
+        if (table === "analytics_events") {
+          const events = getStored<any[]>(STORAGE_ANALYTICS_KEY, DEFAULT_ANALYTICS_EVENTS);
+          list.forEach((item) => {
+            const newEvent = {
+              id: item.id || "evt_" + Math.random().toString(36).substring(2, 10),
+              created_at: item.created_at || new Date().toISOString(),
+              ...item,
+            };
+            events.push(newEvent);
+
+            if (newEvent.event_type === "link_click" && newEvent.resource_id) {
+              const links = getStored<any[]>(STORAGE_STUDENT_LINKS_KEY, DEFAULT_STUDENT_LINKS);
+              const targetLink = links.find((l) => l.id === newEvent.resource_id);
+              if (targetLink) {
+                targetLink.clicks_count = (targetLink.clicks_count || 0) + 1;
+                targetLink.last_clicked_at = newEvent.created_at;
+                setStored(STORAGE_STUDENT_LINKS_KEY, links);
+              }
+            }
+          });
+          setStored(STORAGE_ANALYTICS_KEY, events);
+          return { data: list, error: null };
+        }
+
         return { data: list, error: null };
       },
 
@@ -1154,6 +1387,10 @@ export const mockSupabase = {
                   const resumes = getStored<any[]>(STORAGE_RESUMES_KEY, DEFAULT_RESUMES);
                   const remaining = resumes.filter((r) => r[field] !== value);
                   setStored(STORAGE_RESUMES_KEY, remaining);
+                } else if (table === "analytics_events") {
+                  const events = getStored<any[]>(STORAGE_ANALYTICS_KEY, DEFAULT_ANALYTICS_EVENTS);
+                  const remaining = events.filter((e) => e[field] !== value);
+                  setStored(STORAGE_ANALYTICS_KEY, remaining);
                 }
                 resolve({ error: null });
               },

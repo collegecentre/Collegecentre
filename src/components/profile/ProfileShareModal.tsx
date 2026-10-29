@@ -29,6 +29,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { trackAnalyticsEvent } from "@/lib/analytics";
 import type { Profile } from "@/types";
 import { cn } from "@/lib/utils";
 
@@ -146,6 +147,12 @@ export function ProfileShareModal({
     if (typeof navigator !== "undefined" && navigator.clipboard) {
       navigator.clipboard.writeText(profileUrl);
       setCopied(true);
+      trackAnalyticsEvent({
+        profileId: profile.id,
+        eventType: "share_event",
+        resourceId: "copy_url",
+        resourceTitle: "Copied Profile URL",
+      });
       toast({
         title: "Profile URL Copied",
         description: `${profileUrl} copied to your clipboard.`,
@@ -163,6 +170,12 @@ export function ProfileShareModal({
           title: `${displayName} • CollegeCentre`,
           text: `Explore ${displayName}'s student showcase and projects on CollegeCentre`,
           url: profileUrl,
+        });
+        trackAnalyticsEvent({
+          profileId: profile.id,
+          eventType: "share_event",
+          resourceId: "web_share",
+          resourceTitle: "Native Web Share",
         });
         toast({
           title: "Shared Successfully",
@@ -188,6 +201,13 @@ export function ProfileShareModal({
     a.click();
     document.body.removeChild(a);
 
+    trackAnalyticsEvent({
+      profileId: profile.id,
+      eventType: "share_event",
+      resourceId: "qr_download_png",
+      resourceTitle: "Downloaded QR PNG",
+    });
+
     toast({
       title: "QR Code Downloaded (PNG)",
       description: "Saved high-resolution 1024x1024 image for resumes and print.",
@@ -207,6 +227,13 @@ export function ProfileShareModal({
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+
+    trackAnalyticsEvent({
+      profileId: profile.id,
+      eventType: "share_event",
+      resourceId: "qr_download_svg",
+      resourceTitle: "Downloaded QR SVG",
+    });
 
     toast({
       title: "QR Code Downloaded (SVG)",
