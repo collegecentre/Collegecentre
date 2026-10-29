@@ -1459,6 +1459,9 @@ export const mockSupabase = {
             queryFilters.push({ op: "lte", field, value });
             return this;
           },
+          limit(_count: number) {
+            return this;
+          },
           order(_field: string, _options?: { ascending?: boolean }) {
             return this;
           },

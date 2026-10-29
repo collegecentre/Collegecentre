@@ -1,6 +1,6 @@
-import { supabase } from "@/lib/supabase";
-import { normalizeUsername } from "@/lib/username";
-import type { Profile, SocialLink, StudentLink, Project, Achievement, Certificate, Resume } from "@/types";
+import { supabase } from "./supabase.ts";
+import { normalizeUsername } from "./username.ts";
+import type { Profile, SocialLink, StudentLink, Project, Achievement, Certificate, Resume } from "../types/index.ts";
 
 export interface StudentProfileData {
   profile: Profile;
@@ -15,6 +15,13 @@ export interface StudentProfileData {
 /**
  * Fetches public student profile data by username.
  * Supports both real Supabase and in-memory mock client.
+ * 
+ * Production Security:
+ * Strictly isolates private profiles (is_public = false), never returning
+ * private projects, achievements, certificates, resume, or links to public visitors.
+ * 
+ * Performance:
+ * Queries all related showcase data concurrently with Promise.all to minimize TTFB.
  */
 export async function getStudentProfileByUsername(
   rawUsername: string
@@ -36,33 +43,63 @@ export async function getStudentProfileByUsername(
 
     const profile = profileData as Profile;
 
-    // 2. Fetch basic social links
-    const { data: socialData } = await supabase
-      .from("basic_social_links")
-      .select("*")
-      .eq("profile_id", profile.id)
-      .order("order_index", { ascending: true });
+    // Security check: Private profiles return only public identity shell
+    if (profile.is_public === false) {
+      return {
+        profile,
+        socialLinks: [],
+        studentLinks: [],
+        projects: [],
+        achievements: [],
+        certificates: [],
+        resume: null,
+      };
+    }
 
-    const socialLinks = (socialData || []) as SocialLink[];
+    // 2. Fetch all related showcase modules concurrently
+    const [socialRes, linksRes, projectsRes, achievementsRes, certificatesRes, resumeRes] =
+      await Promise.all([
+        supabase
+          .from("basic_social_links")
+          .select("*")
+          .eq("profile_id", profile.id)
+          .order("order_index", { ascending: true }),
 
-    // 3. Fetch configured student showcase links
-    const { data: linksData } = await supabase
-      .from("student_links")
-      .select("*")
-      .eq("profile_id", profile.id)
-      .order("order_index", { ascending: true });
+        supabase
+          .from("student_links")
+          .select("*")
+          .eq("profile_id", profile.id)
+          .order("order_index", { ascending: true }),
 
-    const studentLinks = ((linksData || []) as StudentLink[])
+        supabase
+          .from("projects")
+          .select("*")
+          .eq("profile_id", profile.id),
+
+        supabase
+          .from("achievements")
+          .select("*")
+          .eq("profile_id", profile.id),
+
+        supabase
+          .from("certificates")
+          .select("*")
+          .eq("profile_id", profile.id),
+
+        supabase
+          .from("resumes")
+          .select("*")
+          .eq("profile_id", profile.id)
+          .maybeSingle(),
+      ]);
+
+    const socialLinks = (socialRes.data || []) as SocialLink[];
+
+    const studentLinks = ((linksRes.data || []) as StudentLink[])
       .filter((l) => l.is_enabled !== false)
       .sort((a, b) => (a.order_index ?? 0) - (b.order_index ?? 0));
 
-    // 4. Fetch student showcase projects
-    const { data: projectsData } = await supabase
-      .from("projects")
-      .select("*")
-      .eq("profile_id", profile.id);
-
-    const projects = ((projectsData || []) as Project[])
+    const projects = ((projectsRes.data || []) as Project[])
       .filter((p) => p.is_enabled !== false)
       .sort((a, b) => {
         if (a.is_featured !== b.is_featured) {
@@ -71,13 +108,7 @@ export async function getStudentProfileByUsername(
         return (a.order_index ?? 0) - (b.order_index ?? 0);
       });
 
-    // 5. Fetch verified student achievements
-    const { data: achievementsData } = await supabase
-      .from("achievements")
-      .select("*")
-      .eq("profile_id", profile.id);
-
-    const achievements = ((achievementsData || []) as Achievement[])
+    const achievements = ((achievementsRes.data || []) as Achievement[])
       .filter((a) => a.is_enabled !== false)
       .sort((a, b) => {
         if (a.is_featured !== b.is_featured) {
@@ -86,14 +117,7 @@ export async function getStudentProfileByUsername(
         return (a.order_index ?? 0) - (b.order_index ?? 0);
       });
 
-    // 6. Fetch verified student certificates
-    // 6. Fetch verified student certificates
-    const { data: certificatesData } = await supabase
-      .from("certificates")
-      .select("*")
-      .eq("profile_id", profile.id);
-
-    const certificates = ((certificatesData || []) as Certificate[])
+    const certificates = ((certificatesRes.data || []) as Certificate[])
       .filter((c) => c.is_enabled !== false)
       .sort((a, b) => {
         if (a.is_featured !== b.is_featured) {
@@ -102,18 +126,9 @@ export async function getStudentProfileByUsername(
         return (a.order_index ?? 0) - (b.order_index ?? 0);
       });
 
-    // 7. Fetch verified student resume (only if profile is public and resume is visible)
     let resume: Resume | null = null;
-    if (profile.is_public !== false) {
-      const { data: resumeData } = await supabase
-        .from("resumes")
-        .select("*")
-        .eq("profile_id", profile.id)
-        .maybeSingle();
-
-      if (resumeData && (resumeData as Resume).is_visible !== false) {
-        resume = resumeData as Resume;
-      }
+    if (resumeRes.data && (resumeRes.data as Resume).is_visible !== false) {
+      resume = resumeRes.data as Resume;
     }
 
     return {

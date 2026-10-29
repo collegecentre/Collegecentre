@@ -107,6 +107,25 @@ export default async function ProfilePage({ params }: PageProps) {
       ? "max-w-2xl"
       : "max-w-xl";
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: profile.full_name || profile.username,
+    alternateName: `@${profile.username}`,
+    url: profile.custom_domain
+      ? `https://${profile.custom_domain}`
+      : `https://collegecentre.in/${profile.username}`,
+    image: profile.avatar_url || undefined,
+    description: profile.bio || undefined,
+    alumniOf: profile.college
+      ? {
+          "@type": "EducationalOrganization",
+          name: profile.college,
+        }
+      : undefined,
+    sameAs: socialLinks.map((s) => s.url).filter(Boolean),
+  };
+
   return (
     <div
       className={cn(
@@ -114,6 +133,11 @@ export default async function ProfilePage({ params }: PageProps) {
         themeConfig.pageBackground
       )}
     >
+      {/* Schema.org Person Structured Data for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <main
         className={cn(
           "mx-auto rounded-2xl border p-6 sm:p-10 space-y-8 backdrop-blur-sm transition-all duration-200",

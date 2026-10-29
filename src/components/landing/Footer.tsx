@@ -138,28 +138,28 @@ export function Footer() {
             </span>
             <ul className="space-y-2 text-xs text-muted-foreground">
               <li>
-                <a href="#privacy" className="hover:text-foreground transition-colors">
+                <a href="/privacy" className="hover:text-foreground transition-colors">
                   Privacy Policy
                 </a>
               </li>
               <li>
-                <a href="#terms" className="hover:text-foreground transition-colors">
+                <a href="/terms" className="hover:text-foreground transition-colors">
                   Terms of Service
                 </a>
               </li>
               <li>
-                <a href="#honor" className="hover:text-foreground transition-colors">
-                  Student Honor Code
+                <a href="/contact" className="hover:text-foreground transition-colors">
+                  Contact &amp; Support
                 </a>
               </li>
               <li>
-                <a href="#verification" className="hover:text-foreground transition-colors">
-                  Verification Standards
+                <a href="/pricing" className="hover:text-foreground transition-colors">
+                  Plans &amp; Pricing
                 </a>
               </li>
               <li>
-                <a href="#security" className="hover:text-foreground transition-colors">
-                  Security &amp; Encryption
+                <a href="/api/health" target="_blank" className="hover:text-foreground transition-colors font-mono text-[11px]">
+                  System Status ↗
                 </a>
               </li>
             </ul>
@@ -171,7 +171,7 @@ export function Footer() {
           <p>© {new Date().getFullYear()} CollegeCentre. Built with precision for student creators.</p>
           <div className="flex items-center gap-1.5 font-mono text-[11px]">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-            <span>Phase 1 Verified • Ready for Phase 2</span>
+            <span>CollegeCentre 2.0 • Production Hardened</span>
           </div>
         </div>
       </div>

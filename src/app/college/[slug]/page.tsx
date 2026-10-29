@@ -49,5 +49,25 @@ export default async function CollegePage({ params }: CollegePageProps) {
     notFound();
   }
 
-  return <CollegeViewClient slug={slug} initialData={initialData} />;
+  const { college } = initialData;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "EducationalOrganization",
+    name: college.name,
+    url: `https://collegecentre.in/college/${slug}`,
+    logo: college.logo_url || undefined,
+    description: college.description || undefined,
+    address: college.location || undefined,
+    sameAs: college.website ? [college.website] : undefined,
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <CollegeViewClient slug={slug} initialData={initialData} />
+    </>
+  );
 }
