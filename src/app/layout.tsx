@@ -6,9 +6,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "CollegeCentre — Student Identity & Showcase",
+  title: "CollegeCentre",
   description:
-    "One link for everything you've built, achieved, and are. The premium student showcase platform.",
+    "One link for everything you've built, achieved, and are.",
   icons: {
     icon: "/favicon.ico",
   },

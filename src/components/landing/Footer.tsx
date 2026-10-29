@@ -21,7 +21,7 @@ export function Footer() {
 
             <p className="text-xs text-muted-foreground leading-relaxed max-w-sm">
               &ldquo;One link for everything you&apos;ve built, achieved, and are.&rdquo;
-              The student identity and showcase platform built for builders, researchers, and graduates.
+              Built for builders, researchers, and graduates.
             </p>
 
             <div className="flex items-center gap-3 pt-1 text-muted-foreground">

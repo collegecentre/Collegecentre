@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { ArrowRight, Sparkles, CheckCircle2, Compass, ShieldCheck } from "lucide-react";
+import { ArrowRight, CheckCircle2, Compass, ShieldCheck } from "lucide-react";
 import { Typography } from "@/components/ui/typography";
 import { Button } from "@/components/ui/button";
 
@@ -20,12 +20,6 @@ export function Hero({ onOpenClaim, onOpenExplore }: HeroProps) {
 
   return (
     <section className="relative pt-12 pb-14 sm:pt-20 sm:pb-20 text-center space-y-8 max-w-4xl mx-auto px-4">
-      {/* Eyebrow Pill */}
-      <div className="inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/5 px-3 py-1 text-xs font-mono font-medium text-brand shadow-subtle animate-in fade-in slide-in-from-bottom-2 duration-300">
-        <Sparkles className="h-3.5 w-3.5" />
-        <span>The Student Identity &amp; Showcase Platform</span>
-      </div>
-
       {/* Hero Headline */}
       <div className="space-y-4">
         <Typography
