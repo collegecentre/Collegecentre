@@ -168,9 +168,6 @@ function SignupForm() {
           <span className="font-semibold text-lg tracking-tight text-foreground">
             CollegeCentre
           </span>
-          <span className="rounded-full bg-brand/10 border border-brand/20 px-1.5 py-0.2 text-[10px] font-mono font-medium text-brand">
-            2.0
-          </span>
         </Link>
 
         <Typography variant="h2" as="h1" className="text-2xl font-bold tracking-tight">

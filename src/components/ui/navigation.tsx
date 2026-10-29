@@ -19,7 +19,7 @@ export interface NavbarProps extends React.HTMLAttributes<HTMLElement> {
 
 export function Navbar({
   brandName = "CollegeCentre",
-  brandTag = "2.0",
+  brandTag,
   items = [],
   actions,
   className,

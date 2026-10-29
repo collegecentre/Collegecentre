@@ -17,9 +17,6 @@ export function Footer() {
               <span className="font-semibold text-sm tracking-tight text-foreground">
                 CollegeCentre
               </span>
-              <span className="rounded-full bg-brand/10 border border-brand/20 px-1.5 py-0.2 text-[10px] font-mono font-medium text-brand">
-                2.0
-              </span>
             </div>
 
             <p className="text-xs text-muted-foreground leading-relaxed max-w-sm">
@@ -125,7 +122,7 @@ export function Footer() {
               </li>
               <li>
                 <a href="#changelog" className="hover:text-foreground transition-colors">
-                  Changelog (v2.0)
+                  Changelog
                 </a>
               </li>
             </ul>
@@ -171,7 +168,7 @@ export function Footer() {
           <p>© {new Date().getFullYear()} CollegeCentre. Built with precision for student creators.</p>
           <div className="flex items-center gap-1.5 font-mono text-[11px]">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-            <span>CollegeCentre 2.0 • Production Hardened</span>
+            <span>Verified Student Network</span>
           </div>
         </div>
       </div>

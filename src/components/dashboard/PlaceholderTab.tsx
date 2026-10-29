@@ -143,7 +143,7 @@ const TAB_CONFIG: Record<
       "Session history & remote signout",
       "Account deletion & full data export",
     ],
-    sampleSnippet: "Status: Verified Student • CollegeCentre 2.0 Account",
+    sampleSnippet: "Status: Verified Student • CollegeCentre Account",
   },
 };
 

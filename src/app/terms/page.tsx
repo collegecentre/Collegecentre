@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 export const metadata: Metadata = {
   title: "Terms of Service • CollegeCentre",
   description:
-    "Review the terms governing the use of CollegeCentre 2.0, student showcase profiles, and platform policies.",
+    "Review the terms governing the use of CollegeCentre, student showcase profiles, and platform policies.",
 };
 
 export default function TermsOfServicePage() {
@@ -27,7 +27,7 @@ export default function TermsOfServicePage() {
               Terms of Service
             </h1>
             <p className="text-xs sm:text-sm text-muted-foreground">
-              Last updated: October 29, 2026 &bull; Effective immediately for CollegeCentre 2.0
+              Last updated: October 29, 2026 &bull; Effective immediately for CollegeCentre
             </p>
           </div>
 

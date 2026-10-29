@@ -67,7 +67,7 @@ export function WhyCollegeCentre() {
           </div>
           <div className="md:col-span-4 text-brand flex items-center gap-1.5 pt-2 md:pt-0">
             <span className="h-2 w-2 rounded-full bg-brand" />
-            CollegeCentre 2.0
+            CollegeCentre
           </div>
         </div>
 

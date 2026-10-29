@@ -20,7 +20,7 @@ const sampleProfiles = [
     college: "National Institute of Technology '26",
     major: "Computer Science & Systems",
     avatar: "SN",
-    tagline: "Building CollegeCentre 2.0. Distributed systems, web platform architecture, and developer productivity tools.",
+    tagline: "Building CollegeCentre. Distributed systems, web platform architecture, and developer productivity tools.",
     highlight: "Core Architect • CollegeCentre",
     linkCount: 15,
     badge: "Verified Student",

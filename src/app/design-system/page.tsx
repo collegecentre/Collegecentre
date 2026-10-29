@@ -113,7 +113,7 @@ export default function DesignSystemShowcase() {
       {/* Top Navbar */}
       <Navbar
         brandName="CollegeCentre"
-        brandTag="2.0 Foundation"
+        brandTag="Design System"
         items={[
           { label: "Overview", href: "#overview", active: true },
           { label: "Typography", href: "#typography" },
@@ -172,9 +172,9 @@ export default function DesignSystemShowcase() {
         {/* Breadcrumb sample */}
         <Breadcrumbs
           items={[
-            { label: "CollegeCentre 2.0", href: "/" },
-            { label: "Phase 0", href: "#" },
-            { label: "Design System & Project Foundation" },
+            { label: "CollegeCentre", href: "/" },
+            { label: "Design System", href: "#" },
+            { label: "Design Tokens & Primitives" },
           ]}
         />
 
@@ -182,7 +182,7 @@ export default function DesignSystemShowcase() {
         <section id="overview" className="space-y-4 pt-2">
           <div className="inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/5 px-3 py-1 text-xs font-mono font-medium text-brand">
             <Sparkles className="h-3.5 w-3.5" />
-            Phase 0: Design System & Project Foundation
+            Design System &amp; Project Foundation
           </div>
 
           <Typography variant="display" as="h1">
@@ -190,7 +190,7 @@ export default function DesignSystemShowcase() {
           </Typography>
 
           <Typography variant="lead" className="max-w-3xl">
-            A restrained, modern design system built for the new CollegeCentre 2.0 student identity platform.
+            A restrained, modern design system built for the CollegeCentre student identity platform.
             Crafted with zero AI-slop, razor-sharp typography, accessible Radix primitives, and resilient design tokens.
           </Typography>
 
@@ -837,7 +837,7 @@ export default function DesignSystemShowcase() {
             <div className="h-4 w-4 rounded bg-foreground flex items-center justify-center text-[9px] font-bold text-background">
               CC
             </div>
-            <span>CollegeCentre 2.0 • Phase 0: Design System & Project Foundation</span>
+            <span>CollegeCentre • Design System &amp; Project Foundation</span>
           </div>
 
           <div className="flex items-center gap-4">

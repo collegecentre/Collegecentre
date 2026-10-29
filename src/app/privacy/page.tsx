@@ -27,7 +27,7 @@ export default function PrivacyPolicyPage() {
               Privacy Policy
             </h1>
             <p className="text-xs sm:text-sm text-muted-foreground">
-              Last updated: October 29, 2026 &bull; Effective immediately for CollegeCentre 2.0
+              Last updated: October 29, 2026 &bull; Effective immediately for CollegeCentre
             </p>
           </div>
 

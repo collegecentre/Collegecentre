@@ -79,7 +79,7 @@ export default function ErrorBoundary({
         </Card>
 
         <p className="text-xs text-muted-foreground">
-          CollegeCentre 2.0 • Reliability &amp; Production Hardening
+          CollegeCentre • Reliable &amp; Secure Student Showcase
         </p>
       </div>
     </div>

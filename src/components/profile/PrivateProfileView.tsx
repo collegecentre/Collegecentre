@@ -66,7 +66,7 @@ export function PrivateProfileView({ profile }: PrivateProfileViewProps) {
         </Card>
 
         <p className="text-xs text-muted-foreground">
-          CollegeCentre 2.0 • Premium Student Identity
+          CollegeCentre • Premium Student Identity
         </p>
       </div>
     </div>

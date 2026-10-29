@@ -45,9 +45,6 @@ export function Header({
               <span className="font-semibold text-sm sm:text-base tracking-tight text-foreground">
                 CollegeCentre
               </span>
-              <span className="hidden sm:inline-flex rounded-full bg-brand/10 border border-brand/20 px-1.5 py-0.2 text-[10px] font-mono font-medium text-brand">
-                2.0
-              </span>
             </div>
           </a>
 

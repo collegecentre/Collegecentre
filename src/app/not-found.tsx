@@ -58,7 +58,7 @@ export default function NotFound() {
         </Card>
 
         <p className="text-xs text-muted-foreground">
-          CollegeCentre 2.0 • One link for everything you&apos;ve built, achieved, and are.
+          CollegeCentre • One link for everything you&apos;ve built, achieved, and are.
         </p>
       </div>
     </div>

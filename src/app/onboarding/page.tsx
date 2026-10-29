@@ -732,7 +732,7 @@ function OnboardingWizard() {
                   )}
 
                   <div className="pt-4 border-t border-border/40 text-[11px] text-muted-foreground font-mono">
-                    collegecentre.in/{normalizeUsername(username)} • Powered by CollegeCentre 2.0
+                    collegecentre.in/{normalizeUsername(username)} • Powered by CollegeCentre
                   </div>
                 </div>
               </div>

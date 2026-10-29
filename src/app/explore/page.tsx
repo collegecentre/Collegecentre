@@ -339,7 +339,7 @@ export default function ExplorePage() {
       {/* 5. Minimal Footer */}
       <footer className="border-t border-border/50 py-6 text-center text-xs text-muted-foreground space-y-2">
         <p className="font-mono text-[11px]">
-          CollegeCentre 2.0 • The verified student network for builders, engineers &amp; researchers.
+          CollegeCentre • The verified student network for builders, engineers &amp; researchers.
         </p>
         <div>
           <Link
