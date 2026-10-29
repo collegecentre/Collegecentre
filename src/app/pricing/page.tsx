@@ -55,7 +55,7 @@ export default function PricingPage() {
       items: [
         { name: "Standard Themes (Minimal, Developer, Academic)", free: true, pro: true },
         { name: "Curated Pro Themes (Creative, Cobalt, Obsidian, Terminal)", free: false, pro: true },
-        { name: "Bespoke Accent Colors & Button Styles", free: false, pro: true },
+        { name: "Custom Accent Colors & Button Styles", free: false, pro: true },
         { name: "Profile Layout Variants", free: false, pro: true },
       ],
     },
@@ -76,7 +76,7 @@ export default function PricingPage() {
     },
     {
       q: "Can I connect a domain I already bought from Namecheap, Cloudflare, or GoDaddy?",
-      a: "Yes! Connecting your custom domain is seamless. Just add a single CNAME record pointing to cname.collegecentre.in, and your showcase will instantly serve from your personal domain.",
+      a: "Yes! Connecting your custom domain is simple. Just add a single CNAME record pointing to cname.collegecentre.in, and your showcase will instantly serve from your personal domain.",
     },
     {
       q: "What happens if I cancel my Pro subscription?",
@@ -265,7 +265,7 @@ export default function PricingPage() {
                       <div className="rounded-full p-0.5 bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400">
                         <Check className="w-3.5 h-3.5" />
                       </div>
-                      <span>Bespoke accent colors & layout styles</span>
+                      <span>Custom accent colors & layout styles</span>
                     </li>
                     <li className="flex items-center gap-2.5">
                       <div className="rounded-full p-0.5 bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400">

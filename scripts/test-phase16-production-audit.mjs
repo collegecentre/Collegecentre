@@ -1,9 +1,8 @@
 /**
- * CollegeCentre 2.0 - Phase 16 Production Hardening & Launch Audit Suite
+ * CollegeCentre - Production Hardening & Launch Audit Suite
  */
 
 import fs from "fs";
-import path from "path";
 import {
   sanitizeText,
   isSafeUrl,
@@ -12,7 +11,6 @@ import {
   checkRateLimit,
 } from "../src/lib/security.ts";
 import { getStudentProfileByUsername } from "../src/lib/profile-service.ts";
-import { logger } from "../src/lib/logger.ts";
 import sitemap from "../src/app/sitemap.ts";
 import robots from "../src/app/robots.ts";
 import { GET as healthCheckGet } from "../src/app/api/health/route.ts";
@@ -32,7 +30,7 @@ function assert(condition, message) {
 
 async function runAudit() {
   console.log("\n========================================================");
-  console.log("  CollegeCentre 2.0 - Phase 16 Production Hardening Audit ");
+  console.log("  CollegeCentre - Production Hardening Audit ");
   console.log("========================================================\n");
 
   try {
@@ -118,7 +116,7 @@ async function runAudit() {
     const healthData = await healthResponse.json();
     assert(healthResponse.status === 200, "Health check endpoint returns HTTP 200");
     assert(healthData.status === "healthy", "Health status is 'healthy'");
-    assert(healthData.version === "2.0.0", "Reports correct application version 2.0.0");
+    assert(healthData.version === "1.0.0", "Reports correct application version 1.0.0");
     assert(typeof healthData.latencyMs === "number", "Reports database/service latency measurement");
 
     // ---------------------------------------------------------

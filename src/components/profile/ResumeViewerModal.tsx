@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import {
-  FileText,
   Download,
   ExternalLink,
   Calendar,
@@ -126,9 +125,9 @@ export function ResumeViewerModal({
                     Updated {uploadDate}
                   </span>
                 )}
-                <span className="flex items-center gap-1 font-mono text-emerald-500">
-                  <CheckCircle2 className="h-3 w-3" />
-                  Verified Attachment
+                <span className="flex items-center gap-1 font-mono text-muted-foreground">
+                  <CheckCircle2 className="h-3 w-3 text-emerald-500" />
+                  PDF Document
                 </span>
               </DialogDescription>
             </div>
@@ -197,7 +196,7 @@ export function ResumeViewerModal({
         {/* Footer Info */}
         <div className="px-4 py-2.5 border-t border-border bg-card flex items-center justify-between text-[11px] font-mono text-muted-foreground">
           <span className="truncate max-w-[240px] sm:max-w-md">{resume.file_name}</span>
-          <span>CollegeCentre Verified PDF</span>
+          <span>Student Resume Document</span>
         </div>
       </DialogContent>
     </Dialog>

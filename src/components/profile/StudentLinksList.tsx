@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ArrowUpRight, Globe, Link as LinkIcon } from "lucide-react";
+import { ArrowUpRight, Globe } from "lucide-react";
 import type { StudentLink } from "@/types";
 import type { ProfileThemeConfig } from "@/lib/themes";
 import { trackAnalyticsEvent } from "@/lib/analytics";

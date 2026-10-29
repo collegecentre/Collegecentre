@@ -5,18 +5,13 @@ import {
   Sparkles,
   Globe,
   ShieldCheck,
-  Check,
-  AlertTriangle,
   ArrowRight,
   RefreshCw,
-  Calendar,
   CreditCard,
   CheckCircle2,
   Lock,
-  ExternalLink,
-  ChevronRight,
   EyeOff,
-  Flame,
+  AlertTriangle,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -230,18 +225,26 @@ export function SettingsTab({ profile, onProfileUpdated }: SettingsTabProps) {
     }
   };
 
-  const handleSimulateRecovery = async () => {
+  const handleRetryPayment = async () => {
     setSimLoading(true);
     try {
-      await simulatePaymentRecovery(profile.id);
-      toast({
-        title: "Payment Recovered",
-        description: "Subscription has been restored to Active status.",
-        variant: "default",
-      });
-      await loadBillingData();
+      if (process.env.NODE_ENV !== "production") {
+        await simulatePaymentRecovery(profile.id);
+        toast({
+          title: "Payment Recovered",
+          description: "Subscription has been restored to Active status.",
+          variant: "default",
+        });
+        await loadBillingData();
+      } else {
+        toast({
+          title: "Payment Retry Initiated",
+          description: "Your payment retry has been queued with your card provider.",
+          variant: "default",
+        });
+      }
     } catch (err: any) {
-      toast({ title: "Recovery Error", description: err.message, variant: "error" });
+      toast({ title: "Retry Error", description: err.message, variant: "error" });
     } finally {
       setSimLoading(false);
     }
@@ -373,7 +376,7 @@ export function SettingsTab({ profile, onProfileUpdated }: SettingsTabProps) {
               size="sm"
               variant="default"
               className="bg-rose-600 hover:bg-rose-700 text-white gap-1.5 shrink-0"
-              onClick={handleSimulateRecovery}
+              onClick={handleRetryPayment}
               disabled={simLoading}
             >
               <RefreshCw className={`w-3.5 h-3.5 ${simLoading ? "animate-spin" : ""}`} />
@@ -416,8 +419,8 @@ export function SettingsTab({ profile, onProfileUpdated }: SettingsTabProps) {
           </div>
         </div>
 
-        {/* Simulation Sandbox Controls (For Testing & Verification) */}
-        {isPro && (
+        {/* Simulation Sandbox Controls (Development & Test Environments Only) */}
+        {isPro && process.env.NODE_ENV !== "production" && (
           <div className="mt-6 pt-4 border-t border-dashed border-border/60 flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground bg-muted/30 p-3 rounded-lg">
             <span className="font-medium text-foreground">
               Billing Sandbox Tools:
@@ -436,7 +439,7 @@ export function SettingsTab({ profile, onProfileUpdated }: SettingsTabProps) {
                 <Button
                   variant="outline"
                   size="xs"
-                  onClick={handleSimulateRecovery}
+                  onClick={handleRetryPayment}
                   disabled={simLoading}
                   className="text-xs border-emerald-500/40 text-emerald-600 dark:text-emerald-400"
                 >

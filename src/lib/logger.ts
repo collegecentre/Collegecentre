@@ -1,6 +1,5 @@
 /**
- * CollegeCentre 2.0 - Production Observability & Structured Logger
- * Phase 16: Production Hardening
+ * CollegeCentre - Production Observability & Structured Logger
  */
 
 type LogLevel = "info" | "warn" | "error" | "audit";

@@ -1,6 +1,5 @@
 /**
- * CollegeCentre 2.0 - Billing Provider Factory
- * Phase 15: Pluggable Billing Provider
+ * CollegeCentre - Billing Provider Factory
  */
 
 import { MockBillingProvider } from "./mock-provider.ts";

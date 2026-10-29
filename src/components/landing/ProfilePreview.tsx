@@ -174,18 +174,21 @@ export function ProfilePreview() {
               <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
                 <a
                   href="#github"
+                  onClick={(e) => e.preventDefault()}
                   className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-border text-xs font-medium hover:bg-muted/80 transition-colors"
                 >
                   <GitBranch className="h-3.5 w-3.5" /> github.com/arivera
                 </a>
                 <a
                   href="#linkedin"
+                  onClick={(e) => e.preventDefault()}
                   className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-border text-xs font-medium hover:bg-muted/80 transition-colors"
                 >
                   <Share2 className="h-3.5 w-3.5" /> in/alex-rivera
                 </a>
                 <a
                   href="#resume"
+                  onClick={(e) => e.preventDefault()}
                   className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-border text-xs font-medium hover:bg-muted/80 transition-colors"
                 >
                   <FileText className="h-3.5 w-3.5" /> Resume PDF
@@ -236,7 +239,7 @@ export function ProfilePreview() {
               </div>
             </div>
 
-            {/* 3. Curated Links (Linktree-style but elevated) */}
+            {/* 3. Curated Links */}
             <div className="space-y-2.5">
               <span className="text-xs font-mono uppercase text-muted-foreground px-0.5 block">
                 Highlighted Links &amp; Research
@@ -245,6 +248,7 @@ export function ProfilePreview() {
               <div className="space-y-2">
                 <a
                   href="#arxiv"
+                  onClick={(e) => e.preventDefault()}
                   className={cn(
                     "flex items-center justify-between p-3.5 rounded-lg border bg-card/40 transition-all group",
                     currentTheme.linkCard
@@ -268,6 +272,7 @@ export function ProfilePreview() {
 
                 <a
                   href="#hardware"
+                  onClick={(e) => e.preventDefault()}
                   className={cn(
                     "flex items-center justify-between p-3.5 rounded-lg border bg-card/40 transition-all group",
                     currentTheme.linkCard

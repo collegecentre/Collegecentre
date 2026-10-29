@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Users, Code2, Sparkles, Check, ArrowUpRight } from "lucide-react";
+import { Users, Sparkles, Check, ArrowUpRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";

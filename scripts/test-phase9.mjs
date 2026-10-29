@@ -1,7 +1,7 @@
 // Phase 9 Comprehensive Test Suite: Student Resume Showcase & Management
 // Verifies Resume CRUD, Replace, Storage, Visibility Boundaries, and Public Profile Resolution
 
-import { mockSupabase, DEFAULT_RESUMES } from "../src/lib/supabase.ts";
+import { mockSupabase } from "../src/lib/supabase.ts";
 import { getStudentProfileByUsername } from "../src/lib/profile-service.ts";
 
 function assert(condition, message) {

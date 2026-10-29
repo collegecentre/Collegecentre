@@ -20,7 +20,7 @@ export function FinalCTA({ onOpenClaim }: FinalCTAProps) {
   return (
     <section className="max-w-4xl mx-auto px-4 pt-16 pb-8 border-t border-border/70">
       <div className="rounded-2xl border border-border bg-card p-8 sm:p-14 text-center space-y-6 shadow-card relative overflow-hidden">
-        {/* Subtle background glow/radial accent without generic gradient slop */}
+        {/* Subtle background accent */}
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand/40 to-transparent" />
 
         <div className="inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/5 px-3 py-1 text-xs font-mono font-medium text-brand">
@@ -80,7 +80,7 @@ export function FinalCTA({ onOpenClaim }: FinalCTAProps) {
           </span>
           <span className="flex items-center gap-1.5">
             <ShieldCheck className="h-3.5 w-3.5 text-brand" />
-            Zero Paywalls or Ads
+            Ad-Free Experience
           </span>
           <span>Fast Global CDN</span>
         </div>

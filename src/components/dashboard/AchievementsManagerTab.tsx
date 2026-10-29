@@ -5,7 +5,6 @@ import {
   Plus,
   GripVertical,
   Star,
-  ExternalLink,
   Pencil,
   Trash2,
   ChevronUp,

@@ -1,7 +1,7 @@
 // Phase 2 Comprehensive Test Suite
 // Verifies Username System, Authentication Flow, and Profile/Onboarding Persistence
 
-import { normalizeUsername, validateUsernameFormat, RESERVED_USERNAMES } from "../src/lib/username.ts";
+import { normalizeUsername, validateUsernameFormat } from "../src/lib/username.ts";
 
 function assert(condition, message) {
   if (!condition) {
@@ -96,7 +96,7 @@ async function runAuthTests() {
     id: userId,
     username: "sreeharitest",
     full_name: "Sreehari Nair",
-    bio: "CS Undergrad building CollegeCentre 2.0",
+    bio: "CS Undergrad building CollegeCentre",
     college: "National Institute of Technology",
     course: "Computer Science and Engineering",
     graduation_year: 2026,

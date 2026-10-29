@@ -1,5 +1,5 @@
 /**
- * CollegeCentre 2.0 Design Tokens
+ * CollegeCentre Design Tokens
  * Programmatic source of truth for design constants
  */
 

@@ -5,17 +5,13 @@ import Link from "next/link";
 import {
   ExternalLink,
   Sparkles,
-  ArrowUpRight,
   Code2,
-  GraduationCap,
-  PlayCircle,
 } from "lucide-react";
 import { GitHubIcon } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { ExploreProject } from "@/types";
-import { cn } from "@/lib/utils";
 
 interface ExploreProjectCardProps {
   project: ExploreProject;

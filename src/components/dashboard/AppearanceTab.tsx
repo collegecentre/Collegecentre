@@ -3,13 +3,10 @@
 import * as React from "react";
 import {
   Palette,
-  Sparkles,
   Check,
   RotateCcw,
   Save,
-  Smartphone,
   Monitor,
-  Eye,
   Layers,
   CircleDot,
   Square,
@@ -18,7 +15,6 @@ import {
   Minimize2,
   Sliders,
 } from "lucide-react";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/toast";
@@ -27,8 +23,6 @@ import { UpgradeModal } from "@/components/billing/UpgradeModal";
 import { getUserEntitlements, authorizeFeatureUpdate } from "@/lib/billing-service";
 import {
   OFFICIAL_THEMES,
-  getProfileTheme,
-  type ProfileThemeConfig,
 } from "@/lib/themes";
 import { supabase } from "@/lib/supabase";
 import type {
@@ -293,7 +287,7 @@ export function AppearanceTab({
               Themes &amp; Appearance
             </h1>
             <Badge variant="outline" size="sm" className="font-mono text-[10px]">
-              Phase 10
+              Presets &amp; Styles
             </Badge>
           </div>
           <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
@@ -716,6 +710,9 @@ export function AppearanceTab({
         userId={profile.id}
         onSuccess={() => {
           setIsPro(true);
+          if (onProfileUpdated) {
+            onProfileUpdated({ ...profile, plan: "pro" });
+          }
           toast({
             title: "Pro Activated",
             description: "You now have full access to curated themes and customizations.",

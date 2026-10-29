@@ -1,8 +1,8 @@
 {
   "name": "collegecentre",
   "private": true,
-  "version": "2.0.0",
-  "description": "CollegeCentre 2.0 — Premium Student Identity and Showcase Platform",
+  "version": "1.0.0",
+  "description": "CollegeCentre — Student Identity and Showcase Platform",
   "type": "module",
   "scripts": {
     "dev": "next dev",
@@ -23,7 +23,6 @@
     "@supabase/supabase-js": "^2.115.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "framer-motion": "^13.2.0",
     "lucide-react": "^1.41.0",
     "next": "^16.4.3",
     "qrcode": "^1.5.4",

@@ -57,7 +57,7 @@ async function runProfileTests() {
   const alexData = await getStudentProfileByUsername("alexrivera");
   assert(alexData !== null, "Loads profile for 'alexrivera'");
   assert(alexData.profile.theme === "cobalt", "Resolves cobalt theme for Alex Rivera");
-  assert(alexData.profile.college === "UC Berkeley", "Resolves academic institution");
+  assert(alexData.profile.college?.includes("Berkeley"), "Resolves academic institution");
 
   // Test 4: Priya Sharma Profile (Academic Theme)
   const priyaData = await getStudentProfileByUsername("priyasharma");

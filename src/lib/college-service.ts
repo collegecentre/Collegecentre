@@ -1,6 +1,5 @@
 /**
- * CollegeCentre 2.0 - College Profiles & Campus Directory Service
- * Phase 14: College Profiles, Campus Networks, Student Associations & RBAC
+ * CollegeCentre - College Profiles & Campus Directory Service
  */
 
 import { supabase } from "./supabase.ts";
@@ -263,7 +262,7 @@ export async function getCollegeProfileData(
       totalStudents: collegeProfiles.length,
       totalProjects: projects.length,
       totalAchievements: achievements.length,
-      verifiedStudents: collegeProfiles.filter((p) => p.onboarding_completed).length,
+      verifiedStudents: collegeProfiles.filter((p) => Boolean(p.is_verified)).length,
     },
     students,
     projects,

@@ -18,19 +18,24 @@ export async function GET() {
 
   const latencyMs = Date.now() - startTime;
 
+  const isProd = process.env.NODE_ENV === "production";
   const payload = {
     status: dbStatus === "error" ? "unhealthy" : "healthy",
-    version: "2.0.0",
+    version: "1.0.0",
     service: "collegecentre-web",
     timestamp: new Date().toISOString(),
-    uptimeSeconds: Math.floor(process.uptime()),
-    environment: process.env.NODE_ENV || "development",
-    latencyMs,
-    checks: {
-      database: dbStatus,
-      storage: "ready",
-      auth: "ready",
-    },
+    ...(isProd
+      ? {}
+      : {
+          uptimeSeconds: Math.floor(process.uptime()),
+          environment: process.env.NODE_ENV || "development",
+          latencyMs,
+          checks: {
+            database: dbStatus,
+            storage: "ready",
+            auth: "ready",
+          },
+        }),
   };
 
   return NextResponse.json(payload, {

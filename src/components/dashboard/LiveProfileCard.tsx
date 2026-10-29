@@ -1,6 +1,6 @@
 import * as React from "react";
 import Link from "next/link";
-import { Copy, Check, ExternalLink, ShieldCheck, QrCode, Share2 } from "lucide-react";
+import { Copy, Check, ExternalLink, ShieldCheck, QrCode } from "lucide-react";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { SocialLinksRow } from "@/components/profile/SocialLinksRow";
 import { ProjectsShowcase } from "@/components/profile/ProjectsShowcase";

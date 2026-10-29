@@ -51,7 +51,7 @@ export function UpgradeModal({
   const proPerks = [
     "Connect your personal custom domain (alexrivera.dev)",
     "Unlock curated Pro themes (Creative, Cobalt, Obsidian, Terminal)",
-    "Bespoke accent colors & profile layout variations",
+    "Custom accent colors & profile layout variations",
     "Full 90-day & all-time traffic analytics with referrers",
     "Remove CollegeCentre footer watermark",
     "Unlimited projects, achievements & certificates",
@@ -85,10 +85,10 @@ export function UpgradeModal({
         </div>
 
         <h3 className="text-xl md:text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
-          {featureName ? `Unlock ${featureName}` : "Elevate Your Engineering Showcase"}
+          {featureName ? `Unlock ${featureName}` : "Upgrade Your Student Showcase"}
         </h3>
         <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-          Professional tools, personal branding, and verified credibility for serious builders.
+          Professional tools, personal branding, and verified credibility for students.
         </p>
 
         {/* Interval Selector */}

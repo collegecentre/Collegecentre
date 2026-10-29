@@ -1,5 +1,5 @@
 /**
- * CollegeCentre 2.0 - Phase 15 Automated Test Suite
+ * CollegeCentre - Monetization Test Suite
  * Monetization, Subscription Billing Abstraction, Entitlements & Feature Gating
  */
 
@@ -37,7 +37,7 @@ function assert(condition, message) {
 
 async function runTests() {
   console.log("\n========================================================");
-  console.log("  CollegeCentre 2.0 - Phase 15 Monetization Test Suite  ");
+  console.log("  CollegeCentre - Monetization Test Suite  ");
   console.log("========================================================\n");
 
   try {

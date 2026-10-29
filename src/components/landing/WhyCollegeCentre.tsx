@@ -30,12 +30,12 @@ export function WhyCollegeCentre() {
     {
       feature: "Visual Aesthetic",
       generic: "Cluttered creator templates, cartoon banners, and bloated animations",
-      collegecentre: "Premium editorial typography, disciplined monochrome & cobalt tokens",
+      collegecentre: "Clean editorial typography, high-contrast palettes, and intentional design presets",
     },
     {
       feature: "Pricing & Student Rights",
       generic: "Aggressive paywalls for basic custom domains and analytics",
-      collegecentre: "100% free for students with zero paywalls or creator spam",
+      collegecentre: "Free core showcase for students with zero ads or creator spam",
     },
   ];
 

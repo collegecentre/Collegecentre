@@ -8,12 +8,9 @@ import {
   Copy,
   Check,
   Download,
-  ExternalLink,
   Smartphone,
   Eye,
   MessageSquare,
-  Globe,
-  Sparkles,
   ShieldCheck,
   Send,
   Mail,
@@ -274,7 +271,7 @@ export function ProfileShareModal({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Badge variant="outline" size="sm" className="font-mono text-[10px]">
-                Phase 11
+                Profile &amp; QR
               </Badge>
               <span className="text-xs font-mono text-muted-foreground flex items-center gap-1">
                 <ShieldCheck className="h-3 w-3 text-brand" />

@@ -32,7 +32,7 @@ export function ProfileHeader({ profile, themeConfig }: ProfileHeaderProps) {
       <div className="relative inline-block">
         <Avatar
           size="2xl"
-          status="verified"
+          status={profile.is_verified ? "verified" : undefined}
           className={cn(
             "ring-4 shadow-card transition-all duration-300",
             themeConfig.avatarRing
@@ -67,14 +67,24 @@ export function ProfileHeader({ profile, themeConfig }: ProfileHeaderProps) {
           >
             {profile.full_name || `@${profile.username}`}
           </h1>
-          <Badge
-            variant={themeConfig.accentBadgeVariant}
-            size="sm"
-            dot
-            className="text-[11px] font-mono tracking-tight shadow-sm"
-          >
-            Verified Student
-          </Badge>
+          {profile.is_verified ? (
+            <Badge
+              variant={themeConfig.accentBadgeVariant}
+              size="sm"
+              dot
+              className="text-[11px] font-mono tracking-tight shadow-sm"
+            >
+              Verified Student
+            </Badge>
+          ) : (
+            <Badge
+              variant="outline"
+              size="sm"
+              className="text-[11px] font-mono tracking-tight"
+            >
+              Student
+            </Badge>
+          )}
         </div>
 
         {/* Academic Identity Bar */}

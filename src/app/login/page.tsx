@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowRight, Mail, Lock, Sparkles, ShieldCheck } from "lucide-react";
+import { ArrowRight, Mail, Lock } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { Typography } from "@/components/ui/typography";
 import { Button } from "@/components/ui/button";

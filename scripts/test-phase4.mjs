@@ -2,7 +2,6 @@
 // Verifies Student Dashboard, Profile Editing, Visibility Toggle, Social Links, and Navigation
 
 import { mockSupabase } from "../src/lib/supabase.ts";
-import { checkUsernameAvailability, normalizeUsername, validateUsernameFormat } from "../src/lib/username.ts";
 
 function assert(condition, message) {
   if (!condition) {

@@ -10,20 +10,16 @@ import {
   Check,
   AlertCircle,
   Loader2,
-  Sparkles,
   Smartphone,
   Monitor,
   School,
   BookOpen,
   Calendar,
-  Globe,
-  Share2,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/components/ui/toast";

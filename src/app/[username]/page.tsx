@@ -164,8 +164,17 @@ export default async function ProfilePage({ params }: PageProps) {
 
           <div className="flex items-center gap-1.5 shrink-0">
             <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
-              <ShieldCheck className="h-3 w-3 text-brand" />
-              <span className="hidden sm:inline">Verified Showcase</span>
+              {profile.is_verified ? (
+                <>
+                  <ShieldCheck className="h-3 w-3 text-brand" />
+                  <span className="hidden sm:inline">Verified Student</span>
+                </>
+              ) : (
+                <>
+                  <Globe className="h-3 w-3 text-muted-foreground" />
+                  <span className="hidden sm:inline">Public Showcase</span>
+                </>
+              )}
             </span>
             <Badge variant="outline" size="sm" className="text-[10px] uppercase font-mono px-1.5 py-0">
               {themeConfig.name.split(" ")[0]}

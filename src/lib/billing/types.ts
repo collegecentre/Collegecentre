@@ -1,6 +1,5 @@
 /**
- * CollegeCentre 2.0 - Billing Provider Abstraction
- * Phase 15: Premium, Monetization & Entitlements Architecture
+ * CollegeCentre - Billing Provider Abstraction
  */
 
 import type { Subscription, PlanTier, BillingInterval } from "../../types/index.ts";

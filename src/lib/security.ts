@@ -1,6 +1,5 @@
 /**
- * CollegeCentre 2.0 - Security, Sanitization & Abuse Prevention Utility
- * Phase 16: Production Hardening
+ * CollegeCentre - Security, Sanitization & Abuse Prevention Utility
  */
 
 /**

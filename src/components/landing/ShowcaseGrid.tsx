@@ -43,7 +43,7 @@ export function ShowcaseGrid() {
                 <Link2 className="h-4 w-4" />
               </div>
               <Badge variant="outline" size="sm" className="font-mono text-[10px]">
-                Module 01
+                Links
               </Badge>
             </div>
 
@@ -83,7 +83,7 @@ export function ShowcaseGrid() {
                 <Code2 className="h-4 w-4" />
               </div>
               <Badge variant="outline" size="sm" className="font-mono text-[10px]">
-                Module 02
+                Projects
               </Badge>
             </div>
 
@@ -127,7 +127,7 @@ export function ShowcaseGrid() {
                 <Award className="h-4 w-4" />
               </div>
               <Badge variant="outline" size="sm" className="font-mono text-[10px]">
-                Module 03
+                Honors
               </Badge>
             </div>
 
@@ -166,7 +166,7 @@ export function ShowcaseGrid() {
                 <FileCheck2 className="h-4 w-4" />
               </div>
               <Badge variant="outline" size="sm" className="font-mono text-[10px]">
-                Module 04
+                Credentials
               </Badge>
             </div>
 
@@ -193,7 +193,7 @@ export function ShowcaseGrid() {
 
           <div className="pt-2 border-t border-border/50 text-[11px] text-muted-foreground font-mono flex items-center justify-between">
             <span>Direct credential check</span>
-            <span className="text-foreground font-medium">Tamper-proof</span>
+            <span className="text-foreground font-medium">Credential link</span>
           </div>
         </Card>
 
@@ -205,7 +205,7 @@ export function ShowcaseGrid() {
                 <FileText className="h-4 w-4" />
               </div>
               <Badge variant="outline" size="sm" className="font-mono text-[10px]">
-                Module 05
+                Resume
               </Badge>
             </div>
 
@@ -244,7 +244,7 @@ export function ShowcaseGrid() {
                 <GitBranch className="h-4 w-4" />
               </div>
               <Badge variant="outline" size="sm" className="font-mono text-[10px]">
-                Module 06
+                GitHub Sync
               </Badge>
             </div>
 
@@ -253,7 +253,7 @@ export function ShowcaseGrid() {
                 GitHub Deep Sync
               </Typography>
               <Typography variant="caption" className="text-xs text-muted-foreground leading-relaxed mt-1 block">
-                Seamlessly import top repositories, stars, commit activity streaks, and language stats into your profile.
+                Automatically import top repositories, stars, commit activity streaks, and language stats into your profile.
               </Typography>
             </div>
 

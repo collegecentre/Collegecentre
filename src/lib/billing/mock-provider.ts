@@ -1,6 +1,5 @@
 /**
- * CollegeCentre 2.0 - Mock Billing Provider Implementation
- * Phase 15: Clean Decoupled Billing Provider
+ * CollegeCentre - Mock Billing Provider Implementation
  */
 
 import type {

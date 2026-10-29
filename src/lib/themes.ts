@@ -44,7 +44,7 @@ export interface ThemeCustomizationOptions {
 }
 
 // -------------------------------------------------------------
-// Official Phase 10 Curated Theme Presets
+// Official Curated Theme Presets
 // -------------------------------------------------------------
 
 export const PROFILE_THEMES: Record<ProfileTheme, ProfileThemeConfig> = {
@@ -52,8 +52,8 @@ export const PROFILE_THEMES: Record<ProfileTheme, ProfileThemeConfig> = {
   minimal: {
     id: "minimal",
     name: "Minimal",
-    tagline: "Ultra-restrained monochrome with razor-sharp hairline borders",
-    description: "Modernist, quiet confidence with generous whitespace and clean typography.",
+    tagline: "Clean monochrome with subtle borders and balanced spacing",
+    description: "Simple, high-contrast monochrome layout with clean typography.",
     category: "Minimal",
     fontFamily: "font-sans",
     pageBackground: "bg-background text-foreground",
@@ -86,8 +86,8 @@ export const PROFILE_THEMES: Record<ProfileTheme, ProfileThemeConfig> = {
   developer: {
     id: "developer",
     name: "Developer",
-    tagline: "Cybernetic terminal with emerald cues and tabular monospaced hierarchy",
-    description: "Built for systems engineers, kernel hackers, and competitive coders.",
+    tagline: "Terminal-inspired monospace layout with green syntax accents",
+    description: "Designed for systems engineers, developers, and command-line lovers.",
     category: "Technical",
     fontFamily: "font-mono",
     pageBackground: "bg-zinc-950 text-zinc-100",
@@ -121,8 +121,8 @@ export const PROFILE_THEMES: Record<ProfileTheme, ProfileThemeConfig> = {
   creative: {
     id: "creative",
     name: "Creative",
-    tagline: "Design-studio editorial with soft ambient gradients and fluid geometry",
-    description: "Crafted for visual designers, filmmakers, and creative technologists.",
+    tagline: "Contemporary layout with soft ambient gradients and rounded cards",
+    description: "Designed for designers, creators, and visual portfolios.",
     category: "Design",
     fontFamily: "font-sans",
     pageBackground: "bg-gradient-to-br from-violet-50/40 via-background to-rose-50/30 dark:from-zinc-950 dark:via-zinc-900 dark:to-violet-950/20 text-foreground",
@@ -156,8 +156,8 @@ export const PROFILE_THEMES: Record<ProfileTheme, ProfileThemeConfig> = {
   academic: {
     id: "academic",
     name: "Academic",
-    tagline: "Warm paper aesthetic, serif editorial typography & scholarly poise",
-    description: "Refined for preprint authors, university researchers, and fellows.",
+    tagline: "Warm paper aesthetic with classic serif editorial typography",
+    description: "Designed for researchers, writers, and academic scholars.",
     category: "Scholarly",
     fontFamily: "font-serif",
     pageBackground: "bg-stone-100/70 dark:bg-stone-950 text-stone-900 dark:text-stone-100",
@@ -191,8 +191,8 @@ export const PROFILE_THEMES: Record<ProfileTheme, ProfileThemeConfig> = {
   professional: {
     id: "professional",
     name: "Professional",
-    tagline: "Executive portfolio aesthetic with cool slate and royal blue clarity",
-    description: "Engineered for finance, consulting, product management, and founders.",
+    tagline: "Clean corporate aesthetic with cool slate and blue highlights",
+    description: "Structured for consulting, finance, management, and industry roles.",
     category: "Corporate",
     fontFamily: "font-sans",
     pageBackground: "bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100",
@@ -226,8 +226,8 @@ export const PROFILE_THEMES: Record<ProfileTheme, ProfileThemeConfig> = {
   dark: {
     id: "dark",
     name: "Dark",
-    tagline: "True pitch-black OLED with luminous borders and modern night polish",
-    description: "Designed for deep focus, low-light environments, and OLED displays.",
+    tagline: "Pitch-black dark mode with subtle border contrast",
+    description: "Designed for low-light environments and OLED displays.",
     category: "OLED",
     fontFamily: "font-sans",
     pageBackground: "bg-black text-zinc-100",
@@ -263,8 +263,8 @@ export const PROFILE_THEMES: Record<ProfileTheme, ProfileThemeConfig> = {
   obsidian: {
     id: "obsidian",
     name: "Obsidian Minimal",
-    tagline: "Ultra-restrained monochrome with razor-sharp hairline borders",
-    description: "Modernist monochrome aesthetic.",
+    tagline: "Clean monochrome with subtle borders",
+    description: "Monochrome aesthetic with balanced spacing.",
     category: "Minimal",
     fontFamily: "font-sans",
     pageBackground: "bg-background text-foreground",
@@ -330,8 +330,8 @@ export const PROFILE_THEMES: Record<ProfileTheme, ProfileThemeConfig> = {
   terminal: {
     id: "terminal",
     name: "Terminal Mono",
-    tagline: "True black cybernetic terminal with emerald green syntax cues",
-    description: "Cybernetic terminal aesthetic.",
+    tagline: "Terminal layout with emerald green syntax cues",
+    description: "Monospace terminal aesthetic.",
     category: "Technical",
     fontFamily: "font-mono",
     pageBackground: "bg-black text-zinc-100",
@@ -363,7 +363,7 @@ export const PROFILE_THEMES: Record<ProfileTheme, ProfileThemeConfig> = {
 };
 
 /**
- * The 6 primary official theme presets for CollegeCentre 2.0
+ * The 6 primary official theme presets for CollegeCentre
  */
 export const OFFICIAL_THEMES: ProfileThemeConfig[] = [
   PROFILE_THEMES.minimal,

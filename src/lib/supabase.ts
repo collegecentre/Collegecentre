@@ -55,7 +55,7 @@ export const DEFAULT_PROFILES: any[] = [
     username: "sreehari",
     full_name: "Sreehari Nair",
     avatar_url: "",
-    bio: "Building CollegeCentre 2.0. Distributed systems, web platform architecture, and developer productivity tools.",
+    bio: "Distributed systems, web platform architecture, and developer productivity tools.",
     college: "National Institute of Technology Calicut",
     college_id: "col_nit",
     college_slug: "nit-calicut",
@@ -659,7 +659,7 @@ export const DEFAULT_STUDENT_LINKS: any[] = [
   {
     id: "link_1",
     profile_id: "usr_sreehari",
-    title: "CollegeCentre 2.0 Engineering Architecture RFC",
+    title: "Distributed KV Storage Engine",
     url: "https://github.com/collegecentre/rfc",
     description: "Deep dive into the distributed architecture, SSR profile engine, and Next.js design tokens.",
     category: "engineering",
@@ -750,8 +750,8 @@ export const DEFAULT_PROJECTS: any[] = [
   {
     id: "proj_1",
     profile_id: "usr_sreehari",
-    title: "CollegeCentre 2.0 Core Platform",
-    description: "High-performance student identity and showcase platform. Features full SSR profile rendering, sub-100ms hydration, customizable design tokens, and distributed Postgres RLS security policies.",
+    title: "CollegeCentre Core Platform",
+    description: "Student identity and showcase platform. Features full SSR profile rendering, fast hydration, customizable design tokens, and distributed Postgres RLS security policies.",
     cover_image_url: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80",
     technologies: ["Next.js", "TypeScript", "Tailwind CSS", "Supabase", "PostgreSQL"],
     github_url: "https://github.com/collegecentre/platform",
@@ -1111,7 +1111,7 @@ function createSeedAnalyticsEvents(): any[] {
 
   // 2. Link Clicks for usr_sreehari
   const linksData = [
-    { id: "link_1", title: "CollegeCentre 2.0 Engineering Architecture RFC", count: 34 },
+    { id: "link_1", title: "Distributed KV Storage Engine", count: 34 },
     { id: "link_3", title: "Resume & Academic Transcripts", count: 48 },
     { id: "link_2", title: "Technical Writing & Engineering Preprints", count: 12 },
   ];
@@ -1140,7 +1140,7 @@ function createSeedAnalyticsEvents(): any[] {
       profile_id: "usr_sreehari",
       event_type: "project_view",
       resource_id: "proj_1",
-      resource_title: "CollegeCentre 2.0 Core Platform",
+      resource_title: "CollegeCentre Core Platform",
       referrer_host: pickWeighted(referrers, referrerWeights),
       device_type: pickWeighted(devices, deviceWeights),
       created_at: new Date(now - day * dayMs - Math.floor(Math.random() * 50000000)).toISOString(),
@@ -1154,7 +1154,7 @@ function createSeedAnalyticsEvents(): any[] {
       profile_id: "usr_sreehari",
       event_type: "project_click",
       resource_id: "proj_1",
-      resource_title: "CollegeCentre 2.0 Core Platform - Live Demo",
+      resource_title: "CollegeCentre Core Platform - Live Demo",
       referrer_host: pickWeighted(referrers, referrerWeights),
       device_type: pickWeighted(devices, deviceWeights),
       created_at: new Date(now - day * dayMs - Math.floor(Math.random() * 50000000)).toISOString(),

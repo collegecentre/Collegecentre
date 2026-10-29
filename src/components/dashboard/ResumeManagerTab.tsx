@@ -16,7 +16,6 @@ import {
   EyeOff,
   Smartphone,
   Monitor,
-  Check,
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
@@ -392,7 +391,7 @@ export function ResumeManagerTab({
               Resume &amp; Curriculum Vitae
             </h1>
             <Badge variant="outline" size="sm" className="font-mono text-[10px]">
-              Phase 9
+              Verified Document
             </Badge>
           </div>
           <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">

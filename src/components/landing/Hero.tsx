@@ -19,7 +19,7 @@ export function Hero({ onOpenClaim, onOpenExplore }: HeroProps) {
   };
 
   return (
-    <section className="relative pt-12 pb-14 sm:pt-20 sm:pb-20 text-center space-y-8 max-w-4xl mx-auto px-4">
+    <section id="overview" className="relative pt-12 pb-14 sm:pt-20 sm:pb-20 text-center space-y-8 max-w-4xl mx-auto px-4">
       {/* Hero Headline */}
       <div className="space-y-4">
         <Typography
@@ -35,7 +35,7 @@ export function Hero({ onOpenClaim, onOpenExplore }: HeroProps) {
           variant="lead"
           className="max-w-2xl mx-auto text-base sm:text-lg md:text-xl text-muted-foreground leading-relaxed"
         >
-          One link for everything you&apos;ve built, achieved, and are. Replace generic bio-links with a verified student showcase of your projects, hackathons, research, and certificates.
+          One link for everything you build, achieve, and share. Replace generic bio-links with a verified student showcase of your projects, hackathons, research, and certificates.
         </Typography>
       </div>
 
@@ -72,7 +72,7 @@ export function Hero({ onOpenClaim, onOpenExplore }: HeroProps) {
             <CheckCircle2 className="h-3 w-3" /> 100% Free Forever
           </span>
           <span>•</span>
-          <span>Zero paywalls</span>
+          <span>Free core features</span>
           <span>•</span>
           <span>No credit card required</span>
         </p>

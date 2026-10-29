@@ -28,7 +28,7 @@
     --accent: 240 4.8% 95.9%;
     --accent-foreground: 240 5.9% 10%;
 
-    /* Brand identity - refined collegiate cobalt */
+    /* Brand identity - primary accent */
     --brand: 226 70% 55.5%;
     --brand-foreground: 0 0% 100%;
     --brand-50: 226 100% 97%;
@@ -55,12 +55,12 @@
     --input: 240 5.9% 90%;
     --ring: 240 5.9% 10%;
 
-    /* Radius: disciplined 8px base */
+    /* Radius: standard 8px base */
     --radius: 0.5rem;
   }
 
   .dark {
-    /* Base surfaces: Obsidian depth */
+    /* Base surfaces: dark mode depth */
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
 
@@ -84,7 +84,7 @@
     --accent: 240 3.7% 15.9%;
     --accent-foreground: 0 0% 98%;
 
-    /* Brand identity - luminous cobalt */
+    /* Brand identity - dark mode accent */
     --brand: 226 80% 64%;
     --brand-foreground: 0 0% 100%;
     --brand-50: 226 40% 12%;

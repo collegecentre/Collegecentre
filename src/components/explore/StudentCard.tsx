@@ -16,7 +16,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { ExploreStudentCardData } from "@/types";
-import { cn } from "@/lib/utils";
 
 interface StudentCardProps {
   student: ExploreStudentCardData;

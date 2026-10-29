@@ -62,27 +62,27 @@ export function Footer() {
             </span>
             <ul className="space-y-2 text-xs text-muted-foreground">
               <li>
-                <a href="#overview" className="hover:text-foreground transition-colors">
+                <a href="/#overview" className="hover:text-foreground transition-colors">
                   Overview
                 </a>
               </li>
               <li>
-                <a href="#preview" className="hover:text-foreground transition-colors">
+                <a href="/#preview" className="hover:text-foreground transition-colors">
                   Live Showcase
                 </a>
               </li>
               <li>
-                <a href="#why-collegecentre" className="hover:text-foreground transition-colors">
+                <a href="/#why-collegecentre" className="hover:text-foreground transition-colors">
                   Why CollegeCentre
                 </a>
               </li>
               <li>
-                <a href="#showcase" className="hover:text-foreground transition-colors">
+                <a href="/#showcase" className="hover:text-foreground transition-colors">
                   Showcase Modules
                 </a>
               </li>
               <li>
-                <a href="#themes" className="hover:text-foreground transition-colors">
+                <a href="/#themes" className="hover:text-foreground transition-colors">
                   Visual Themes
                 </a>
               </li>
@@ -101,28 +101,28 @@ export function Footer() {
             </span>
             <ul className="space-y-2 text-xs text-muted-foreground">
               <li>
-                <a href="#ambassadors" className="hover:text-foreground transition-colors">
+                <a href="/contact" className="hover:text-foreground transition-colors">
                   Campus Leads
                 </a>
               </li>
               <li>
-                <a href="#hackathons" className="hover:text-foreground transition-colors">
+                <a href="/explore" className="hover:text-foreground transition-colors">
                   For Hackathons
                 </a>
               </li>
               <li>
-                <a href="#clubs" className="hover:text-foreground transition-colors">
+                <a href="/college" className="hover:text-foreground transition-colors">
                   Student Clubs
                 </a>
               </li>
               <li>
-                <a href="#fellowships" className="hover:text-foreground transition-colors">
+                <a href="/explore" className="hover:text-foreground transition-colors">
                   Fellowships
                 </a>
               </li>
               <li>
-                <a href="#changelog" className="hover:text-foreground transition-colors">
-                  Changelog
+                <a href="/pricing" className="hover:text-foreground transition-colors">
+                  Changelog &amp; Updates
                 </a>
               </li>
             </ul>

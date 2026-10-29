@@ -5,22 +5,18 @@ import {
   Plus,
   GripVertical,
   Globe,
-  ExternalLink,
   Pencil,
   Trash2,
   ChevronUp,
   ChevronDown,
-  Check,
   AlertCircle,
   Eye,
   EyeOff,
   Sparkles,
   Link2,
-  Upload,
   MousePointerClick,
   Smartphone,
   Monitor,
-  FolderOpen,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -651,7 +647,7 @@ export function LinksManagerTab({
                 Title <span className="text-primary">*</span>
               </label>
               <Input
-                placeholder="e.g. Distributed KV Engine Architecture RFC"
+                placeholder="e.g. Distributed Key-Value Store Repo"
                 value={formTitle}
                 onChange={(e) => setFormTitle(e.target.value)}
                 required

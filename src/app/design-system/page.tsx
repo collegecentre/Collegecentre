@@ -156,13 +156,13 @@ export default function DesignSystemShowcase() {
               variant="brand"
               onClick={() =>
                 toast({
-                  title: "Phase 0 Active",
-                  description: "Design system & project foundation ready for Phase 1.",
+                  title: "Design System Tokens",
+                  description: "Radix primitives and design tokens are active.",
                   variant: "info",
                 })
               }
             >
-              Phase 0 Spec
+              Component Spec
             </Button>
           </div>
         }
@@ -191,7 +191,7 @@ export default function DesignSystemShowcase() {
 
           <Typography variant="lead" className="max-w-3xl">
             A restrained, modern design system built for the CollegeCentre student identity platform.
-            Crafted with zero AI-slop, razor-sharp typography, accessible Radix primitives, and resilient design tokens.
+            Crafted with typographic restraint, accessible Radix primitives, and resilient design tokens.
           </Typography>
 
           <div className="flex flex-wrap items-center gap-3 pt-2">
@@ -199,7 +199,7 @@ export default function DesignSystemShowcase() {
             <Badge variant="outline">Next.js App Router</Badge>
             <Badge variant="outline">Tailwind CSS</Badge>
             <Badge variant="outline">TypeScript Strict</Badge>
-            <Badge variant="success" dot>Phase 0 Complete</Badge>
+            <Badge variant="success" dot>Design System Active</Badge>
           </div>
         </section>
 
@@ -831,7 +831,7 @@ export default function DesignSystemShowcase() {
           </div>
         </section>
 
-        {/* Phase 0 Signoff Footer */}
+        {/* Design System Footer */}
         <footer className="border-t border-border pt-8 pb-12 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
           <div className="flex items-center gap-2">
             <div className="h-4 w-4 rounded bg-foreground flex items-center justify-center text-[9px] font-bold text-background">

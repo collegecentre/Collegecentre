@@ -1,6 +1,5 @@
 /**
- * CollegeCentre 2.0 - Billing, Monetization & Entitlements Service
- * Phase 15: Premium & Monetization Architecture
+ * CollegeCentre - Billing, Monetization & Entitlements Service
  */
 
 import { supabase, DEFAULT_PLANS } from "./supabase.ts";

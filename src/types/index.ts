@@ -1,7 +1,5 @@
 /**
- * CollegeCentre 2.0 Core Types
- * Phase 0: Design System & Project Foundation
- * Phase 2: Authentication & Onboarding
+ * CollegeCentre Core Types
  */
 
 export type ThemeMode = "light" | "dark" | "system";
@@ -94,6 +92,8 @@ export interface Profile {
   category?: string | null;
   skills?: string[];
   is_featured?: boolean;
+  is_verified?: boolean;
+  plan?: PlanTier | string;
   views_count?: number;
   custom_domain?: string | null;
   remove_branding?: boolean;

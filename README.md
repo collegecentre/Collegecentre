@@ -1,4 +1,4 @@
-# CollegeCentre 2.0
+# CollegeCentre
 
 > **"One link for everything you've built, achieved, and are."**
 > A premium, student-focused identity and showcase platform.

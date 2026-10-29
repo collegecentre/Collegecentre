@@ -1,6 +1,6 @@
-# CollegeCentre 2.0 — Production Deployment & Launch Guide
+# CollegeCentre — Production Deployment & Launch Guide
 
-This document outlines the architecture, deployment sequence, environment setup, database migrations, security hardening, and rollback strategies for launching **CollegeCentre 2.0** into production.
+This document outlines the architecture, deployment sequence, environment setup, database migrations, security hardening, and rollback strategies for launching **CollegeCentre** into production.
 
 ---
 

@@ -69,28 +69,22 @@ export function Header({
               Pricing
             </Link>
             <a
-              href="#why-collegecentre"
+              href="/#why-collegecentre"
               className="px-3 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
             >
               Why CollegeCentre
             </a>
             <a
-              href="#showcase"
+              href="/#showcase"
               className="px-3 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
             >
               Features
             </a>
             <a
-              href="#themes"
+              href="/#themes"
               className="px-3 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
             >
               Themes
-            </a>
-            <a
-              href="/design-system"
-              className="px-3 py-1.5 rounded-md text-muted-foreground/70 hover:text-foreground hover:bg-muted/50 transition-colors font-mono text-[11px]"
-            >
-              Tokens & System
             </a>
           </nav>
         </div>
@@ -227,32 +221,25 @@ export function Header({
               Plans & Pricing
             </Link>
             <a
-              href="#why-collegecentre"
+              href="/#why-collegecentre"
               onClick={() => setMobileMenuOpen(false)}
               className="px-3 py-2 text-sm font-medium rounded-md hover:bg-muted text-foreground transition-colors"
             >
               Why CollegeCentre
             </a>
             <a
-              href="#showcase"
+              href="/#showcase"
               onClick={() => setMobileMenuOpen(false)}
               className="px-3 py-2 text-sm font-medium rounded-md hover:bg-muted text-foreground transition-colors"
             >
               Showcase Modules
             </a>
             <a
-              href="#themes"
+              href="/#themes"
               onClick={() => setMobileMenuOpen(false)}
               className="px-3 py-2 text-sm font-medium rounded-md hover:bg-muted text-foreground transition-colors"
             >
               Profile Themes
-            </a>
-            <a
-              href="/design-system"
-              onClick={() => setMobileMenuOpen(false)}
-              className="px-3 py-2 text-xs font-mono text-muted-foreground hover:bg-muted transition-colors"
-            >
-              Design Tokens & System
             </a>
           </nav>
 

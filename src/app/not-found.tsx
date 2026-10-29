@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, Sparkles, Compass } from "lucide-react";
+import { Sparkles, Compass } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -44,7 +44,7 @@ export default function NotFound() {
               </Button>
             </Link>
 
-            <Link href="/" className="w-full">
+            <Link href="/explore" className="w-full">
               <Button
                 variant="outline"
                 size="sm"

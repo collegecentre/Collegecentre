@@ -8,7 +8,7 @@ const themes = [
   {
     id: "obsidian",
     name: "Obsidian Minimal",
-    tagline: "Ultra-restrained dark mode with hairline borders",
+    tagline: "Minimal dark mode with clean hairline borders",
     audience: "Systems engineers, backend builders & designers",
     accentColor: "bg-zinc-100 text-zinc-950",
     previewBorder: "border-zinc-800 bg-zinc-950 text-zinc-100",
@@ -19,7 +19,7 @@ const themes = [
   {
     id: "academic",
     name: "Academic Editorial",
-    tagline: "Parchment warmth with timeless serif typography",
+    tagline: "Warm parchment tones with timeless serif typography",
     audience: "Researchers, preprints, fellows & humanities",
     accentColor: "bg-amber-900 text-amber-50 dark:bg-amber-200 dark:text-amber-950",
     previewBorder: "border-amber-900/20 bg-amber-50/50 dark:bg-zinc-900 text-amber-950 dark:text-zinc-100",
@@ -30,7 +30,7 @@ const themes = [
   {
     id: "cobalt",
     name: "Electric Cobalt",
-    tagline: "Bold modern tech with vibrant collegiate contrast",
+    tagline: "Modern high-contrast theme with electric blue accents",
     audience: "Student founders, hackathon winners & product leads",
     accentColor: "bg-blue-600 text-white",
     previewBorder: "border-blue-500/30 bg-card text-foreground",

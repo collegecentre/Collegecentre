@@ -106,7 +106,7 @@ export function ResumeShowcase({
             size="sm"
             className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground"
           >
-            Verified Document
+            PDF Document
           </Badge>
         </div>
 

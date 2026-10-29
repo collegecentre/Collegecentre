@@ -155,7 +155,7 @@ async function runPhase6Tests() {
 
   const firstProject = sreehariProfile.projects[0];
   assert(firstProject.is_featured === true, "Featured project is first in showcase");
-  assert(firstProject.title === "CollegeCentre 2.0 Core Platform", "Correct featured project title");
+  assert(firstProject.title === "CollegeCentre Core Platform", "Correct featured project title");
   assert(firstProject.technologies.includes("Next.js"), "Correct project tech tags");
   assert(firstProject.github_url !== null, "Contains GitHub repository URL");
   assert(firstProject.demo_url !== null, "Contains live demo URL");

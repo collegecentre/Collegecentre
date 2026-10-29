@@ -1,6 +1,6 @@
 import * as React from "react";
 import type { Metadata } from "next";
-import { Scale, CheckCircle2, AlertCircle } from "lucide-react";
+import { Scale } from "lucide-react";
 import { Header } from "@/components/landing/Header";
 import { Footer } from "@/components/landing/Footer";
 import { Badge } from "@/components/ui/badge";
