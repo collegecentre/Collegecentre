@@ -33,7 +33,7 @@ const NAV_ITEMS: Array<{
   { id: "achievements", label: "Achievements", icon: Award },
   { id: "certificates", label: "Certificates", icon: FileCheck2 },
   { id: "resume", label: "Resume", icon: FileText },
-  { id: "appearance", label: "Appearance", icon: Palette, isPlaceholder: true },
+  { id: "appearance", label: "Appearance", icon: Palette },
   { id: "analytics", label: "Analytics", icon: BarChart3, isPlaceholder: true },
   { id: "settings", label: "Settings", icon: Settings, isPlaceholder: true },
 ];

@@ -42,10 +42,33 @@ export interface ToastOptions {
 }
 
 // -------------------------------------------------------------
-// Phase 2: Profiles, Usernames & Social Links
+// Phase 2 & 10: Profiles, Appearance & Curated Themes
 // -------------------------------------------------------------
 
-export type ProfileTheme = "obsidian" | "academic" | "cobalt" | "terminal";
+export type ProfileTheme =
+  | "minimal"
+  | "developer"
+  | "creative"
+  | "academic"
+  | "professional"
+  | "dark"
+  // Legacy aliases supported for backward compatibility:
+  | "obsidian"
+  | "cobalt"
+  | "terminal";
+
+export type ThemeAccentColor = "default" | "emerald" | "blue" | "violet" | "amber" | "rose";
+export type ThemeLayoutVariant = "centered" | "compact" | "editorial";
+export type ThemeButtonStyle = "rounded" | "pill" | "sharp";
+export type ThemeBackgroundStyle = "solid" | "gradient" | "dots" | "grid";
+
+export interface ProfileAppearanceCustomization {
+  theme?: ProfileTheme;
+  theme_accent?: ThemeAccentColor | null;
+  theme_layout?: ThemeLayoutVariant | null;
+  theme_button?: ThemeButtonStyle | null;
+  theme_background?: ThemeBackgroundStyle | null;
+}
 
 export interface Profile {
   id: string;
@@ -57,6 +80,10 @@ export interface Profile {
   course: string | null;
   graduation_year: number | null;
   theme: ProfileTheme;
+  theme_accent?: ThemeAccentColor | null;
+  theme_layout?: ThemeLayoutVariant | null;
+  theme_button?: ThemeButtonStyle | null;
+  theme_background?: ThemeBackgroundStyle | null;
   is_public: boolean;
   onboarding_completed: boolean;
   onboarding_step: number;

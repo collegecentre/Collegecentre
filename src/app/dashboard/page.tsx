@@ -27,6 +27,7 @@ import { ProjectsManagerTab } from "@/components/dashboard/ProjectsManagerTab";
 import { AchievementsManagerTab } from "@/components/dashboard/AchievementsManagerTab";
 import { CertificatesManagerTab } from "@/components/dashboard/CertificatesManagerTab";
 import { ResumeManagerTab } from "@/components/dashboard/ResumeManagerTab";
+import { AppearanceTab } from "@/components/dashboard/AppearanceTab";
 import { PlaceholderTab } from "@/components/dashboard/PlaceholderTab";
 import type { DashboardTab } from "@/components/dashboard/dashboard-types";
 import { supabase } from "@/lib/supabase";
@@ -268,13 +269,22 @@ function DashboardContent() {
           />
         )}
 
+        {activeTab === "appearance" && profile && (
+          <AppearanceTab
+            profile={profile}
+            socialLinks={socialLinks}
+            onProfileUpdated={handleProfileUpdated}
+          />
+        )}
+
         {activeTab !== "overview" &&
           activeTab !== "profile" &&
           activeTab !== "links" &&
           activeTab !== "projects" &&
           activeTab !== "achievements" &&
           activeTab !== "certificates" &&
-          activeTab !== "resume" && (
+          activeTab !== "resume" &&
+          activeTab !== "appearance" && (
             <PlaceholderTab tab={activeTab} onNavigateTab={setActiveTab} />
           )}
       </main>

@@ -43,7 +43,12 @@ export function LiveProfileCard({
   const [internalAchievements, setInternalAchievements] = React.useState<Achievement[]>([]);
   const [internalCertificates, setInternalCertificates] = React.useState<Certificate[]>([]);
   const [internalResume, setInternalResume] = React.useState<Resume | null>(null);
-  const themeConfig = getProfileTheme(profile.theme);
+  const themeConfig = getProfileTheme(profile.theme, {
+    accentColor: profile.theme_accent,
+    layoutVariant: profile.theme_layout,
+    buttonStyle: profile.theme_button,
+    backgroundStyle: profile.theme_background,
+  });
 
   React.useEffect(() => {
     if (projects !== undefined) {

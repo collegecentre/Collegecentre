@@ -19,7 +19,7 @@ console.log("TEST SUITE 1: Profile Themes Architecture");
 console.log("=========================================\n");
 
 const themes = getAllProfileThemes();
-assert(themes.length === 4, `Supports 4 standard profile themes (found ${themes.length})`);
+assert(themes.length >= 4, `Supports standard profile themes (found ${themes.length})`);
 
 const themeIds = ["obsidian", "academic", "cobalt", "terminal"];
 for (const id of themeIds) {

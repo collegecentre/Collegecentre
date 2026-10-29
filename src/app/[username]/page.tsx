@@ -88,8 +88,20 @@ export default async function ProfilePage({ params }: PageProps) {
     return <PrivateProfileView profile={profile} />;
   }
 
-  // 3. Theme resolution
-  const themeConfig = getProfileTheme(profile.theme);
+  // 3. Theme resolution with custom appearance layer
+  const themeConfig = getProfileTheme(profile.theme, {
+    accentColor: profile.theme_accent,
+    layoutVariant: profile.theme_layout,
+    buttonStyle: profile.theme_button,
+    backgroundStyle: profile.theme_background,
+  });
+
+  const layoutWidthClass =
+    profile.theme_layout === "compact"
+      ? "max-w-lg"
+      : profile.theme_layout === "editorial"
+      ? "max-w-2xl"
+      : "max-w-xl";
 
   return (
     <div
@@ -100,7 +112,8 @@ export default async function ProfilePage({ params }: PageProps) {
     >
       <main
         className={cn(
-          "max-w-xl mx-auto rounded-2xl border p-6 sm:p-10 space-y-8 backdrop-blur-sm transition-all duration-200",
+          "mx-auto rounded-2xl border p-6 sm:p-10 space-y-8 backdrop-blur-sm transition-all duration-200",
+          layoutWidthClass,
           themeConfig.containerClass
         )}
       >
