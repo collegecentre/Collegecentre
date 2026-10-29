@@ -48,35 +48,37 @@ export function ProfileFooter({ profile, themeConfig }: ProfileFooterProps) {
         </Button>
       </div>
 
-      {/* CollegeCentre Branding & Pitch */}
-      <div className="space-y-2">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 group transition-opacity hover:opacity-90"
-        >
-          <div className="h-6 w-6 rounded-md bg-foreground text-background flex items-center justify-center font-bold text-xs tracking-tighter shadow-subtle group-hover:scale-105 transition-transform">
-            CC
-          </div>
-          <span className="font-semibold text-xs tracking-tight text-foreground">
-            CollegeCentre
-          </span>
-        </Link>
-
-        <p className={cn("text-[11px] leading-relaxed max-w-xs mx-auto", themeConfig.footerMuted)}>
-          One link for everything you&apos;ve built, achieved, and are.
-        </p>
-
-        <div className="pt-1">
+      {/* CollegeCentre Branding & Pitch (Hidden if Pro user has remove_branding enabled) */}
+      {!profile.remove_branding && (
+        <div className="space-y-2">
           <Link
-            href="/signup"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline underline-offset-4 group"
+            href="/"
+            className="inline-flex items-center gap-2 group transition-opacity hover:opacity-90"
           >
-            <Sparkles className="h-3 w-3 text-brand" />
-            <span>Create your free CollegeCentre page</span>
-            <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+            <div className="h-6 w-6 rounded-md bg-foreground text-background flex items-center justify-center font-bold text-xs tracking-tighter shadow-subtle group-hover:scale-105 transition-transform">
+              CC
+            </div>
+            <span className="font-semibold text-xs tracking-tight text-foreground">
+              CollegeCentre
+            </span>
           </Link>
+
+          <p className={cn("text-[11px] leading-relaxed max-w-xs mx-auto", themeConfig.footerMuted)}>
+            One link for everything you&apos;ve built, achieved, and are.
+          </p>
+
+          <div className="pt-1">
+            <Link
+              href="/signup"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline underline-offset-4 group"
+            >
+              <Sparkles className="h-3 w-3 text-brand" />
+              <span>Create your free CollegeCentre page</span>
+              <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+            </Link>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Full QR & Share Modal */}
       <ProfileShareModal

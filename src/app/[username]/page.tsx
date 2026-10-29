@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ShieldCheck } from "lucide-react";
+import { ShieldCheck, Globe } from "lucide-react";
 import { getStudentProfileByUsername } from "@/lib/profile-service";
 import { getProfileTheme } from "@/lib/themes";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
@@ -124,9 +124,18 @@ export default async function ProfilePage({ params }: PageProps) {
         {/* Top Minimal Identity Meta Bar */}
         <div className="flex items-center justify-between pb-2 border-b border-border/40 text-xs font-mono text-muted-foreground">
           <div className="flex items-center gap-1.5 truncate max-w-[240px] sm:max-w-xs">
-            <span className="font-semibold text-foreground/80">collegecentre.in</span>
-            <span>/</span>
-            <span className="text-foreground font-medium truncate">{profile.username}</span>
+            {profile.custom_domain ? (
+              <span className="font-semibold text-foreground/90 flex items-center gap-1">
+                <Globe className="h-3 w-3 text-brand" />
+                {profile.custom_domain}
+              </span>
+            ) : (
+              <>
+                <span className="font-semibold text-foreground/80">collegecentre.in</span>
+                <span>/</span>
+                <span className="text-foreground font-medium truncate">{profile.username}</span>
+              </>
+            )}
           </div>
 
           <div className="flex items-center gap-1.5 shrink-0">

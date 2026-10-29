@@ -95,6 +95,8 @@ export interface Profile {
   skills?: string[];
   is_featured?: boolean;
   views_count?: number;
+  custom_domain?: string | null;
+  remove_branding?: boolean;
   onboarding_completed: boolean;
   onboarding_step: number;
   created_at: string;
@@ -503,4 +505,88 @@ export interface CollegeProfileData {
   availableYears: number[];
   availableSkills: string[];
 }
+
+// -------------------------------------------------------------
+// Phase 15: Premium, Monetization & Entitlements Architecture
+// -------------------------------------------------------------
+
+export type PlanTier = "free" | "pro";
+
+export type BillingInterval = "monthly" | "yearly";
+
+export type SubscriptionStatus =
+  | "active"
+  | "trialing"
+  | "past_due"
+  | "canceled"
+  | "unpaid"
+  | "incomplete";
+
+export type EntitlementFeature =
+  | "custom_domain"
+  | "advanced_themes"
+  | "advanced_customization"
+  | "advanced_analytics"
+  | "remove_branding"
+  | "unlimited_projects"
+  | "pro_badge";
+
+export interface BillingPlanLimits {
+  max_projects: number;
+  max_achievements: number;
+  max_certificates: number;
+  analytics_days: number;
+}
+
+export interface BillingPlan {
+  id: string;
+  slug: PlanTier;
+  name: string;
+  description: string;
+  price_monthly: number;
+  price_yearly: number;
+  currency: string;
+  features: string[];
+  limits: BillingPlanLimits;
+  is_active: boolean;
+}
+
+export interface Subscription {
+  id: string;
+  profile_id: string;
+  plan_id: string;
+  plan_slug: PlanTier;
+  status: SubscriptionStatus;
+  billing_interval: BillingInterval;
+  current_period_start: string;
+  current_period_end: string;
+  cancel_at_period_end: boolean;
+  canceled_at?: string | null;
+  trial_start?: string | null;
+  trial_end?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UserEntitlements {
+  tier: PlanTier;
+  isPro: boolean;
+  subscription: Subscription | null;
+  features: Record<EntitlementFeature, boolean>;
+  limits: BillingPlanLimits;
+}
+
+export interface BillingEvent {
+  id: string;
+  profile_id: string;
+  event_type:
+    | "subscription.created"
+    | "subscription.updated"
+    | "subscription.canceled"
+    | "payment.succeeded"
+    | "payment.failed";
+  data: Record<string, any>;
+  created_at: string;
+}
+
 

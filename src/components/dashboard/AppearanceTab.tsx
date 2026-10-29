@@ -23,6 +23,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/toast";
 import { LiveProfileCard } from "./LiveProfileCard";
+import { UpgradeModal } from "@/components/billing/UpgradeModal";
+import { getUserEntitlements, authorizeFeatureUpdate } from "@/lib/billing-service";
 import {
   OFFICIAL_THEMES,
   getProfileTheme,
@@ -45,6 +47,8 @@ interface AppearanceTabProps {
   socialLinks: SocialLink[];
   onProfileUpdated?: (updatedProfile: Profile) => void;
 }
+
+const PRO_THEMES: ProfileTheme[] = ["creative", "professional", "dark"];
 
 const ACCENT_OPTIONS: Array<{
   id: ThemeAccentColor;
@@ -121,6 +125,18 @@ export function AppearanceTab({
 
   const [isSaving, setIsSaving] = React.useState(false);
   const [mobileView, setMobileView] = React.useState<"edit" | "preview">("edit");
+  const [isPro, setIsPro] = React.useState(false);
+  const [upgradeOpen, setUpgradeOpen] = React.useState(false);
+  const [upgradeFeature, setUpgradeFeature] = React.useState<string | undefined>(undefined);
+
+  // Check entitlements
+  React.useEffect(() => {
+    if (profile?.id) {
+      getUserEntitlements(profile.id).then((ents) => {
+        setIsPro(ents.isPro);
+      });
+    }
+  }, [profile?.id]);
 
   // Keep state in sync if profile updates externally
   React.useEffect(() => {
@@ -169,6 +185,44 @@ export function AppearanceTab({
     if (!profile?.id) return;
     try {
       setIsSaving(true);
+
+      // Server-side authorization check: Pro themes require Pro entitlement
+      if (PRO_THEMES.includes(selectedTheme)) {
+        const auth = await authorizeFeatureUpdate(profile.id, "advanced_themes", { theme: selectedTheme });
+        if (!auth.authorized) {
+          setIsSaving(false);
+          setUpgradeFeature(`Theme '${selectedTheme}'`);
+          setUpgradeOpen(true);
+          toast({
+            title: "Pro Theme Selected",
+            description: auth.error || "Upgrade to Pro to apply curated themes.",
+            variant: "default",
+          });
+          return;
+        }
+      }
+
+      // Server-side authorization check: Bespoke accents and layouts
+      const hasCustomAppearance =
+        selectedAccent !== "default" ||
+        selectedLayout !== "centered" ||
+        selectedButton !== "rounded" ||
+        selectedBackground !== "solid";
+
+      if (hasCustomAppearance) {
+        const auth = await authorizeFeatureUpdate(profile.id, "advanced_customization");
+        if (!auth.authorized) {
+          setIsSaving(false);
+          setUpgradeFeature("Advanced Theme Customization");
+          setUpgradeOpen(true);
+          toast({
+            title: "Pro Customization Selected",
+            description: auth.error || "Upgrade to Pro to customize theme accents and layouts.",
+            variant: "default",
+          });
+          return;
+        }
+      }
 
       const updates = {
         theme: selectedTheme,
@@ -407,9 +461,19 @@ export function AppearanceTab({
                     {/* Metadata */}
                     <div className="space-y-1">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-bold text-foreground tracking-tight group-hover:text-primary transition-colors">
-                          {themePreset.name}
-                        </span>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-sm font-bold text-foreground tracking-tight group-hover:text-primary transition-colors">
+                            {themePreset.name}
+                          </span>
+                          {PRO_THEMES.includes(themePreset.id) && (
+                            <Badge
+                              variant="outline"
+                              className="text-[9px] font-bold uppercase text-indigo-500 border-indigo-500/30 px-1 py-0"
+                            >
+                              PRO
+                            </Badge>
+                          )}
+                        </div>
                         <Badge
                           variant="outline"
                           size="sm"
@@ -643,6 +707,22 @@ export function AppearanceTab({
           />
         </div>
       </div>
+
+      {/* Upgrade Modal for Pro Themes & Customizations */}
+      <UpgradeModal
+        isOpen={upgradeOpen}
+        onClose={() => setUpgradeOpen(false)}
+        featureName={upgradeFeature}
+        userId={profile.id}
+        onSuccess={() => {
+          setIsPro(true);
+          toast({
+            title: "Pro Activated",
+            description: "You now have full access to curated themes and customizations.",
+            variant: "default",
+          });
+        }}
+      />
     </div>
   );
 }

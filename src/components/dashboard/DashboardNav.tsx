@@ -35,7 +35,7 @@ const NAV_ITEMS: Array<{
   { id: "resume", label: "Resume", icon: FileText },
   { id: "appearance", label: "Appearance", icon: Palette },
   { id: "analytics", label: "Analytics", icon: BarChart3 },
-  { id: "settings", label: "Settings", icon: Settings, isPlaceholder: true },
+  { id: "settings", label: "Settings", icon: Settings },
 ];
 
 export function DashboardNav({ activeTab, onTabChange, className }: DashboardNavProps) {

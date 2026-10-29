@@ -44,6 +44,10 @@ const STORAGE_RESUMES_KEY = "cc_mock_resumes";
 const STORAGE_ANALYTICS_KEY = "cc_mock_analytics";
 const STORAGE_COLLEGES_KEY = "cc_mock_colleges_v14";
 const STORAGE_COLLEGE_MEMBERS_KEY = "cc_mock_college_members_v14";
+const STORAGE_PLANS_KEY = "cc_mock_plans_v15";
+const STORAGE_SUBSCRIPTIONS_KEY = "cc_mock_subscriptions_v15";
+const STORAGE_ENTITLEMENTS_KEY = "cc_mock_entitlements_v15";
+const STORAGE_BILLING_EVENTS_KEY = "cc_mock_billing_events_v15";
 
 export const DEFAULT_PROFILES: any[] = [
   {
@@ -467,6 +471,118 @@ export const DEFAULT_COLLEGE_EVENTS: Record<string, any[]> = {
     },
   ],
 };
+
+export const DEFAULT_PLANS: any[] = [
+  {
+    id: "plan_free",
+    slug: "free",
+    name: "Free Builder",
+    description: "Essential portfolio capabilities for every ambitious student. Free forever.",
+    price_monthly: 0,
+    price_yearly: 0,
+    currency: "INR",
+    features: [
+      "Public student showcase",
+      "Configurable links & social icons",
+      "Up to 5 engineering projects",
+      "Up to 5 verified honors",
+      "Certificates & PDF resume",
+      "Standard themes (Minimal, Developer, Academic)",
+      "QR code sharing",
+      "7-day analytics overview",
+    ],
+    limits: {
+      max_projects: 5,
+      max_achievements: 5,
+      max_certificates: 5,
+      analytics_days: 7,
+    },
+    is_active: true,
+  },
+  {
+    id: "plan_pro",
+    slug: "pro",
+    name: "CollegeCentre Pro",
+    description: "Custom domain, advanced analytics, custom colors, and priority builder presence.",
+    price_monthly: 299,
+    price_yearly: 2499,
+    currency: "INR",
+    features: [
+      "Connect your personal custom domain (yourname.dev)",
+      "Advanced curated themes (Creative, Cobalt, Obsidian, Terminal)",
+      "Custom theme accents, layouts, and button aesthetics",
+      "Full 90-day & all-time traffic analytics with referrers",
+      "Remove CollegeCentre footer watermark",
+      "Unlimited projects, honors & certificates",
+      "Verified Pro badge on showcase & campus directory",
+    ],
+    limits: {
+      max_projects: 9999,
+      max_achievements: 9999,
+      max_certificates: 9999,
+      analytics_days: 90,
+    },
+    is_active: true,
+  },
+];
+
+export const DEFAULT_SUBSCRIPTIONS: any[] = [
+  {
+    id: "sub_alex",
+    profile_id: "usr_alex",
+    plan_id: "plan_pro",
+    plan_slug: "pro",
+    status: "active",
+    billing_interval: "yearly",
+    current_period_start: "2026-01-01T00:00:00Z",
+    current_period_end: "2027-01-01T00:00:00Z",
+    cancel_at_period_end: false,
+    canceled_at: null,
+    created_at: "2026-01-01T00:00:00Z",
+    updated_at: "2026-10-29T00:00:00Z",
+  },
+  {
+    id: "sub_sreehari",
+    profile_id: "usr_sreehari",
+    plan_id: "plan_free",
+    plan_slug: "free",
+    status: "active",
+    billing_interval: "monthly",
+    current_period_start: "2026-09-01T00:00:00Z",
+    current_period_end: "2026-11-01T00:00:00Z",
+    cancel_at_period_end: false,
+    canceled_at: null,
+    created_at: "2026-09-01T00:00:00Z",
+    updated_at: "2026-10-29T00:00:00Z",
+  },
+];
+
+export const DEFAULT_ENTITLEMENTS: any[] = [
+  { id: "ent_1", profile_id: "usr_alex", subscription_id: "sub_alex", feature_key: "custom_domain", is_enabled: true },
+  { id: "ent_2", profile_id: "usr_alex", subscription_id: "sub_alex", feature_key: "advanced_themes", is_enabled: true },
+  { id: "ent_3", profile_id: "usr_alex", subscription_id: "sub_alex", feature_key: "advanced_customization", is_enabled: true },
+  { id: "ent_4", profile_id: "usr_alex", subscription_id: "sub_alex", feature_key: "advanced_analytics", is_enabled: true },
+  { id: "ent_5", profile_id: "usr_alex", subscription_id: "sub_alex", feature_key: "remove_branding", is_enabled: true },
+  { id: "ent_6", profile_id: "usr_alex", subscription_id: "sub_alex", feature_key: "unlimited_projects", is_enabled: true },
+  { id: "ent_7", profile_id: "usr_alex", subscription_id: "sub_alex", feature_key: "pro_badge", is_enabled: true },
+];
+
+export const DEFAULT_BILLING_EVENTS: any[] = [
+  {
+    id: "bevt_1",
+    profile_id: "usr_alex",
+    event_type: "subscription.created",
+    data: { plan: "pro", interval: "yearly", amount: 2499, currency: "INR" },
+    created_at: "2026-01-01T00:00:00Z",
+  },
+  {
+    id: "bevt_2",
+    profile_id: "usr_alex",
+    event_type: "payment.succeeded",
+    data: { amount: 2499, invoice: "inv_2026_001" },
+    created_at: "2026-01-01T00:00:00Z",
+  },
+];
 
 export const DEFAULT_COLLEGE_CLUBS: Record<string, any[]> = {
   col_nit: [
@@ -1385,6 +1501,10 @@ export const mockSupabase = {
             if (table === "basic_social_links") return getStored<any[]>(STORAGE_SOCIAL_KEY, DEFAULT_SOCIAL_LINKS);
             if (table === "student_links" || table === "links") return getStored<any[]>(STORAGE_STUDENT_LINKS_KEY, DEFAULT_STUDENT_LINKS);
             if (table === "analytics_events") return getStored<any[]>(STORAGE_ANALYTICS_KEY, DEFAULT_ANALYTICS_EVENTS);
+            if (table === "plans") return getStored<any[]>(STORAGE_PLANS_KEY, DEFAULT_PLANS);
+            if (table === "subscriptions") return getStored<any[]>(STORAGE_SUBSCRIPTIONS_KEY, DEFAULT_SUBSCRIPTIONS);
+            if (table === "entitlements") return getStored<any[]>(STORAGE_ENTITLEMENTS_KEY, DEFAULT_ENTITLEMENTS);
+            if (table === "billing_events") return getStored<any[]>(STORAGE_BILLING_EVENTS_KEY, DEFAULT_BILLING_EVENTS);
             return [];
           },
 
@@ -1549,6 +1669,10 @@ export const mockSupabase = {
                 }
                 return true;
               });
+              resolve({ data: list, error: null });
+            } else if (table === "plans" || table === "subscriptions" || table === "entitlements" || table === "billing_events") {
+              const rows = this._getTableRows();
+              const list = rows.filter((r) => this._matchItem(r));
               resolve({ data: list, error: null });
             } else {
               resolve({ data: [], error: null });
@@ -1806,6 +1930,65 @@ export const mockSupabase = {
           return { data: list, error: null };
         }
 
+        if (table === "subscriptions") {
+          const subs = getStored<any[]>(STORAGE_SUBSCRIPTIONS_KEY, DEFAULT_SUBSCRIPTIONS);
+          list.forEach((item) => {
+            const existingIdx = subs.findIndex((s) => s.id === item.id || s.profile_id === item.profile_id);
+            if (existingIdx > -1) {
+              subs[existingIdx] = { ...subs[existingIdx], ...item, updated_at: new Date().toISOString() };
+              item.id = subs[existingIdx].id;
+            } else {
+              const newSub = {
+                id: item.id || "sub_" + Math.random().toString(36).substring(2, 9),
+                status: item.status || "active",
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+                ...item,
+              };
+              item.id = newSub.id;
+              subs.push(newSub);
+            }
+          });
+          setStored(STORAGE_SUBSCRIPTIONS_KEY, subs);
+          return { data: list, error: null };
+        }
+
+        if (table === "entitlements") {
+          const ents = getStored<any[]>(STORAGE_ENTITLEMENTS_KEY, DEFAULT_ENTITLEMENTS);
+          list.forEach((item) => {
+            const existingIdx = ents.findIndex((e) => e.id === item.id || (e.profile_id === item.profile_id && e.feature_key === item.feature_key));
+            if (existingIdx > -1) {
+              ents[existingIdx] = { ...ents[existingIdx], ...item };
+              item.id = ents[existingIdx].id;
+            } else {
+              const newEnt = {
+                id: item.id || "ent_" + Math.random().toString(36).substring(2, 9),
+                created_at: new Date().toISOString(),
+                ...item,
+              };
+              item.id = newEnt.id;
+              ents.push(newEnt);
+            }
+          });
+          setStored(STORAGE_ENTITLEMENTS_KEY, ents);
+          return { data: list, error: null };
+        }
+
+        if (table === "billing_events") {
+          const events = getStored<any[]>(STORAGE_BILLING_EVENTS_KEY, DEFAULT_BILLING_EVENTS);
+          list.forEach((item) => {
+            const newEvt = {
+              id: item.id || "bevt_" + Math.random().toString(36).substring(2, 9),
+              created_at: item.created_at || new Date().toISOString(),
+              ...item,
+            };
+            item.id = newEvt.id;
+            events.push(newEvt);
+          });
+          setStored(STORAGE_BILLING_EVENTS_KEY, events);
+          return { data: list, error: null };
+        }
+
         return { data: list, error: null };
       },
 
@@ -1898,6 +2081,26 @@ export const mockSupabase = {
                     resolve({ data: members[idx], error: null });
                   } else {
                     resolve({ data: null, error: { message: "College member not found to update" } });
+                  }
+                } else if (table === "subscriptions") {
+                  const subs = getStored<any[]>(STORAGE_SUBSCRIPTIONS_KEY, DEFAULT_SUBSCRIPTIONS);
+                  const idx = subs.findIndex((s) => s[field] === value);
+                  if (idx > -1) {
+                    subs[idx] = { ...subs[idx], ...updates, updated_at: new Date().toISOString() };
+                    setStored(STORAGE_SUBSCRIPTIONS_KEY, subs);
+                    resolve({ data: subs[idx], error: null });
+                  } else {
+                    resolve({ data: null, error: { message: "Subscription not found to update" } });
+                  }
+                } else if (table === "entitlements") {
+                  const ents = getStored<any[]>(STORAGE_ENTITLEMENTS_KEY, DEFAULT_ENTITLEMENTS);
+                  const idx = ents.findIndex((e) => e[field] === value);
+                  if (idx > -1) {
+                    ents[idx] = { ...ents[idx], ...updates };
+                    setStored(STORAGE_ENTITLEMENTS_KEY, ents);
+                    resolve({ data: ents[idx], error: null });
+                  } else {
+                    resolve({ data: null, error: { message: "Entitlement not found to update" } });
                   }
                 } else {
                   resolve({ data: null, error: null });

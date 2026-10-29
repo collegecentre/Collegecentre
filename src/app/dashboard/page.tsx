@@ -30,6 +30,7 @@ import { CertificatesManagerTab } from "@/components/dashboard/CertificatesManag
 import { ResumeManagerTab } from "@/components/dashboard/ResumeManagerTab";
 import { AppearanceTab } from "@/components/dashboard/AppearanceTab";
 import { AnalyticsTab } from "@/components/dashboard/AnalyticsTab";
+import { SettingsTab } from "@/components/dashboard/SettingsTab";
 import { PlaceholderTab } from "@/components/dashboard/PlaceholderTab";
 import type { DashboardTab } from "@/components/dashboard/dashboard-types";
 import { supabase } from "@/lib/supabase";
@@ -297,6 +298,13 @@ function DashboardContent() {
           />
         )}
 
+        {activeTab === "settings" && profile && (
+          <SettingsTab
+            profile={profile}
+            onProfileUpdated={handleProfileUpdated}
+          />
+        )}
+
         {activeTab !== "overview" &&
           activeTab !== "profile" &&
           activeTab !== "links" &&
@@ -305,7 +313,8 @@ function DashboardContent() {
           activeTab !== "certificates" &&
           activeTab !== "resume" &&
           activeTab !== "appearance" &&
-          activeTab !== "analytics" && (
+          activeTab !== "analytics" &&
+          activeTab !== "settings" && (
             <PlaceholderTab tab={activeTab} onNavigateTab={setActiveTab} />
           )}
       </main>

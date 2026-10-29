@@ -27,6 +27,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
 import { getAnalyticsSummary } from "@/lib/analytics";
+import { UpgradeModal } from "@/components/billing/UpgradeModal";
+import { getUserEntitlements } from "@/lib/billing-service";
 import type {
   Profile,
   SocialLink,
@@ -49,6 +51,16 @@ export function AnalyticsTab({ profile }: AnalyticsTabProps) {
   const [summary, setSummary] = React.useState<AnalyticsSummary | null>(null);
   const [hoveredPoint, setHoveredPoint] = React.useState<AnalyticsDailyPoint | null>(null);
   const [copiedLink, setCopiedLink] = React.useState(false);
+  const [isPro, setIsPro] = React.useState(false);
+  const [upgradeOpen, setUpgradeOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    if (profile?.id) {
+      getUserEntitlements(profile.id).then((ents) => {
+        setIsPro(ents.isPro);
+      });
+    }
+  }, [profile?.id]);
 
   const profileUrl = typeof window !== "undefined"
     ? `${window.location.origin}/${profile.username}`
@@ -143,20 +155,30 @@ export function AnalyticsTab({ profile }: AnalyticsTabProps) {
                 "90d": "90 Days",
                 all: "All Time",
               };
+              const isProFilter = filter === "90d" || filter === "all";
               const isActive = timeFilter === filter;
               return (
                 <button
                   key={filter}
                   type="button"
-                  onClick={() => setTimeFilter(filter)}
+                  onClick={() => {
+                    if (isProFilter && !isPro) {
+                      setUpgradeOpen(true);
+                      return;
+                    }
+                    setTimeFilter(filter);
+                  }}
                   className={cn(
-                    "px-2.5 py-1 text-xs font-medium rounded-lg transition-all",
+                    "px-2.5 py-1 text-xs font-medium rounded-lg transition-all inline-flex items-center gap-1",
                     isActive
                       ? "bg-foreground text-background font-semibold shadow-xs"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/80"
                   )}
                 >
-                  {labels[filter]}
+                  <span>{labels[filter]}</span>
+                  {isProFilter && !isPro && (
+                    <Lock className="w-2.5 h-2.5 opacity-60" />
+                  )}
                 </button>
               );
             })}
@@ -762,6 +784,17 @@ export function AnalyticsTab({ profile }: AnalyticsTabProps) {
           Owner-Only RLS Access
         </span>
       </div>
+
+      {/* Upgrade Modal */}
+      <UpgradeModal
+        isOpen={upgradeOpen}
+        onClose={() => setUpgradeOpen(false)}
+        featureName="90-Day & All-Time Traffic Analytics"
+        userId={profile.id}
+        onSuccess={() => {
+          setIsPro(true);
+        }}
+      />
     </div>
   );
 }

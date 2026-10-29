@@ -65,6 +65,12 @@ export function Header({
             >
               Campuses
             </Link>
+            <Link
+              href="/pricing"
+              className="px-3 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+            >
+              Pricing
+            </Link>
             <a
               href="#why-collegecentre"
               className="px-3 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
@@ -215,6 +221,13 @@ export function Header({
               className="text-left px-3 py-2 text-sm font-medium rounded-md hover:bg-muted text-foreground transition-colors"
             >
               Campus Directories
+            </Link>
+            <Link
+              href="/pricing"
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-left px-3 py-2 text-sm font-medium rounded-md hover:bg-muted text-foreground transition-colors"
+            >
+              Plans & Pricing
             </Link>
             <a
               href="#why-collegecentre"
