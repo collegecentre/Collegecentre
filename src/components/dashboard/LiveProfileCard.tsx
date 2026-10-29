@@ -1,6 +1,6 @@
 import * as React from "react";
 import Link from "next/link";
-import { Copy, Check, ExternalLink, ShieldCheck } from "lucide-react";
+import { Copy, Check, ExternalLink, ShieldCheck, QrCode, Share2 } from "lucide-react";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { SocialLinksRow } from "@/components/profile/SocialLinksRow";
 import { ProjectsShowcase } from "@/components/profile/ProjectsShowcase";
@@ -8,6 +8,7 @@ import { AchievementsShowcase } from "@/components/profile/AchievementsShowcase"
 import { CertificatesShowcase } from "@/components/profile/CertificatesShowcase";
 import { ResumeShowcase } from "@/components/profile/ResumeShowcase";
 import { StudentLinksList } from "@/components/profile/StudentLinksList";
+import { ProfileShareModal } from "@/components/profile/ProfileShareModal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
@@ -39,6 +40,7 @@ export function LiveProfileCard({
 }: LiveProfileCardProps) {
   const { toast } = useToast();
   const [copied, setCopied] = React.useState(false);
+  const [shareModalOpen, setShareModalOpen] = React.useState(false);
   const [internalProjects, setInternalProjects] = React.useState<Project[]>([]);
   const [internalAchievements, setInternalAchievements] = React.useState<Achievement[]>([]);
   const [internalCertificates, setInternalCertificates] = React.useState<Certificate[]>([]);
@@ -168,9 +170,21 @@ export function LiveProfileCard({
             </button>
           </div>
 
-          <div className="flex items-center gap-1 text-[10px] font-mono text-muted-foreground">
-            <ShieldCheck className="h-3 w-3 text-brand" />
-            <span className="hidden sm:inline">Verified</span>
+          <div className="flex items-center gap-1.5 text-[10px] font-mono text-muted-foreground">
+            <button
+              type="button"
+              onClick={() => setShareModalOpen(true)}
+              className="text-muted-foreground hover:text-foreground flex items-center gap-1 p-0.5 transition-colors"
+              title="Open QR & Sharing Modal"
+            >
+              <QrCode className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">QR</span>
+            </button>
+            <span className="opacity-40">•</span>
+            <span className="inline-flex items-center gap-0.5">
+              <ShieldCheck className="h-3 w-3 text-brand" />
+              <span className="hidden sm:inline">Verified</span>
+            </span>
           </div>
         </div>
 
@@ -228,6 +242,13 @@ export function LiveProfileCard({
           </div>
         </div>
       </div>
+
+      {/* Profile Share & QR Modal */}
+      <ProfileShareModal
+        profile={profile}
+        open={shareModalOpen}
+        onOpenChange={setShareModalOpen}
+      />
     </div>
   );
 }

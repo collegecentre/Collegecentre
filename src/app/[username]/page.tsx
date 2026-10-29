@@ -40,12 +40,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const canonicalUrl = `https://collegecentre.in/${profile.username}`;
 
+  const defaultOgImage = "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&h=630&q=80";
+  const shareImage = profile.avatar_url || defaultOgImage;
+
   return {
     title,
     description,
     alternates: {
       canonical: canonicalUrl,
     },
+    robots: profile.is_public ? { index: true, follow: true } : { index: false, follow: false },
     openGraph: {
       title,
       description,
@@ -53,21 +57,20 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       siteName: "CollegeCentre",
       type: "profile",
       locale: "en_US",
-      images: profile.avatar_url
-        ? [
-            {
-              url: profile.avatar_url,
-              width: 800,
-              height: 800,
-              alt: displayName,
-            },
-          ]
-        : undefined,
+      images: [
+        {
+          url: shareImage,
+          width: 1200,
+          height: 630,
+          alt: `${displayName} on CollegeCentre`,
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
+      images: [shareImage],
     },
   };
 }

@@ -18,7 +18,9 @@ import {
   Award,
   FileCheck2,
   FileText,
+  QrCode,
 } from "lucide-react";
+import { ProfileShareModal } from "@/components/profile/ProfileShareModal";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -46,6 +48,7 @@ export function OverviewTab({
   const { toast } = useToast();
   const [copied, setCopied] = React.useState(false);
   const [isUpdatingPrivacy, setIsUpdatingPrivacy] = React.useState(false);
+  const [shareModalOpen, setShareModalOpen] = React.useState(false);
 
   // Compute profile completion percentage and missing items
   const completionItems = React.useMemo(() => {
@@ -158,6 +161,16 @@ export function OverviewTab({
               leftIcon={copied ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
             >
               {copied ? "Copied Link" : "Copy Link"}
+            </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShareModalOpen(true)}
+              className="text-xs font-semibold gap-1.5"
+            >
+              <QrCode className="h-3.5 w-3.5" />
+              <span>Share &amp; QR</span>
             </Button>
 
             <Link href={`/${username}`} target="_blank">
@@ -456,6 +469,15 @@ export function OverviewTab({
           </Link>
         </div>
       </div>
+
+      {/* Profile Share & QR Modal */}
+      {profile && (
+        <ProfileShareModal
+          profile={profile}
+          open={shareModalOpen}
+          onOpenChange={setShareModalOpen}
+        />
+      )}
     </div>
   );
 }

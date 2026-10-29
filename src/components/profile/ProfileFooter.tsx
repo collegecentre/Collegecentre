@@ -2,16 +2,9 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Share2, Copy, Check, Sparkles, ArrowRight } from "lucide-react";
+import { Share2, QrCode, Sparkles, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/toast";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { ProfileShareModal } from "./ProfileShareModal";
 import type { Profile } from "@/types";
 import type { ProfileThemeConfig } from "@/lib/themes";
 import { cn } from "@/lib/utils";
@@ -22,70 +15,36 @@ interface ProfileFooterProps {
 }
 
 export function ProfileFooter({ profile, themeConfig }: ProfileFooterProps) {
-  const { toast } = useToast();
   const [shareModalOpen, setShareModalOpen] = React.useState(false);
-  const [copied, setCopied] = React.useState(false);
-
-  const profileUrl = typeof window !== "undefined"
-    ? `${window.location.origin}/${profile.username}`
-    : `https://collegecentre.in/${profile.username}`;
-
-  const handleShareClick = async () => {
-    // If native mobile sharing is available, prefer it
-    if (typeof navigator !== "undefined" && navigator.share) {
-      try {
-        await navigator.share({
-          title: `${profile.full_name || profile.username} | CollegeCentre`,
-          text: `Check out ${profile.full_name || profile.username}'s student showcase on CollegeCentre`,
-          url: profileUrl,
-        });
-        return;
-      } catch (err: any) {
-        if (err.name !== "AbortError") {
-          setShareModalOpen(true);
-        }
-        return;
-      }
-    }
-    // Otherwise open desktop share modal
-    setShareModalOpen(true);
-  };
-
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(profileUrl);
-    setCopied(true);
-    toast({
-      title: "Showcase Link Copied",
-      description: `${profileUrl} copied to clipboard.`,
-      variant: "default",
-    });
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const shareText = encodeURIComponent(
-    `Check out ${profile.full_name || `@${profile.username}`}'s student showcase on CollegeCentre:`
-  );
-  const encodedUrl = encodeURIComponent(profileUrl);
-
-  const twitterUrl = `https://twitter.com/intent/tweet?text=${shareText}&url=${encodedUrl}`;
-  const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
-  const whatsappUrl = `https://api.whatsapp.com/send?text=${shareText}%20${encodedUrl}`;
 
   return (
     <footer className="pt-6 pb-4 border-t border-border/50 text-center space-y-5">
-      {/* Action Buttons: Share Showcase */}
-      <div className="flex items-center justify-center gap-3">
+      {/* Action Buttons: Share Showcase & QR */}
+      <div className="flex items-center justify-center gap-2.5 flex-wrap">
         <Button
           variant="outline"
           size="sm"
-          onClick={handleShareClick}
+          onClick={() => setShareModalOpen(true)}
           className={cn(
-            "text-xs font-medium shadow-xs transition-transform active:scale-95",
+            "text-xs font-medium shadow-xs transition-transform active:scale-95 gap-1.5",
             themeConfig.socialButton
           )}
-          leftIcon={<Share2 className="h-3.5 w-3.5" />}
         >
-          Share Profile
+          <Share2 className="h-3.5 w-3.5" />
+          <span>Share Profile</span>
+        </Button>
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShareModalOpen(true)}
+          className={cn(
+            "text-xs font-medium shadow-xs transition-transform active:scale-95 gap-1.5",
+            themeConfig.socialButton
+          )}
+        >
+          <QrCode className="h-3.5 w-3.5" />
+          <span>Show QR</span>
         </Button>
       </div>
 
@@ -119,72 +78,12 @@ export function ProfileFooter({ profile, themeConfig }: ProfileFooterProps) {
         </div>
       </div>
 
-      {/* Share Dialog Modal */}
-      <Dialog open={shareModalOpen} onOpenChange={setShareModalOpen}>
-        <DialogContent className="max-w-md p-6 space-y-4">
-          <DialogHeader>
-            <DialogTitle className="text-base font-bold">
-              Share Student Showcase
-            </DialogTitle>
-            <DialogDescription className="text-xs text-muted-foreground">
-              Share {profile.full_name || profile.username}&apos;s profile across networks or copy the direct vanity URL.
-            </DialogDescription>
-          </DialogHeader>
-
-          {/* Vanity URL Copy Field */}
-          <div className="flex items-center gap-2 p-2 rounded-lg bg-muted border border-border">
-            <span className="text-xs font-mono text-muted-foreground truncate flex-1 px-1">
-              {profileUrl}
-            </span>
-            <Button
-              variant="default"
-              size="sm"
-              onClick={handleCopyLink}
-              className="text-xs shrink-0"
-            >
-              {copied ? (
-                <>
-                  <Check className="h-3.5 w-3.5 mr-1 text-emerald-400" />
-                  Copied
-                </>
-              ) : (
-                <>
-                  <Copy className="h-3.5 w-3.5 mr-1" />
-                  Copy Link
-                </>
-              )}
-            </Button>
-          </div>
-
-          {/* Social Share Buttons */}
-          <div className="grid grid-cols-3 gap-2 pt-1">
-            <a
-              href={twitterUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-1.5 p-2 rounded-lg border border-border text-xs font-medium hover:bg-muted transition-colors"
-            >
-              Share on X
-            </a>
-            <a
-              href={linkedInUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-1.5 p-2 rounded-lg border border-border text-xs font-medium hover:bg-muted transition-colors"
-            >
-              LinkedIn
-            </a>
-            <a
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-1.5 p-2 rounded-lg border border-border text-xs font-medium hover:bg-muted transition-colors"
-            >
-              WhatsApp
-            </a>
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* Full QR & Share Modal */}
+      <ProfileShareModal
+        profile={profile}
+        open={shareModalOpen}
+        onOpenChange={setShareModalOpen}
+      />
     </footer>
   );
 }
