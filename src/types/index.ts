@@ -57,6 +57,7 @@ export interface Profile {
   course: string | null;
   graduation_year: number | null;
   theme: ProfileTheme;
+  is_public: boolean;
   onboarding_completed: boolean;
   onboarding_step: number;
   created_at: string;
@@ -78,7 +79,18 @@ export interface SocialLink {
   id?: string;
   profile_id?: string;
   platform: SocialPlatform;
+  title?: string;
   url: string;
+  order_index: number;
+}
+
+export interface StudentLink {
+  id: string;
+  profile_id: string;
+  title: string;
+  url: string;
+  description?: string;
+  icon?: string;
   order_index: number;
 }
 

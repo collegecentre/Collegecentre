@@ -162,9 +162,14 @@ function DashboardContent() {
                   </Badge>
                 </div>
 
-                <p className="text-xs font-mono text-muted-foreground">
-                  collegecentre.in/{username}
-                </p>
+                <Link
+                  href={`/${username}`}
+                  target="_blank"
+                  className="inline-flex items-center gap-1 text-xs font-mono text-primary hover:underline underline-offset-4"
+                >
+                  <span>collegecentre.in/{username}</span>
+                  <ExternalLink className="h-3 w-3" />
+                </Link>
 
                 <p className="text-xs text-foreground/80 pt-0.5">
                   {profile?.college || "University"} • {profile?.course || "Undergraduate"} {profile?.graduation_year ? `• Class of '${profile.graduation_year}` : ""}
@@ -179,18 +184,29 @@ function DashboardContent() {
             </div>
 
             <div className="flex flex-wrap sm:flex-col items-center sm:items-end gap-2 w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-border/60">
+              <Link href={`/${username}`} target="_blank" className="w-full sm:w-auto">
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="text-xs shadow-subtle w-full sm:w-auto"
+                  rightIcon={<ArrowUpRight className="h-3.5 w-3.5" />}
+                >
+                  View Live Showcase
+                </Button>
+              </Link>
+
               <Button
-                variant="brand"
+                variant="outline"
                 size="sm"
                 onClick={handleCopyLink}
-                className="text-xs shadow-subtle w-full sm:w-auto"
+                className="text-xs w-full sm:w-auto"
                 leftIcon={<Share2 className="h-3.5 w-3.5" />}
               >
-                Share Showcase Link
+                Share Link
               </Button>
 
               <Link href="/onboarding?step=1" className="w-full sm:w-auto">
-                <Button variant="outline" size="sm" className="text-xs w-full sm:w-auto">
+                <Button variant="ghost" size="sm" className="text-xs w-full sm:w-auto">
                   Edit Profile
                 </Button>
               </Link>

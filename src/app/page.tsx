@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useRouter } from "next/navigation";
 import {
   Header,
   Hero,
@@ -17,6 +18,7 @@ import {
 } from "@/components/landing";
 
 export default function LandingPage() {
+  const router = useRouter();
   const [claimModalOpen, setClaimModalOpen] = React.useState(false);
   const [loginModalOpen, setLoginModalOpen] = React.useState(false);
   const [exploreModalOpen, setExploreModalOpen] = React.useState(false);
@@ -92,7 +94,7 @@ export default function LandingPage() {
         open={exploreModalOpen}
         onOpenChange={setExploreModalOpen}
         onSelectProfile={(handle) => {
-          handleOpenClaim(handle);
+          router.push(`/${handle}`);
         }}
       />
     </div>

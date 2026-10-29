@@ -36,6 +36,178 @@ const STORAGE_USERS_KEY = "cc_mock_users";
 const STORAGE_SESSION_KEY = "cc_mock_session";
 const STORAGE_PROFILES_KEY = "cc_mock_profiles";
 const STORAGE_SOCIAL_KEY = "cc_mock_social_links";
+const STORAGE_STUDENT_LINKS_KEY = "cc_mock_student_links";
+
+export const DEFAULT_PROFILES: any[] = [
+  {
+    id: "usr_sreehari",
+    username: "sreehari",
+    full_name: "Sreehari Nair",
+    avatar_url: "",
+    bio: "Building CollegeCentre 2.0. Distributed systems, web platform architecture, and developer productivity tools.",
+    college: "National Institute of Technology",
+    course: "Computer Science & Engineering",
+    graduation_year: 2026,
+    theme: "obsidian",
+    is_public: true,
+    onboarding_completed: true,
+    onboarding_step: 7,
+    created_at: "2026-09-01T00:00:00Z",
+    updated_at: "2026-10-29T00:00:00Z",
+  },
+  {
+    id: "usr_alex",
+    username: "alexrivera",
+    full_name: "Alex Rivera",
+    avatar_url: "",
+    bio: "Building visual SLAM kernels for autonomous aerial drones and low-latency ROS2 nodes. ACM SIGGRAPH & HackMIT finalist.",
+    college: "UC Berkeley",
+    course: "B.S. EECS & Robotics",
+    graduation_year: 2026,
+    theme: "cobalt",
+    is_public: true,
+    onboarding_completed: true,
+    onboarding_step: 7,
+    created_at: "2026-09-01T00:00:00Z",
+    updated_at: "2026-10-29T00:00:00Z",
+  },
+  {
+    id: "usr_priya",
+    username: "priyasharma",
+    full_name: "Priya Sharma",
+    avatar_url: "",
+    bio: "Researching multimodal foundation models and interactive latency constraints. NeurIPS 2025 Workshop Author.",
+    college: "Stanford University",
+    course: "M.S. Artificial Intelligence & HCI",
+    graduation_year: 2025,
+    theme: "academic",
+    is_public: true,
+    onboarding_completed: true,
+    onboarding_step: 7,
+    created_at: "2026-09-01T00:00:00Z",
+    updated_at: "2026-10-29T00:00:00Z",
+  },
+  {
+    id: "usr_kavya",
+    username: "kavyapatel",
+    full_name: "Kavya Patel",
+    avatar_url: "",
+    bio: "Kernel hacker, eBPF observer, and rustaceans lead at GT Systems Lab.",
+    college: "Georgia Institute of Technology",
+    course: "B.S. Computer Science & Systems",
+    graduation_year: 2027,
+    theme: "terminal",
+    is_public: true,
+    onboarding_completed: true,
+    onboarding_step: 7,
+    created_at: "2026-09-01T00:00:00Z",
+    updated_at: "2026-10-29T00:00:00Z",
+  },
+  {
+    id: "usr_private",
+    username: "privateuser",
+    full_name: "Jordan Lee",
+    avatar_url: "",
+    bio: "Quantum algorithms and condensed matter physics researcher.",
+    college: "MIT",
+    course: "Physics & Quantum Computation",
+    graduation_year: 2026,
+    theme: "obsidian",
+    is_public: false,
+    onboarding_completed: true,
+    onboarding_step: 7,
+    created_at: "2026-09-01T00:00:00Z",
+    updated_at: "2026-10-29T00:00:00Z",
+  },
+];
+
+export const DEFAULT_SOCIAL_LINKS: any[] = [
+  { id: "sl_1", profile_id: "usr_sreehari", platform: "github", url: "https://github.com/sreehari", order_index: 0 },
+  { id: "sl_2", profile_id: "usr_sreehari", platform: "linkedin", url: "https://linkedin.com/in/sreehari", order_index: 1 },
+  { id: "sl_3", profile_id: "usr_sreehari", platform: "x", url: "https://x.com/sreehari", order_index: 2 },
+  { id: "sl_4", profile_id: "usr_sreehari", platform: "website", url: "https://sreehari.dev", order_index: 3 },
+  { id: "sl_5", profile_id: "usr_sreehari", platform: "instagram", url: "https://instagram.com/sreehari", order_index: 4 },
+
+  { id: "sl_6", profile_id: "usr_alex", platform: "github", url: "https://github.com/arivera", order_index: 0 },
+  { id: "sl_7", profile_id: "usr_alex", platform: "linkedin", url: "https://linkedin.com/in/alex-rivera", order_index: 1 },
+  { id: "sl_8", profile_id: "usr_alex", platform: "x", url: "https://x.com/alexrivera", order_index: 2 },
+  { id: "sl_9", profile_id: "usr_alex", platform: "website", url: "https://alexrivera.me", order_index: 3 },
+
+  { id: "sl_10", profile_id: "usr_priya", platform: "github", url: "https://github.com/priyasharma", order_index: 0 },
+  { id: "sl_11", profile_id: "usr_priya", platform: "linkedin", url: "https://linkedin.com/in/priya-sharma", order_index: 1 },
+  { id: "sl_12", profile_id: "usr_priya", platform: "website", url: "https://priyasharma.ai", order_index: 2 },
+
+  { id: "sl_13", profile_id: "usr_kavya", platform: "github", url: "https://github.com/kavyapatel", order_index: 0 },
+  { id: "sl_14", profile_id: "usr_kavya", platform: "x", url: "https://x.com/kavyapatel", order_index: 1 },
+  { id: "sl_15", profile_id: "usr_kavya", platform: "website", url: "https://kavyasystems.org", order_index: 2 },
+];
+
+export const DEFAULT_STUDENT_LINKS: any[] = [
+  {
+    id: "link_1",
+    profile_id: "usr_sreehari",
+    title: "CollegeCentre 2.0 Engineering Architecture RFC",
+    url: "https://github.com/collegecentre/rfc",
+    description: "Deep dive into the distributed architecture, SSR profile engine, and Next.js design tokens.",
+    order_index: 0,
+  },
+  {
+    id: "link_2",
+    profile_id: "usr_sreehari",
+    title: "Technical Writing & Engineering Preprints",
+    url: "https://sreehari.dev/writing",
+    description: "Articles on TypeScript compiler internals and low-latency database connection pooling.",
+    order_index: 1,
+  },
+  {
+    id: "link_3",
+    profile_id: "usr_sreehari",
+    title: "Resume & Academic Transcripts",
+    url: "https://sreehari.dev/resume.pdf",
+    description: "Updated CV with academic coursework, research papers, and technical project stack.",
+    order_index: 2,
+  },
+  {
+    id: "link_4",
+    profile_id: "usr_alex",
+    title: "Real-Time Visual SLAM Quadrotor Demo",
+    url: "https://github.com/arivera/vslam-drone",
+    description: "Open-source trajectory estimator running at 90fps on onboard Jetson Orin.",
+    order_index: 0,
+  },
+  {
+    id: "link_5",
+    profile_id: "usr_alex",
+    title: "Berkeley EECS Capstone Research Paper",
+    url: "https://arxiv.org",
+    description: "Multi-agent coordination under intermittent wireless mesh conditions.",
+    order_index: 1,
+  },
+  {
+    id: "link_6",
+    profile_id: "usr_priya",
+    title: "Interactive Latency & Reasoning Benchmarks",
+    url: "https://github.com/priyasharma/latency-bench",
+    description: "Benchmarking user friction and cognitive perception during token-streamed agent reasoning.",
+    order_index: 0,
+  },
+  {
+    id: "link_7",
+    profile_id: "usr_priya",
+    title: "Substack: The Human-AI Interface",
+    url: "https://substack.com/@priyasharma",
+    description: "Bi-weekly essays on cognitive ergonomies and direct manipulation interfaces.",
+    order_index: 1,
+  },
+  {
+    id: "link_8",
+    profile_id: "usr_kavya",
+    title: "Zero-Copy eBPF Packet Filter in Rust",
+    url: "https://github.com/kavyapatel/ebpf-router",
+    description: "Kernel bypass routing module processing 10Gbps at sub-microsecond latency.",
+    order_index: 0,
+  },
+];
 
 const inMemoryStore = new Map<string, string>();
 
@@ -228,28 +400,43 @@ export const mockSupabase = {
 
     return {
       select(_columns = "*") {
-        return {
+        const queryObj = {
           eq(field: string, value: any) {
             queryFilter = { field, value };
             return this;
           },
+          order(_field: string, _options?: { ascending?: boolean }) {
+            return this;
+          },
           async maybeSingle() {
-            await new Promise((r) => setTimeout(r, 100));
+            await new Promise((r) => setTimeout(r, 60));
             if (table === "profiles") {
-              const profiles = getStored<any[]>(STORAGE_PROFILES_KEY, []);
+              const profiles = getStored<any[]>(STORAGE_PROFILES_KEY, DEFAULT_PROFILES);
               const found = queryFilter.field
-                ? profiles.find((p) => p[queryFilter.field!] === queryFilter.value)
+                ? profiles.find((p) => {
+                    const val = p[queryFilter.field!];
+                    if (typeof val === "string" && typeof queryFilter.value === "string") {
+                      return val.toLowerCase() === queryFilter.value.toLowerCase();
+                    }
+                    return val === queryFilter.value;
+                  })
                 : profiles[0] || null;
               return { data: found || null, error: null };
             }
             return { data: null, error: null };
           },
           async single() {
-            await new Promise((r) => setTimeout(r, 100));
+            await new Promise((r) => setTimeout(r, 60));
             if (table === "profiles") {
-              const profiles = getStored<any[]>(STORAGE_PROFILES_KEY, []);
+              const profiles = getStored<any[]>(STORAGE_PROFILES_KEY, DEFAULT_PROFILES);
               const found = queryFilter.field
-                ? profiles.find((p) => p[queryFilter.field!] === queryFilter.value)
+                ? profiles.find((p) => {
+                    const val = p[queryFilter.field!];
+                    if (typeof val === "string" && typeof queryFilter.value === "string") {
+                      return val.toLowerCase() === queryFilter.value.toLowerCase();
+                    }
+                    return val === queryFilter.value;
+                  })
                 : profiles[0] || null;
               if (!found) return { data: null, error: { message: "Row not found", code: "PGRST116" } };
               return { data: found, error: null };
@@ -257,29 +444,36 @@ export const mockSupabase = {
             return { data: null, error: null };
           },
           async then(resolve: any) {
-            await new Promise((r) => setTimeout(r, 100));
+            await new Promise((r) => setTimeout(r, 60));
             if (table === "basic_social_links") {
-              const links = getStored<any[]>(STORAGE_SOCIAL_KEY, []);
+              const links = getStored<any[]>(STORAGE_SOCIAL_KEY, DEFAULT_SOCIAL_LINKS);
+              const filtered = queryFilter.field
+                ? links.filter((l) => l[queryFilter.field!] === queryFilter.value)
+                : links;
+              resolve({ data: filtered, error: null });
+            } else if (table === "student_links") {
+              const links = getStored<any[]>(STORAGE_STUDENT_LINKS_KEY, DEFAULT_STUDENT_LINKS);
               const filtered = queryFilter.field
                 ? links.filter((l) => l[queryFilter.field!] === queryFilter.value)
                 : links;
               resolve({ data: filtered, error: null });
             } else if (table === "profiles") {
-              const profiles = getStored<any[]>(STORAGE_PROFILES_KEY, []);
+              const profiles = getStored<any[]>(STORAGE_PROFILES_KEY, DEFAULT_PROFILES);
               resolve({ data: profiles, error: null });
             } else {
               resolve({ data: [], error: null });
             }
           },
         };
+        return queryObj;
       },
 
       async insert(rows: any | any[]) {
-        await new Promise((r) => setTimeout(r, 200));
+        await new Promise((r) => setTimeout(r, 100));
         const list = Array.isArray(rows) ? rows : [rows];
 
         if (table === "profiles") {
-          const profiles = getStored<any[]>(STORAGE_PROFILES_KEY, []);
+          const profiles = getStored<any[]>(STORAGE_PROFILES_KEY, DEFAULT_PROFILES);
           list.forEach((row) => {
             const idx = profiles.findIndex((p) => p.id === row.id || p.username === row.username);
             if (idx > -1) {
@@ -297,15 +491,28 @@ export const mockSupabase = {
         }
 
         if (table === "basic_social_links") {
-          const links = getStored<any[]>(STORAGE_SOCIAL_KEY, []);
+          const links = getStored<any[]>(STORAGE_SOCIAL_KEY, DEFAULT_SOCIAL_LINKS);
           list.forEach((item) => {
             links.push({
-              id: "link_" + Math.random().toString(36).substring(2, 9),
+              id: item.id || "link_" + Math.random().toString(36).substring(2, 9),
               ...item,
               created_at: new Date().toISOString(),
             });
           });
           setStored(STORAGE_SOCIAL_KEY, links);
+          return { data: list, error: null };
+        }
+
+        if (table === "student_links") {
+          const links = getStored<any[]>(STORAGE_STUDENT_LINKS_KEY, DEFAULT_STUDENT_LINKS);
+          list.forEach((item) => {
+            links.push({
+              id: item.id || "slink_" + Math.random().toString(36).substring(2, 9),
+              ...item,
+              created_at: new Date().toISOString(),
+            });
+          });
+          setStored(STORAGE_STUDENT_LINKS_KEY, links);
           return { data: list, error: null };
         }
 
